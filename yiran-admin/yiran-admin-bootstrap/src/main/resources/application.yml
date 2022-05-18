@@ -1,0 +1,122 @@
+spring:
+  main:
+    banner-mode: "OFF"
+  application:
+    name: SP后台管理
+  datasource:
+    url: jdbc:mysql://1.1.1.1:3306/sp-back?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
+    username: xxx
+    password: xxx
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        strategy: org.hibernate.cfg.ImprovedNamingStrategy
+    show-sql: true
+    open-in-view: false
+    database-platform: org.hibernate.dialect.MySQL5Dialect
+  redis:
+    prefix: sp
+    host: 1.1.1.1
+    port: 6379
+    password: xxx
+    timeout: 3000
+    database: 6
+    jedis:
+      pool:
+        max-idle: 8
+        min-idle: 0
+        max-active: 8
+        max-wait: -1
+        time-between-eviction-runs: 30
+  http:
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+  mvc:
+    throw-exception-if-no-handler-found: true
+    static-path-pattern: /static/*
+  messages:
+    encoding: UTF-8
+    basename: i18n/messages
+  servlet:
+    multipart:
+    # 单个文件大小
+    max-file-size:  10MB
+    # 设置总上传的文件大小
+    max-request-size:  20MB
+
+  devtools:
+    restart:
+       # 热部署开关
+       enabled: true
+
+
+server:
+  port: 8800
+  tomcat:
+    uri-encoding: UTF-8
+    max-http-header-size: 81940
+  servlet:
+    context-path: /api
+  address: 0.0.0.0
+
+
+logging:
+  path: ${LOG_DIR:..}/logx
+  level:
+    root: INFO
+    one.yiran: INFO
+    org.springframework: INFO
+    org.springframework.data: INFO
+    org.springframework.security: INFO
+    org.springframework.beans.factory.support.DefaultListableBeanFactory: INFO
+    org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener: INFO
+    org.apache.shiro: INFO
+#    org.springframework.data.mongodb.core: DEBUG
+
+
+# 防止XSS攻击
+xss:
+  # 过滤开关
+  enabled: false
+  # 排除链接（多个用逗号分隔）
+  excludes: /system/notice/*
+  # 匹配链接
+  urlPatterns: /system/*,/monitor/*,/tool/*
+dashboard:
+  version: 1.0.0
+  cache: local # local redis
+  salt: salt@defalut
+  debug:
+    mode: false
+    loginName: admin
+    password: password
+  password:
+    limit:
+      count: 3
+      time: 1
+  filepath: ${BASE_DIR:/Users/jimmy/tmp}/data/job
+  ali:
+    oss:
+      enable: false
+      bucket:
+      endpoint:
+      accessKey:
+      accessSecret:
+  upload:
+    filepath: ${dashboard.filepath}/upload/
+    #filepath: /oss/upload
+  avatar:
+    filepath: ${dashboard.filepath}/avatar/
+  export:
+    filepath: ${java.io.tmpdir}/export/
+  ip:
+    addressEnabled: true
+    userLocalDatabase: true
+    filepath: classpath:data/qqwry.dat
+
+---
+spring:
+  profiles: home
