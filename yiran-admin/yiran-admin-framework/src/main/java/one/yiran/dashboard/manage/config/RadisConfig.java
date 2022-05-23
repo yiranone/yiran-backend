@@ -48,13 +48,17 @@ public class RadisConfig {
         poolConfig.setMaxTotal(maxActive);
         //当池内没有可用的连接时，最大等待时间
         poolConfig.setMaxWaitMillis(1000);
+        poolConfig.setTestWhileIdle(true);
+        poolConfig.setMinEvictableIdleTimeMillis(50000); //多久空闲就移除
+        poolConfig.setTimeBetweenEvictionRunsMillis(30000); //检测间隔时间
+        poolConfig.setNumTestsPerEvictionRun(-1); //检测所有链接
         return poolConfig;
     }
 
     @Bean
     public JedisPool jedisPool(JedisPoolConfig poolConfig) {
         JedisPool jedisPool = new JedisPool(poolConfig,
-                host, port, timeout, password, database);
+                host, port, timeout, password, database, "sp-back");
         return jedisPool;
     }
 }

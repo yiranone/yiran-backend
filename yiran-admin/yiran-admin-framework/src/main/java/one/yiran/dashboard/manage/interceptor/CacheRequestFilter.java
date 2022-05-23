@@ -1,5 +1,6 @@
 package one.yiran.dashboard.manage.interceptor;
 
+import lombok.extern.slf4j.Slf4j;
 import one.yiran.dashboard.common.util.ServletUtil;
 import org.springframework.core.annotation.Order;
 
@@ -8,13 +9,14 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
+@Slf4j
 @WebFilter(urlPatterns="/*")
 @Order(2)
 public class CacheRequestFilter implements Filter {
 
     @Override
     public void destroy() {
-        System.out.println("销毁CacheRequestFilter");
+        log.info("销毁CacheRequestFilter");
     }
 
     @Override
@@ -34,6 +36,6 @@ public class CacheRequestFilter implements Filter {
 
     @Override
     public void init(FilterConfig f) {
-        System.out.println("初始化CacheRequestFilter");
+        log.info("初始化CacheRequestFilter");
     }
 }

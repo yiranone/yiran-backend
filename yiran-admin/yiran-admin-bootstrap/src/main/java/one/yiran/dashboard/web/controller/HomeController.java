@@ -42,6 +42,7 @@ public class HomeController {
     @Autowired
     private SysPermService sysPermService;
 
+    //后台首页菜单获取接口，树形
     @AjaxWrapper
     @RequestMapping("/menu")
     public List<WebMenu> menu(ModelMap model) {
@@ -89,10 +90,5 @@ public class HomeController {
         }
         return retLists;
     }
-
-//    @RequestMapping("/error")
-//    public String error(Model model){
-//        throw BusinessException.build("系统异常");
-//    }
 
 }

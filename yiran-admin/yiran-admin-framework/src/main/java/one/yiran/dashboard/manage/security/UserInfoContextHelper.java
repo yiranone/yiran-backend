@@ -61,7 +61,7 @@ public class UserInfoContextHelper {
         UserInfo user = UserCacheUtil.getSessionInfo(request);
         request.setAttribute("YIRAN_LOGIN_USER", user);
 
-        //        Object obj = getSubject().getPrincipal();
+//        Object obj = getSubject().getPrincipal();
 //        if (obj != null) {
 //            if(obj instanceof UserInfo) {
 //                return (UserInfo)obj;

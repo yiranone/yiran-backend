@@ -36,12 +36,12 @@ public class UserCacheUtil {
             return;
         }
 
-        Jedis pool = getJedis();
+        Jedis resource = getJedis();
         try {
-            pool.set(Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX, s, SetParams.setParams().ex(SESSION_TIMEOUT));
+            resource.set(Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX, s, SetParams.setParams().ex(SESSION_TIMEOUT));
         } finally {
-            if (pool != null)
-                pool.close();
+            if (resource != null)
+                resource.close();
         }
     }
 
