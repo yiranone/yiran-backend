@@ -4,6 +4,7 @@ package one.yiran.dashboard.manage.service;
 import one.yiran.common.domain.PageModel;
 import one.yiran.common.domain.PageRequest;
 import one.yiran.dashboard.manage.entity.SysUser;
+import one.yiran.dashboard.vo.UserPageVO;
 
 import java.util.Date;
 import java.util.List;
@@ -38,7 +39,15 @@ public interface SysUserService {
 
     List<SysUser> findUsersByUserIds(Long[] id);
 
-    PageModel getPage(PageRequest pageRequest, SysUser searchUser);
+    PageModel<SysUser> getPage(PageRequest pageRequest, SysUser searchUser);
+
+    /**
+     * 查询用户列表，返回包含角色信息
+     * @param pageRequest
+     * @param searchUser
+     * @return
+     */
+    PageModel<UserPageVO> getPageDetail(PageRequest pageRequest, SysUser searchUser, String deptName);
 
     long getListSize(SysUser searchUser, Date bTime, Date eTime);
 

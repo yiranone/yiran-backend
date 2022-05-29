@@ -14,6 +14,7 @@ import one.yiran.common.domain.PageModel;
 import one.yiran.common.domain.PageRequest;
 import one.yiran.common.exception.BusinessException;
 import one.yiran.db.common.util.PageRequestUtil;
+import one.yiran.db.common.util.PredicateBuilder;
 import one.yiran.db.common.util.PredicateUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -123,8 +124,17 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
         return path;
     }
 
-    private void injectObject(T target, JPAQuery query) {
-        List<Predicate> pres = exactFromObject(target);
+    protected void injectObject(T target, JPAQuery query, EntityPathBase path) {
+        List<Predicate> pres = exactFromObject(target,path);
+        if(pres!=null && pres.size()>0){
+            pres.forEach(e->{
+                query.where(e);
+            });
+        }
+    }
+
+    protected void injectObject(T target, JPAQuery query) {
+        List<Predicate> pres = exactFromObject(target,entityPath());
         if(pres!=null && pres.size()>0){
             pres.forEach(e->{
                 query.where(e);
@@ -165,7 +175,7 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
         if(request != null)
             PageRequestUtil.injectQuery(request,q);
 
-        predicates.addAll(exactFromObject(target));
+        predicates.addAll(exactFromObject(target,entityPath()));
         return doCount(predicates);
     }
 
@@ -422,81 +432,7 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
         });
     }
 
-    private List<Predicate> exactFromObject(T target) {
-        List<Predicate> predicates = new ArrayList<>();
-        if (target != null) {
-            List<Field> fields = FieldUtils.getAllFieldsList(target.getClass());
-            for (Field f : fields) {
-                Search search = f.getAnnotation(Search.class);
-                if (search == null)
-                    continue;
-                String key = StringUtils.isNotEmpty(search.columnName()) ? search.columnName() : f.getName();
-                Search.Op op = search.op();
-                Object value = null;
-                Class fieldType = null;
-                try {
-                    f.setAccessible(true);
-                    fieldType = f.getType();
-                    value = FieldUtils.readField(f, target);
-                } catch (IllegalAccessException e) {
-                    log.error("", e);
-                }
-                if (value instanceof String && StringUtils.isBlank(((String) value))) {
-                    continue;
-                }
-                if (value != null) {
-                    if (op.equals(Search.Op.IS)) {
-                        if(key.equals("isDelete")) {
-                            if (value instanceof Boolean) {
-                                if(((Boolean) value).booleanValue()) {
-                                    //PredicateUtil.addDeletePredicate(query);
-                                    predicates.add(PredicateUtil.buildDeletePredicate());
-                                } else if(!((Boolean) value).booleanValue()){
-                                    //PredicateUtil.addNotDeletePredicate(query);
-                                    predicates.add(PredicateUtil.buildNotDeletePredicate());
-                                }
-                            }
-                        } else {
-//                            if (value instanceof String)
-                                predicates.add(PredicateUtil.buildPredicate(Ops.EQ,key,fieldType.cast(value)));
-//                            else if (value instanceof Long)
-//                                predicates.add(PredicateUtil.buildPredicate(Ops.EQ,key,Long.valueOf(value.toString())));
-//                            else
-//                                predicates.add(PredicateUtil.buildPredicate(Ops.EQ,key,value.toString().trim()));
-                        }
-                    } else if (op.equals(Search.Op.REGEX)) {
-                        predicates.add(PredicateUtil.buildPredicate(Ops.LIKE,key,fieldType.cast(value)));
-                    } else if (op.equals(Search.Op.IN)) {
-                        if(value instanceof Number[]) {
-                            Number[] numValue = (Number[]) value;
-                            if(numValue.length > 0)
-                                predicates.add(PredicateUtil.buildPredicate(Ops.IN, key,numValue));
-                        }else if(value instanceof String[]) {
-                            String[] strValue = (String[]) value;
-                            if(strValue.length > 0)
-                                predicates.add(PredicateUtil.buildPredicate(Ops.IN, key,strValue));
-                        }
-                    } else if (op.equals(Search.Op.GT)) {
-                        predicates.add(PredicateUtil.buildPredicate(Ops.GT,key,fieldType.cast(value)));
-                    } else if (op.equals(Search.Op.GTE)) {
-                        if(value instanceof Number) {
-                            Number numValue = (Number) value;
-                            predicates.add(PredicateUtil.buildPredicate(Ops.GOE, key,numValue));
-                        }
-                    } else if (op.equals(Search.Op.LT)) {
-                        if(value instanceof Number) {
-                            Number numValue = (Number) value;
-                            predicates.add(PredicateUtil.buildPredicate(Ops.LT, key,numValue));
-                        }
-                    } else if (op.equals(Search.Op.GTE)) {
-                        if(value instanceof Number) {
-                            Number numValue = (Number) value;
-                            predicates.add(PredicateUtil.buildPredicate(Ops.LOE, key,numValue));
-                        }
-                    }
-                }
-            }
-        }
-        return predicates;
+    private List<Predicate> exactFromObject(T target, EntityPath path) {
+        return PredicateBuilder.builder().addEntityByAnnotation(target,path).toList();
     }
 }

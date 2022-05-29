@@ -8,9 +8,12 @@ import one.yiran.common.util.TimeUtil;
 import one.yiran.common.domain.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.List;
 
 @Slf4j
 public class PageRequestUtil {
@@ -65,16 +68,35 @@ public class PageRequestUtil {
     }
 
     public static void injectQuery(PageRequest request, JPAQuery query) {
+          injectQuery(request,query,null);
+    }
+
+    private static Path detectType(String name, Path<Type> defaultPath, Path<?>... paths){
+        for (Path<?> p : paths){
+            List<Field> clazzs = FieldUtils.getAllFieldsList(p.getClass());
+            for(Field f : clazzs) {
+                if(Path.class.isAssignableFrom(f.getType())) {
+                    if(f.getName().equals(name))
+                        return p;
+                }
+            }
+        }
+        return defaultPath;
+    }
+    public static void injectQuery(PageRequest request, JPAQuery query, EntityPath<?>... alternativePaths) {
 
         boolean succ = request.alreadyInjectToQuery.compareAndSet(false, true);
         if (!succ)
             return;
 
-        Path<Type> pathEntity = Expressions.path(query.getType(), query.getType().getSimpleName());
+        String simpleName = query.getType().getSimpleName();
+        simpleName = simpleName.substring(0, 1).toLowerCase() + simpleName.substring(1);
+        Path<Type> defaultPath = Expressions.path(query.getType(), simpleName);
 
         if(StringUtils.isNotBlank(request.getStatus())){
-//            Path<String> statusPath = Expressions.path(String.class, pathEntity, "status");
-            Path<String> statusPath = Expressions.stringPath("status");
+            Path<Type> p = detectType("status",defaultPath,alternativePaths);
+            Path<String> statusPath = Expressions.path(String.class, p, "status");
+//            Path<String> statusPath = Expressions.stringPath("status");
             BooleanOperation bpre = Expressions.predicate(Ops.EQ, statusPath, Expressions.constant(request.getStatus()));
             query.where(bpre);
         }
@@ -90,137 +112,17 @@ public class PageRequestUtil {
             query.limit(request.getPageSize());
 
         if (StringUtils.isNotBlank(request.getOrderByColumn())) {
+            Path<Type> p = detectType(request.getOrderByColumn(),defaultPath,alternativePaths);
+
             if(StringUtils.isNotBlank(request.getOrderDirection())){
                 if (request.getOrderDirection().equals("DESC")) {
-                    query.orderBy(new OrderSpecifier(Order.DESC,Expressions.stringPath(request.getOrderByColumn())));
+                    query.orderBy(new OrderSpecifier(Order.DESC,Expressions.stringPath(p,request.getOrderByColumn())));
                 } else {
-                    query.orderBy(new OrderSpecifier(Order.ASC,Expressions.stringPath(request.getOrderByColumn())));
+                    query.orderBy(new OrderSpecifier(Order.ASC,Expressions.stringPath(p,request.getOrderByColumn())));
                 }
             } else {
-                query.orderBy(new OrderSpecifier(Order.ASC,Expressions.stringPath(request.getOrderByColumn())));
+                query.orderBy(new OrderSpecifier(Order.ASC,Expressions.stringPath(p,request.getOrderByColumn())));
             }
          }
     }
-
-
-    public static void injectQuery(PageRequest request, Predicate predicate) {
-
-        boolean succ  = request.alreadyInjectToQuery.compareAndSet(false,true);
-        if(!succ)
-            return;
-
-
-
-        //if (StringUtils.isNotBlank(status)) {
-        //    query.addCriteria(Criteria.where("status").is(status));
-        //}
-
-//        if (request.getBeginCreateTime() != null && request.getEndCreateTime() != null) {
-//            //query.addCriteria(Criteria.where("createTime").gte(request.getBeginCreateTime()).lte(request.getEndCreateTime() ));
-//            CriteriaUtil.addCriteria(query,Criteria.where("createTime").gte(request.getBeginCreateTime()).lte(request.getEndCreateTime() ));
-//        } else if (request.getBeginCreateTime() != null) {
-//            //query.addCriteria(Criteria.where("createTime").gte(request.getBeginCreateTime()));
-//            CriteriaUtil.addCriteria(query,Criteria.where("createTime").gte(request.getBeginCreateTime()));
-//        } else if (request.getEndCreateTime()  != null) {
-//            //query.addCriteria(Criteria.where("createTime").lte(request.getEndCreateTime() ));
-//            CriteriaUtil.addCriteria(query,Criteria.where("createTime").lte(request.getEndCreateTime() ));
-//        }
-//
-//        if (StringUtils.isNotBlank(request.getOrderByColumn())) {
-//            query.with(
-//                    new Sort(
-//                            Sort.Direction.fromOptionalString(request.getOrderDirection()).orElse(Sort.Direction.ASC), request.getOrderByColumn()));
-//        }
-//        if (request.getPageNum() < 1)
-//            request.setPageNum(1);
-//        if (request.getPageSize() <= 0)
-//            request.setPageSize(10);
-//        if (request.getPageSize() > Integer.MAX_VALUE)
-//            request.setPageSize(Integer.MAX_VALUE);
-//        Pageable pageableRequest = org.springframework.data.domain.PageRequest.of((int) request.getPageNum() - 1, (int) request.getPageSize());
-//        query.with(pageableRequest);
-//
-//        if(request.getDepts() != null && request.getDepts().size() > 0) {
-//            try {
-//                Field cField = FieldUtils.getField(query.getClass(), "criteria",true);
-//                cField.setAccessible(true);
-//                Object v = cField.get(query);
-//                Map<String, CriteriaDefinition> mq = (Map<String, CriteriaDefinition> )v;
-//
-//                Criteria reqDeptCri = null;
-//                if (mq != null) {
-//                    Criteria[] criterias = mq.values().toArray(new Criteria[]{});
-//                    for(Criteria c : criterias){
-//                        if(StringUtils.equals(c.getKey(),"deptId")) {
-//                            reqDeptCri = c;
-//                            break;
-//                        }
-//                    }
-//                }
-//
-//                if(reqDeptCri != null) {
-//                    //reqDeptCri.andOperator()
-//                    //Long[] xx = new Long[]{34L,35L};
-//                    //reqDeptCri.getCriteriaObject();
-//                    //reqDeptCri.in(xx);
-//                    reqDeptCri.andOperator(Criteria.where("deptId").in(request.getDepts()));
-//                    log.info("inject query:{}",query);
-//                } else {
-//                    Criteria addCri = Criteria.where("deptId").in(request.getDepts());
-//                    query.addCriteria(addCri);
-//                }
-//
-//
-//                //log.info("{}",mq);
-//
-//            } catch (Exception e) {
-//                log.error("",e);
-//            }
-//        }
-
-    }
-
-//    public static void injectAggregation(PageRequest request, List<AggregationOperation> aggregationOperations) {
-//        boolean succ  = request.alreadyInjectToQuery.compareAndSet(false,true);
-//        //if(!succ)
-//        //    return;
-//
-//        if (StringUtils.isNotBlank(request.getStatus())) {
-//            aggregationOperations.add(Aggregation.match(Criteria.where("status").is(request.getStatus())));
-//        }
-//        Date beginDate = request.getBeginCreateTime();
-//        Date endDate = request.getEndCreateTime();
-//        if (beginDate != null && endDate != null) {
-//            aggregationOperations.add(Aggregation.match(Criteria.where("createTime").gte(beginDate).lte(endDate)));
-//        } else if (beginDate != null) {
-//            aggregationOperations.add(Aggregation.match(Criteria.where("createTime").gte(beginDate)));
-//        } else if (endDate != null) {
-//            aggregationOperations.add(Aggregation.match(Criteria.where("createTime").lte(endDate)));
-//        }
-//        injectAggregationOnlyPage(request, aggregationOperations);
-//    }
-//
-//    public static void injectAggregationOnlyPage(PageRequest request, List<AggregationOperation> aggregationOperations) {
-//        boolean succ  = request.alreadyInjectToQuery.compareAndSet(false,true);
-//        //if(!succ)
-//        //    return;
-//
-//        if (StringUtils.isNotBlank(request.getOrderByColumn())) {
-//            aggregationOperations.add(Aggregation.sort(
-//                    new Sort(Sort.Direction.fromOptionalString(request.getOrderDirection()).orElse(Sort.Direction.ASC), request.getOrderByColumn())));
-//        }
-//        long pageNum = request.getPageNum();
-//        long pageSize = request.getPageSize();
-//        if (request.getPageNum() < 1)
-//            pageNum = 1;
-//        if (pageSize > Integer.MAX_VALUE)
-//            pageSize = Integer.MAX_VALUE;
-//        Pageable pageableRequest = org.springframework.data.domain.PageRequest.of((int) pageNum - 1, (int) pageSize);
-//        aggregationOperations.add(Aggregation.skip((pageNum - 1) * pageSize));
-//        aggregationOperations.add(Aggregation.limit(pageSize));
-//
-//        if(request.getDepts() != null && request.getDepts().size() > 0) {
-//            aggregationOperations.add(Aggregation.match(Criteria.where("deptId").in(request.getDepts())));
-//        }
-//    }
 }

@@ -1,7 +1,10 @@
 package one.yiran.dashboard.manage.service.impl;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.SubQueryExpression;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import one.yiran.dashboard.common.constants.UserConstants;
 import one.yiran.common.domain.PageModel;
@@ -11,6 +14,7 @@ import one.yiran.dashboard.manage.dao.UserDao;
 import one.yiran.dashboard.manage.dao.UserPostDao;
 import one.yiran.dashboard.manage.dao.UserRoleDao;
 import one.yiran.dashboard.manage.entity.*;
+import one.yiran.dashboard.vo.UserPageVO;
 import one.yiran.db.common.service.CrudBaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import one.yiran.dashboard.common.constants.Global;
@@ -23,6 +27,9 @@ import one.yiran.dashboard.manage.service.SysPostService;
 import one.yiran.dashboard.manage.service.SysRoleService;
 import one.yiran.dashboard.manage.service.SysUserService;
 import one.yiran.dashboard.common.util.MD5Util;
+import one.yiran.db.common.util.PageRequestUtil;
+import one.yiran.db.common.util.PredicateBuilder;
+import one.yiran.db.common.util.PredicateUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -252,7 +259,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
     }
 
     @Override
-    public PageModel getPage(PageRequest pageRequest, SysUser searchUser) {
+    public PageModel<SysUser> getPage(PageRequest pageRequest, SysUser searchUser) {
 
 //        BooleanExpression pp = new BooleanExpression();
 //        BooleanExpression p = addSearchToQuery(searchUser);
@@ -271,6 +278,37 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
         }
 
         return super.selectPage(pageRequest,searchUser, pres);
+    }
+
+    @Override
+    public PageModel<UserPageVO> getPageDetail(PageRequest pageRequest, SysUser searchUser, String deptName) {
+
+        QSysUser qUser = QSysUser.sysUser;
+        QSysDept qDept = QSysDept.sysDept;
+        QSysUserRole qUserRole = QSysUserRole.sysUserRole;
+
+        Predicate[] pres = PredicateBuilder.builder()
+                .addExpression(PredicateUtil.buildNotDeletePredicate(qUser))
+                .addLikeIfNotBlank(qDept.deptName, deptName)
+                .addEqualIfNotBlank(QSysUser.sysUser.loginName, searchUser.getLoginName())
+//                .addEqualIfNotBlank(QSysUser.sysUser.phoneNumber, searchUser.getPhoneNumber())
+                .addEntityByAnnotation(searchUser,QSysUser.sysUser)
+                .toArray();
+
+        JPAQuery<Tuple> q = queryFactory.select(qUser,qDept).from(qUser).leftJoin(qDept)
+                .on(qUser.deptId.eq(qDept.deptId)).where(pres);
+
+        PageRequestUtil.injectQuery(pageRequest,q,qUser,qDept);
+
+        List<Tuple> ts = q.fetch();
+        List<UserPageVO> userPageVOs = new ArrayList<>();
+        for (Tuple r : ts) {
+           SysUser su = r.get(qUser);
+           SysDept sd = r.get(qDept);
+           userPageVOs.add(UserPageVO.from(su,sd));
+        }
+        long count = q.fetchCount();
+        return PageModel.instance(count,userPageVOs);
     }
 
     @Override

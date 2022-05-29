@@ -23,6 +23,7 @@ import java.util.List;
 @Data
 public class SysUser extends TimedBasedEntity {
 
+    @Search
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Excel(name = "用户序号", prompt = "用户编号", cellType = Excel.ColumnType.NUMERIC)
@@ -140,9 +141,6 @@ public class SysUser extends TimedBasedEntity {
      */
     @Transient
     private Long parentId;
-
-    @Column
-    private String deptName;
 
     @Column
     private Long passwordErrorCount;

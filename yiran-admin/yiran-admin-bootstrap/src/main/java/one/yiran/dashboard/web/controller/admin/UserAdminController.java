@@ -15,6 +15,7 @@ import one.yiran.dashboard.manage.service.SysConfigService;
 import one.yiran.dashboard.manage.service.SysPostService;
 import one.yiran.dashboard.manage.service.SysRoleService;
 import one.yiran.dashboard.manage.service.SysUserService;
+import one.yiran.dashboard.vo.UserPageVO;
 import one.yiran.dashboard.web.service.ThirdPartyService;
 import one.yiran.db.common.util.PageRequestUtil;
 import one.yiran.common.domain.PageModel;
@@ -80,23 +81,10 @@ public class UserAdminController {
 
     @RequirePermission(PermissionConstants.User.VIEW)
     @RequestMapping("/list")
-    public PageModel<UserInfo> list(@RequestBody SysUser sysUser, HttpServletRequest request) {
-        sysUser.setIsDelete(false);
+    public PageModel<UserPageVO> list(@RequestBody SysUser sysUser, @ApiParam String deptName, HttpServletRequest request) {
         PageRequest pageRequest = PageRequestUtil.fromRequest(request);
-//        if(!UserInfoContextHelper.getLoginUser().isHasAllDeptPerm())
-//            pageRequest.setDepts(UserInfoContextHelper.getLoginUser().getScopeData(PermissionConstants.User.VIEW));
-        PageModel<SysUser> pe = sysUserService.getPage(pageRequest, sysUser);
-        List<SysUser> lue = pe.getRows();
-        if (pe == null)
-            return null;
-        List<UserInfo> uinfs = lue.stream().map(e -> {
-            UserInfo info = UserConvertUtil.convert(e);
-            List<SysUserRole> userRoleList = userRoleDao.findAllByUserId(e.getUserId());
-            List<Long> roleIds = userRoleList.stream().map(t -> t.getRoleId()).collect(Collectors.toList());
-            info.setRoleIds(roleIds);
-            return info;
-        }).collect(Collectors.toList());
-        return PageModel.instance(pe.getCount(), uinfs);
+        PageModel pe = sysUserService.getPageDetail(pageRequest, sysUser, deptName );
+        return pe;
     }
 
     @Log(title = "用户管理", businessType = BusinessType.ADD)
@@ -188,23 +176,16 @@ public class UserAdminController {
 
     @RequirePermission(PermissionConstants.User.VIEW)
     @PostMapping("/detail")
-    public SysUser detail(@ApiParam(required = true) Long userId) {
+    public UserPageVO detail(@ApiParam(required = true) Long userId) {
         SysUser user =  sysUserService.findUser(userId);
         if (user == null)
             throw new UserNotFoundException();
-        List<SysRole> roleList = roleDao.findAll();
         List<SysUserRole> userRoleList = userRoleDao.findAllByUserId(user.getUserId());
         List<Long> roleIds = userRoleList.stream().map(t -> t.getRoleId()).collect(Collectors.toList());
-        roleList.stream().forEach(t -> {
-            if (roleIds.contains(t.getRoleId())) {
-                t.setFlag(true);
-            } else {
-                t.setFlag(false);
-            }
-        });
         user.setRoleIds(roleIds);
-        //user.setSysRoles(roleList);
-        return user;
+        UserPageVO vo = UserPageVO.from(user);
+        vo.setRoleIds(roleIds);
+        return vo;
     }
 
     @Log(title = "用户管理", businessType = BusinessType.EXPORT)
