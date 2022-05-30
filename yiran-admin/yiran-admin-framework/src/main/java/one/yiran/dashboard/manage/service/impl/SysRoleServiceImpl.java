@@ -2,10 +2,8 @@ package one.yiran.dashboard.manage.service.impl;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import lombok.extern.slf4j.Slf4j;
-import one.yiran.dashboard.manage.dao.*;
 import one.yiran.dashboard.manage.entity.*;
 import one.yiran.dashboard.manage.dao.PermDao;
-import one.yiran.dashboard.manage.entity.*;
 import one.yiran.dashboard.manage.service.SysUserService;
 import one.yiran.dashboard.manage.dao.RoleDao;
 import one.yiran.dashboard.manage.dao.RolePermDao;
@@ -193,7 +191,7 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
         Assert.notNull(sysUserRole.getUserId(), "userId cant be null");
         Assert.notNull(sysUserRole.getRoleId(), "roleId cant be null");
         if(sysUserRole.getRoleId().equals(1L)) {
-            sysUserService.checkUserAllowed(new SysUser(sysUserRole.getUserId()), "取消授权");
+            sysUserService.checkAdminModifyAllowed(new SysUser(sysUserRole.getUserId()), "取消授权");
         }
         return userRoleDao.deleteAllByUserIdAndRoleId(sysUserRole.getUserId(), sysUserRole.getRoleId());
     }
@@ -211,7 +209,7 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
         if(roleId.equals(1L)) {
             List<Long> uids = Convert.toLongList(userIds);
             uids.forEach(e -> {
-                sysUserService.checkUserAllowed(new SysUser(e), "取消授权");
+                sysUserService.checkAdminModifyAllowed(new SysUser(e), "取消授权");
             });
         }
         List<SysUserRole> sysUserRoles = userRoleDao.findAllByRoleIdAndUserIdIn(roleId, Convert.toLongArray(userIds));
@@ -221,7 +219,7 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
 
     @Override
     public long deleteAuthUsers(List<Long> roleIds, Long userId) {
-        sysUserService.checkUserAllowed(new SysUser(userId),"取消授权");
+        sysUserService.checkAdminModifyAllowed(new SysUser(userId),"取消授权");
         List<SysUserRole> sysUserRoles = userRoleDao.findAllByRoleIdInAndUserId(roleIds, userId);
         userRoleDao.deleteAll(sysUserRoles);
         return sysUserRoles.size();
@@ -229,7 +227,7 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
 
     @Override
     public int deleteAuthUsers(Long userId) {
-        sysUserService.checkUserAllowed(new SysUser(userId),"取消授权");
+        sysUserService.checkAdminModifyAllowed(new SysUser(userId),"取消授权");
         return userRoleDao.deleteAllByUserId(userId);
     }
 

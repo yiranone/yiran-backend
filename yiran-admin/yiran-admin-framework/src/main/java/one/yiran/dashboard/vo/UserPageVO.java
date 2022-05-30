@@ -32,6 +32,7 @@ public class UserPageVO {
         vo.setLoginName(sysUser.getLoginName());
         vo.setUserName(sysUser.getUserName());
         vo.setPhoneNumber(sysUser.getPhoneNumber());
+        vo.setDeptId(sysUser.getDeptId());
         vo.setStatus(sysUser.getStatus());
         vo.setUpdateTime(DateUtil.dateTime(sysUser.getUpdateTime()));
         vo.setCreateBy(sysUser.getCreateBy());
@@ -42,7 +43,6 @@ public class UserPageVO {
     public static UserPageVO from(SysUser sysUser, SysDept  sysDept) {
         UserPageVO vo = from(sysUser);
         if(sysDept != null) {
-            vo.setDeptId(sysDept.getDeptId());
             vo.setDeptName(sysDept.getDeptName());
         }
         return vo;

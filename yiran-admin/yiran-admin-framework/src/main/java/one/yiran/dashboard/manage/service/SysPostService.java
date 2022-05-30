@@ -15,7 +15,7 @@ public interface SysPostService extends CrudBaseService<Long,SysPost> {
      * @param userId 用户ID
      * @return 岗位列表
      */
-    public List<SysPost> selectPostsByUserId(Long userId);
+    List<SysPost> selectPostsByUserId(Long userId);
 
 
     /**
@@ -24,7 +24,7 @@ public interface SysPostService extends CrudBaseService<Long,SysPost> {
      * @param postId 岗位ID
      * @return 结果
      */
-    public long countUserPostByPostId(Long postId);
+    long countUserPostByPostId(Long postId);
 
 
     /**
@@ -34,9 +34,9 @@ public interface SysPostService extends CrudBaseService<Long,SysPost> {
      */
     List<SysUser> selectUserByPostId(Long postId, long limit);
 
-    public boolean checkPostNameUnique(SysPost sysPost);
+    boolean checkPostNameUnique(SysPost sysPost);
 
-    public boolean checkPostCodeUnique(SysPost sysPost);
+    boolean checkPostCodeUnique(SysPost sysPost);
 
     long deleteAuthUsers(Long userId);
 

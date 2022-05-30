@@ -1,44 +1,41 @@
 package one.yiran.dashboard.web.controller.admin;
 
 import com.alibaba.fastjson.JSONObject;
-import one.yiran.dashboard.common.annotation.ApiParam;
-import one.yiran.dashboard.common.annotation.RequireUserLogin;
+import lombok.extern.slf4j.Slf4j;
+import one.yiran.common.domain.PageModel;
+import one.yiran.common.domain.PageRequest;
+import one.yiran.common.exception.BusinessException;
+import one.yiran.dashboard.common.annotation.*;
+import one.yiran.dashboard.common.constants.BusinessType;
+import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.common.expection.user.UserHasNotPermissionException;
 import one.yiran.dashboard.common.expection.user.UserNotFoundException;
+import one.yiran.dashboard.common.model.UserInfo;
+import one.yiran.dashboard.common.util.ExcelUtil;
 import one.yiran.dashboard.common.util.UserCacheUtil;
-import one.yiran.dashboard.manage.dao.RoleDao;
-import one.yiran.dashboard.manage.dao.UserDao;
+import one.yiran.dashboard.common.util.UserConvertUtil;
 import one.yiran.dashboard.manage.dao.UserRoleDao;
+import one.yiran.dashboard.manage.entity.SysDept;
 import one.yiran.dashboard.manage.entity.SysRole;
+import one.yiran.dashboard.manage.entity.SysUser;
 import one.yiran.dashboard.manage.entity.SysUserRole;
-import one.yiran.dashboard.manage.service.SysConfigService;
-import one.yiran.dashboard.manage.service.SysPostService;
+import one.yiran.dashboard.manage.security.UserInfoContextHelper;
+import one.yiran.dashboard.manage.security.config.PermissionConstants;
+import one.yiran.dashboard.manage.security.service.PasswordService;
+import one.yiran.dashboard.manage.service.SysDeptService;
 import one.yiran.dashboard.manage.service.SysRoleService;
 import one.yiran.dashboard.manage.service.SysUserService;
 import one.yiran.dashboard.vo.UserPageVO;
 import one.yiran.dashboard.web.service.ThirdPartyService;
 import one.yiran.db.common.util.PageRequestUtil;
-import one.yiran.common.domain.PageModel;
-import one.yiran.common.domain.PageRequest;
-import one.yiran.dashboard.common.model.UserInfo;
-import lombok.extern.slf4j.Slf4j;
-import one.yiran.dashboard.common.annotation.AjaxWrapper;
-import one.yiran.dashboard.common.annotation.Log;
-import one.yiran.dashboard.common.constants.BusinessType;
-import one.yiran.dashboard.common.constants.Global;
-import one.yiran.dashboard.manage.entity.SysUser;
-import one.yiran.common.exception.BusinessException;
-import one.yiran.dashboard.manage.security.config.PermissionConstants;
-import one.yiran.dashboard.manage.security.service.PasswordService;
-import one.yiran.dashboard.common.util.ExcelUtil;
-import one.yiran.dashboard.manage.security.UserInfoContextHelper;
-import one.yiran.dashboard.common.util.UserConvertUtil;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import one.yiran.dashboard.common.annotation.RequirePermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,6 +43,7 @@ import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 
+//管理员管理
 @Slf4j
 @Controller
 @RequestMapping("/system/user")
@@ -59,13 +57,10 @@ public class UserAdminController {
     private SysRoleService sysRoleService;
 
     @Autowired
-    private SysPostService sysPostService;
+    private SysDeptService sysDeptService;
 
     @Autowired
     private PasswordService passwordService;
-
-    @Autowired
-    private SysConfigService sysConfigService;
 
     @Autowired
     private ThirdPartyService thirdPartyService;
@@ -73,24 +68,19 @@ public class UserAdminController {
     @Autowired
     private UserRoleDao userRoleDao;
 
-    @Autowired
-    private UserDao userDao;
-
-    @Autowired
-    private RoleDao roleDao;
-
+    //管理员列表页面
     @RequirePermission(PermissionConstants.User.VIEW)
     @RequestMapping("/list")
     public PageModel<UserPageVO> list(@RequestBody SysUser sysUser, @ApiParam String deptName, HttpServletRequest request) {
         PageRequest pageRequest = PageRequestUtil.fromRequest(request);
-        PageModel pe = sysUserService.getPageDetail(pageRequest, sysUser, deptName );
+        PageModel pe = sysUserService.getPageDetail(pageRequest, sysUser, deptName);
         return pe;
     }
 
     @Log(title = "用户管理", businessType = BusinessType.ADD)
     @RequirePermission(PermissionConstants.User.ADD)
     @PostMapping("/add")
-    public UserInfo addUser(@Valid @RequestBody SysUser user) {
+    public UserInfo addAdmin(@Valid @RequestBody SysUser user) {
 //        UserInfoContextHelper.getLoginUser().checkScopePermission(PermissionConstants.User.ADD,user.getDeptId());
         checkUserFields(user);
         SysUser dbUser = new SysUser();
@@ -110,11 +100,12 @@ public class UserAdminController {
         dbUser.setLoginName(user.getLoginName());
         dbUser.setSex(user.getSex());
         dbUser.setPostIds(user.getPostIds());
-//        if (user.getDeptId() != null) {
-//            SysDept sysDept = sysDeptService.selectDeptByDeptId(user.getDeptId());
-//            dbUser.setDeptId(user.getDeptId());
-//            dbUser.setDeptName(sysDept.getDeptName());
-//        }
+        if (user.getDeptId() != null) {
+            SysDept sysDept = sysDeptService.selectByPId(user.getDeptId());
+            if(sysDept == null)
+                throw BusinessException.build("部门不存在");
+            dbUser.setDeptId(user.getDeptId());
+        }
         dbUser.setRoleIds(user.getRoleIds());
         dbUser.setRemark(user.getRemark());
 
@@ -149,11 +140,12 @@ public class UserAdminController {
         dbUser.setSex(user.getSex());
         dbUser.setRoleIds(user.getRoleIds());
         dbUser.setPostIds(user.getPostIds());
-//        if (user.getDeptId() != null) {
-//            dbUser.setDeptId(user.getDeptId());
-//            SysDept sysDept = sysDeptService.selectDeptByDeptId(user.getDeptId());
-//            dbUser.setDeptName(sysDept.getDeptName());
-//        }
+        if (user.getDeptId() != null) {
+            SysDept sysDept = sysDeptService.selectByPId(user.getDeptId());
+            if(sysDept == null)
+                throw BusinessException.build("部门不存在");
+            dbUser.setDeptId(user.getDeptId());
+        }
 
 //        if(UserInfoContextHelper.getLoginUser().hashScopePermission(PermissionConstants.User.ROLE,user.getDeptId())) {
 //            List<Long> toSaveRoleIds = filterRoles(user.getUserId(), user.getRoleIds() == null ? new ArrayList<>() : Arrays.asList(user.getRoleIds()));
@@ -163,7 +155,7 @@ public class UserAdminController {
         dbUser.setRemark(user.getRemark());
         dbUser.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
 
-        sysUserService.checkUserAllowed(user, "修改");
+        sysUserService.checkAdminModifyAllowed(user, "修改");
         return UserConvertUtil.convert(sysUserService.saveUserAndPerms(dbUser));
     }
 
@@ -233,7 +225,7 @@ public class UserAdminController {
         sysUserService.resetLoginFail(dbUser.getUserId());
 
         dbUser.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
-        sysUserService.checkUserAllowed(dbUser, "重置");
+        sysUserService.checkAdminModifyAllowed(dbUser, "重置");
         sysUserService.resetUserPwd(dbUser.getUserId(), dbUser.getPassword(), dbUser.getSalt());
     }
 
@@ -245,7 +237,7 @@ public class UserAdminController {
     @PostMapping("/authRole/insertAuthRole")
     public void insertAuthRole(Long userId, Long[] roleIds) {
         if (roleIds != null && !Arrays.asList(roleIds).contains(1L))
-            sysUserService.checkUserAllowed(new SysUser(userId), "取消授权");
+            sysUserService.checkAdminModifyAllowed(new SysUser(userId), "取消授权");
         SysUser user = sysUserService.findUser(userId);
         boolean hasUserDept = UserInfoContextHelper.getLoginUser().hashScopePermission(PermissionConstants.User.ROLE, user.getDeptId());
         if (!hasUserDept)
@@ -263,7 +255,7 @@ public class UserAdminController {
     @Log(title = "状态修改", businessType = BusinessType.UPDATE)
     @PostMapping("/changeStatus")
     public void changeStatus(SysUser user) {
-        sysUserService.checkUserAllowed(user, "修改状态");
+        sysUserService.checkAdminModifyAllowed(user, "修改状态");
         SysUser u = sysUserService.findUser(user.getUserId());
         UserInfoContextHelper.checkScopePermission(PermissionConstants.User.EDIT, u.getDeptId());
         u.setStatus(user.getStatus());

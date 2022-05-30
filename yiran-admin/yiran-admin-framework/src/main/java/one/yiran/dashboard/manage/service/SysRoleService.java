@@ -12,11 +12,8 @@ public interface SysRoleService extends CrudBaseService<Long, SysRole> {
     List<SysRole> selectRolesByRoleIds(Long[] ids);
     /**
      * 根据用户ID查询角色，所有的 有check
-     *
-     * @param userId 用户ID
-     * @return 角色列表
      */
-    public List<SysRole> selectAllRolesByUserId(Long userId);
+    List<SysRole> selectAllRolesByUserId(Long userId);
 
     /**
      * 获取当前登陆用户有权限看到的角色
@@ -26,7 +23,7 @@ public interface SysRoleService extends CrudBaseService<Long, SysRole> {
      */
     List<SysRole> selectAllVisibleRolesByUserId(Long currentUserId, Long userId);
 
-    public List<SysRole> selectRolesByUserId(Long userId);
+    List<SysRole> selectRolesByUserId(Long userId);
 
     /**
      * 通过角色ID删除角色
@@ -34,7 +31,7 @@ public interface SysRoleService extends CrudBaseService<Long, SysRole> {
      * @param roleId 角色ID
      * @return 结果
      */
-    public long deleteRoleById(Long roleId);
+    long deleteRoleById(Long roleId);
 
     /**
      * 批量删除角色用户信息
