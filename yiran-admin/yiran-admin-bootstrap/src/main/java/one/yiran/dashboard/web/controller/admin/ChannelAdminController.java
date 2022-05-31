@@ -10,11 +10,13 @@ import one.yiran.dashboard.common.annotation.Log;
 import one.yiran.dashboard.common.annotation.RequirePermission;
 import one.yiran.dashboard.common.constants.BusinessType;
 import one.yiran.dashboard.common.util.ExcelUtil;
+import one.yiran.dashboard.manage.entity.QSysChannel;
 import one.yiran.dashboard.manage.entity.SysChannel;
 import one.yiran.dashboard.manage.security.UserInfoContextHelper;
 import one.yiran.dashboard.manage.security.config.PermissionConstants;
 import one.yiran.dashboard.manage.service.SysChannelService;
 import one.yiran.db.common.util.PageRequestUtil;
+import one.yiran.db.common.util.PredicateBuilder;
 import one.yiran.db.common.util.PredicateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -45,12 +47,13 @@ public class ChannelAdminController {
         channel.setChannelName(searchChannelName);
         channel.setChannelCode(searchChannelCode);
         channel.setStatus(searchStatus);
-        List<Predicate> predicates = new ArrayList<>();
-        if(searchExpireDate1 != null)
-            predicates.add(PredicateUtil.buildPredicate(Ops.GOE, "expireDate", searchExpireDate1));
-        if(searchExpireDate2 != null)
-            predicates.add(PredicateUtil.buildPredicate(Ops.LOE, "expireDate", searchExpireDate2));
-        return sysChannelService.selectPage(PageRequestUtil.fromRequest(request), channel,predicates);
+
+        List<Predicate> ps = PredicateBuilder.builder()
+                .addGreaterOrEqualIfNotBlank(QSysChannel.sysChannel.expireDate, searchExpireDate1)
+                .addLittlerOrEqualIfNotBlank(QSysChannel.sysChannel.expireDate, searchExpireDate2)
+                .toList();
+
+        return sysChannelService.selectPage(PageRequestUtil.fromRequest(request), channel,ps);
     }
 
     @Log(title = PermissionConstants.Channel.NAME, businessType = BusinessType.EXPORT)

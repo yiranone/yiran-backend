@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -71,16 +72,13 @@ public class PageRequestUtil {
           injectQuery(request,query,null);
     }
 
-    private static Path detectType(String name, Path<Type> defaultPath, Path<?>... paths){
-        for (Path<?> p : paths){
-            List<Field> clazzs = FieldUtils.getAllFieldsList(p.getClass());
-            for(Field f : clazzs) {
-                if(Path.class.isAssignableFrom(f.getType())) {
-                    if(f.getName().equals(name))
-                        return p;
-                }
+    private static Path detectType(String name, Path<Type> defaultPath, EntityPath... paths){
+        if(paths != null)
+            for (EntityPath p : paths){
+                Path fPath = QClassUtil.getFieldPath(p.getClass(), name);
+                if(fPath != null)
+                    return fPath;
             }
-        }
         return defaultPath;
     }
     public static void injectQuery(PageRequest request, JPAQuery query, EntityPath<?>... alternativePaths) {
@@ -89,9 +87,11 @@ public class PageRequestUtil {
         if (!succ)
             return;
 
-        String simpleName = query.getType().getSimpleName();
-        simpleName = simpleName.substring(0, 1).toLowerCase() + simpleName.substring(1);
-        Path<Type> defaultPath = Expressions.path(query.getType(), simpleName);
+        String simpleName = query.getType().getName();
+        EntityPath<Type> defaultPath = null;
+        if(alternativePaths == null) {
+            defaultPath = QClassUtil.getPathByEntityName(simpleName);
+        }
 
         if(StringUtils.isNotBlank(request.getStatus())){
             Path<Type> p = detectType("status",defaultPath,alternativePaths);
@@ -112,16 +112,17 @@ public class PageRequestUtil {
             query.limit(request.getPageSize());
 
         if (StringUtils.isNotBlank(request.getOrderByColumn())) {
-            Path<Type> p = detectType(request.getOrderByColumn(),defaultPath,alternativePaths);
-
+            Path orderPath = QClassUtil.getFieldPathByEntityName(simpleName, request.getOrderByColumn());
+            orderPath = detectType(request.getOrderByColumn(),orderPath,alternativePaths);
             if(StringUtils.isNotBlank(request.getOrderDirection())){
                 if (request.getOrderDirection().equals("DESC")) {
-                    query.orderBy(new OrderSpecifier(Order.DESC,Expressions.stringPath(p,request.getOrderByColumn())));
+                    query.orderBy(new OrderSpecifier(Order.DESC,orderPath));
                 } else {
-                    query.orderBy(new OrderSpecifier(Order.ASC,Expressions.stringPath(p,request.getOrderByColumn())));
+                    query.orderBy(new OrderSpecifier(Order.ASC,orderPath));
                 }
             } else {
-                query.orderBy(new OrderSpecifier(Order.ASC,Expressions.stringPath(p,request.getOrderByColumn())));
+                query.orderBy(new OrderSpecifier(Order.ASC,orderPath));
+                //Expressions.stringPath(p,request.getOrderByColumn())
             }
          }
     }

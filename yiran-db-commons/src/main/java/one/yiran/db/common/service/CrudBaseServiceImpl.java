@@ -16,8 +16,10 @@ import one.yiran.common.exception.BusinessException;
 import one.yiran.db.common.util.PageRequestUtil;
 import one.yiran.db.common.util.PredicateBuilder;
 import one.yiran.db.common.util.PredicateUtil;
+import one.yiran.db.common.util.QClassUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.reflections.Reflections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -30,12 +32,15 @@ import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
@@ -118,10 +123,7 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
     }
 
     private EntityPath entityPath(){
-        String name  =  ((Class) tClass).getSimpleName();
-        String newName = name.substring(0,1).toLowerCase() + name.substring(1);
-        EntityPath<T> path = new EntityPathBase<T>((Class) tClass, newName);
-        return path;
+         return QClassUtil.getPathByEntityName( ((Class) tClass).getName());
     }
 
     protected void injectObject(T target, JPAQuery query, EntityPathBase path) {
@@ -216,17 +218,6 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
             throw BusinessException.build("查询到多个结果");
         }
         return rs.get(0);
-
-//        Specification specification = new Specification<T>() {
-//            @Override
-//            public javax.persistence.criteria.Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-//                List<javax.persistence.criteria.Predicate> predicateList = new ArrayList<>();
-//                predicateList.add(cb.equal(root.get(fieldName).as(String.class), pId));
-//                javax.persistence.criteria.Predicate[] pre = new javax.persistence.criteria.Predicate[predicateList.size()];
-//                pre = predicateList.toArray(pre);
-//                return query.where(pre).getRestriction();
-//            }
-//        };
     }
 
     @Override

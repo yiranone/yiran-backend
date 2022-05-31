@@ -17,11 +17,6 @@ import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-/**
- * 图片验证码（支持算术形式）
- *
- * @author ruoyi
- */
 @Controller
 @RequestMapping("/captcha")
 public class CaptchaAdminController {

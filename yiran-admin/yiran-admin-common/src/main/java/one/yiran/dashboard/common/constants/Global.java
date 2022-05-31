@@ -64,7 +64,7 @@ public class Global {
      * 获取项目名称
      */
     public static String getName() {
-        return StringUtils.defaultIfBlank(getConfig("dashboard.name"), "RuoYi");
+        return StringUtils.defaultIfBlank(getConfig("dashboard.name"), "YYYY");
     }
 
     /**
