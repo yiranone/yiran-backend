@@ -49,12 +49,11 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
 
     @Autowired
     private SysRoleService sysRoleService;
+    @Autowired
+    private SysPostService sysPostService;
 
     @Autowired
     private UserPostDao userPostDao;
-
-    @Autowired
-    private SysPostService sysPostService;
 
     @Autowired
     private SysConfigService sysConfigService;
@@ -291,11 +290,10 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
     }
 
     @Override
-    public boolean isEmailExist(SysUser user) {
-        Assert.notNull(user, "user 不能为空");
-        Assert.notNull(user.getEmail(), "email 不能为空");
-        Long userId = user.getUserId() == null ? 0L : user.getUserId();
-        SysUser sysUser = findUserByEmail(user.getEmail());
+    public boolean isEmailExist(String email,Long userId) {
+        Assert.notNull(email, "email 不能为空");
+        userId = userId == null ? 0L : userId;
+        SysUser sysUser = findUserByEmail(email);
         if (sysUser != null && !sysUser.getUserId().equals(userId)) {
             return true;
         }
@@ -487,6 +485,9 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
             // 新增用户与角色管理
             List<SysUserRole> list = new ArrayList<>();
             for (Long roleId : roleIds) {
+                if(sysRoleService.selectByPId(roleId) == null){
+                    throw BusinessException.build("角色异常，角色["+roleId+"]不存在");
+                }
                 SysUserRole ur = new SysUserRole();
                 ur.setUserId(userId);
                 ur.setRoleId(roleId);
@@ -509,6 +510,9 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
             // 新增用户与岗位管理
             List<SysUserPost> list = new ArrayList<>();
             for (Long postId : user.getPostIds()) {
+                if(sysPostService.selectByPId(postId) == null){
+                    throw BusinessException.build("岗位异常，岗位["+postId+"]不存在");
+                }
                 SysUserPost up = new SysUserPost();
                 up.setUserId(user.getUserId());
                 up.setPostId(postId);

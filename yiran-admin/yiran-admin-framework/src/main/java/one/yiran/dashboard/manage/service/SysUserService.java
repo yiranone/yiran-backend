@@ -53,7 +53,7 @@ public interface SysUserService {
 
     boolean isPhoneNumberExist(String phoneNumber,Long userId);
 
-    boolean isEmailExist(SysUser user);
+    boolean isEmailExist(String email,Long userId);
 
     boolean isLoginNameExist(SysUser user);
 

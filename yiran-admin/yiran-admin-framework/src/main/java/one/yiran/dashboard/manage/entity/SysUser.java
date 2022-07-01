@@ -1,6 +1,7 @@
 package one.yiran.dashboard.manage.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import one.yiran.dashboard.common.annotation.Option;
 import one.yiran.db.common.domain.TimedBasedEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -46,6 +47,10 @@ public class SysUser extends TimedBasedEntity {
     @Column
     private String openId;
 
+    /** 用户类型 */
+    @Column
+    private String userType;
+
     @Excel(name = "手机号码")
     @Search
     @Size(min = 0, max = 11, message = "手机号码长度不能超过11个字符")
@@ -54,10 +59,6 @@ public class SysUser extends TimedBasedEntity {
 
     @Column
     private Boolean phoneNumberLoginEnable;
-
-    /** 用户类型 */
-    @Column
-    private String userType;
 
     @Excel(name = "用户邮箱")
     @Search
@@ -109,9 +110,10 @@ public class SysUser extends TimedBasedEntity {
     /**
      * 帐号状态（0正常 1停用）
      */
+    @Option(value = {"0","1"}, message = "状态只能是0，1; 0=正常,1=停用")
     @Excel(name = "帐号状态", readConverterExp = "0=正常,1=停用")
     @Search
-    @Column(length = 8)
+    @Column(length = 8,nullable = false)
     private String status;
 
     /**

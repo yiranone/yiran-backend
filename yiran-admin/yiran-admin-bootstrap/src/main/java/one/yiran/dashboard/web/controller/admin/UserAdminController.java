@@ -27,13 +27,12 @@ import one.yiran.dashboard.manage.service.SysRoleService;
 import one.yiran.dashboard.manage.service.SysUserService;
 import one.yiran.dashboard.vo.UserPageVO;
 import one.yiran.dashboard.web.service.ThirdPartyService;
+import one.yiran.dashboard.web.util.WrapUtil;
 import one.yiran.db.common.util.PageRequestUtil;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -82,7 +81,7 @@ public class UserAdminController {
     @Log(title = "用户管理", businessType = BusinessType.ADD)
     @RequirePermission(PermissionConstants.User.ADD)
     @PostMapping("/add")
-    public UserInfo addAdmin(@Valid @RequestBody SysUser user) {
+    public UserInfo addAdmin(@ApiObject(validate = true) SysUser user) {
 //        UserInfoContextHelper.getLoginUser().checkScopePermission(PermissionConstants.User.ADD,user.getDeptId());
         checkUserFields(user);
         SysUser dbUser = new SysUser();
@@ -120,7 +119,7 @@ public class UserAdminController {
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @RequirePermission(PermissionConstants.User.EDIT)
     @PostMapping("edit")
-    public UserInfo editUser(@Valid @RequestBody SysUser user) {
+    public UserInfo editUser(@ApiObject(validate = true) SysUser user) {
 //        UserInfoContextHelper.checkScopePermission(PermissionConstants.User.EDIT,user.getDeptId());
         if (user == null) {
             throw BusinessException.build("user不能为空");
@@ -164,8 +163,8 @@ public class UserAdminController {
     @Log(title = "用户管理", businessType = BusinessType.DELETE)
     @RequirePermission(PermissionConstants.User.REMOVE)
     @PostMapping("/remove")
-    public long remove(@ApiParam(required = true) Long[] userIds) {
-        return sysUserService.deleteUserByIds(userIds);
+    public Map<String, Object> remove(@ApiParam(required = true) Long[] userIds) {
+        return WrapUtil.wrap("deleteCount",sysUserService.deleteUserByIds(userIds));
     }
 
     @RequirePermission(PermissionConstants.User.VIEW)
@@ -286,45 +285,44 @@ public class UserAdminController {
 
         String randomToken = RandomStringUtils.randomNumeric(32) + "_" + user.getPhoneNumber();
         UserCacheUtil.setSmsInfo(randomToken, randomNumber);
-        return new HashMap() {{
-            put("token", randomToken);
-        }};
+        return WrapUtil.wrap("token", randomToken);
     }
 
     /**
      * 校验用户名是否重复， 参数 loginName userId
      */
     @PostMapping("/isLoginNameExist")
-    public boolean isLoginNameExist(@ApiObject(validate = true) SysUser user) {
-        return sysUserService.isLoginNameExist(user);
+    public Map<String, Object> isLoginNameExist(@ApiObject(validate = true) SysUser user) {
+        return WrapUtil.wrapWithExist(sysUserService.isLoginNameExist(user));
     }
 
     /**
      * 校验手机号码是否重复
      */
     @PostMapping("/isPhoneNumberExist")
-    public boolean isPhoneNumberExist(@ApiParam(required = true) String phoneNumber,
-                                      @ApiParam Long userId) {
-        return sysUserService.isPhoneNumberExist(phoneNumber,userId);
+    public Map<String, Object> isPhoneNumberExist(@ApiParam(required = true) String phoneNumber,
+                                                  @ApiParam Long userId) {
+        return WrapUtil.wrapWithExist(sysUserService.isPhoneNumberExist(phoneNumber,userId));
     }
 
     /**
      * 校验email邮箱是否重复
      */
     @PostMapping("/isEmailExist")
-    public boolean isEmailExist(@Valid @RequestBody SysUser user) {
-        return sysUserService.isEmailExist(user);
+    public Map<String, Object> isEmailExist(@ApiParam(required = true) String email,
+                                @ApiParam Long userId) {
+        return WrapUtil.wrapWithExist(sysUserService.isEmailExist(email,userId));
     }
 
     private void checkUserFields(SysUser user){
-        if (StringUtils.isBlank(user.getLoginName())) {
-            throw BusinessException.build("登陆名称不能为空");
-        }
         if (sysUserService.isLoginNameExist(user)) {
-            throw BusinessException.build("用户名字:"+user.getLoginName()+"已经存在");
+            throw BusinessException.build("用户名字["+user.getLoginName()+"]已经存在");
         }
         if (sysUserService.isPhoneNumberExist(user.getPhoneNumber(),user.getUserId())) {
-            throw BusinessException.build("手机号:"+user.getPhoneNumber()+"已经存在");
+            throw BusinessException.build("手机号["+user.getPhoneNumber()+"]已经存在");
+        }
+        if (sysUserService.isPhoneNumberExist(user.getEmail(),user.getUserId())) {
+            throw BusinessException.build("邮箱["+user.getEmail()+"]已经存在");
         }
     }
 
