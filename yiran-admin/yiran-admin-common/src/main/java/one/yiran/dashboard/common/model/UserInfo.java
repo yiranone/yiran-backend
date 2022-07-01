@@ -30,6 +30,7 @@ public class UserInfo implements Serializable {
     private Long deptId;
     private Boolean isLocked;
     private String token;
+    private Long tokenExpires; //token过期时间 毫秒
     private String srcSys;
 
     private String createBy;

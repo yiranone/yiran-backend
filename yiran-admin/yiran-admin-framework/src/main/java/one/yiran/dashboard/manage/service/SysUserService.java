@@ -51,7 +51,7 @@ public interface SysUserService {
 
     long getListSize(SysUser searchUser, Date bTime, Date eTime);
 
-    boolean isPhoneNumberExist(SysUser user);
+    boolean isPhoneNumberExist(String phoneNumber,Long userId);
 
     boolean isEmailExist(SysUser user);
 

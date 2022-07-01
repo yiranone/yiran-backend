@@ -32,6 +32,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Calendar;
 
 /**
  * 登录验证
@@ -139,6 +140,9 @@ public class LoginAdminController {
 
         UserCacheUtil.setSessionInfo(randomKey,ui);
         ui.setToken(randomKey);
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.SECOND,UserCacheUtil.getSessionTimeout());
+        ui.setTokenExpires(c.getTimeInMillis());
         return ui;
     }
 

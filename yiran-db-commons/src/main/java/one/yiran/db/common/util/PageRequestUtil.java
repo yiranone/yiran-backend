@@ -4,6 +4,7 @@ import com.querydsl.core.types.*;
 import com.querydsl.core.types.dsl.BooleanOperation;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
+import one.yiran.common.exception.BusinessException;
 import one.yiran.common.util.TimeUtil;
 import one.yiran.common.domain.PageRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -73,12 +74,9 @@ public class PageRequestUtil {
     }
 
     private static Path detectType(String name, Path<Type> defaultPath, EntityPath... paths){
-        if(paths != null)
-            for (EntityPath p : paths){
-                Path fPath = QClassUtil.getFieldPath(p.getClass(), name);
-                if(fPath != null)
-                    return fPath;
-            }
+        Path<Type> s = QClassUtil.searchFieldOrderPath(name,paths);
+        if(s != null)
+            return s;
         return defaultPath;
     }
     public static void injectQuery(PageRequest request, JPAQuery query, EntityPath<?>... alternativePaths) {
@@ -96,9 +94,10 @@ public class PageRequestUtil {
         if(StringUtils.isNotBlank(request.getStatus())){
             Path<Type> p = detectType("status",defaultPath,alternativePaths);
             Path<String> statusPath = Expressions.path(String.class, p, "status");
-//            Path<String> statusPath = Expressions.stringPath("status");
-            BooleanOperation bpre = Expressions.predicate(Ops.EQ, statusPath, Expressions.constant(request.getStatus()));
-            query.where(bpre);
+            if(statusPath != null)  {
+                BooleanOperation bpre = Expressions.predicate(Ops.EQ, statusPath, Expressions.constant(request.getStatus()));
+                query.where(bpre);
+            }
         }
         if (request.getPageNum() != null && request.getPageNum() < 1)
             request.setPageNum(1L);
@@ -114,6 +113,9 @@ public class PageRequestUtil {
         if (StringUtils.isNotBlank(request.getOrderByColumn())) {
             Path orderPath = QClassUtil.getFieldPathByEntityName(simpleName, request.getOrderByColumn());
             orderPath = detectType(request.getOrderByColumn(),orderPath,alternativePaths);
+            if(orderPath == null){
+                throw BusinessException.build("参数请求异常，排序字段不支持");
+            }
             if(StringUtils.isNotBlank(request.getOrderDirection())){
                 if (request.getOrderDirection().equals("DESC")) {
                     query.orderBy(new OrderSpecifier(Order.DESC,orderPath));

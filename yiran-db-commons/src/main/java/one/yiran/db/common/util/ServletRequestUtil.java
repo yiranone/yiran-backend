@@ -6,6 +6,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Type;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ServletRequestUtil {
     public static <T> T getValueFromRequest(HttpServletRequest request, String name, Type type){
@@ -29,5 +33,29 @@ public class ServletRequestUtil {
         jsonObj = JSON.parseObject(reqMessage);
         request.setAttribute("REQ_JSON_OBJ",jsonObj);
         return jsonObj.getObject(name,type);
+    }
+
+    public static <T> T getObjectFromRequest(HttpServletRequest request, Type type){
+        Map<String,String> reqMap = new HashMap<>();
+        Enumeration<String> names = request.getParameterNames();
+        while (names.hasMoreElements()) {
+            String key = names.nextElement();
+            String v = request.getParameter(key);
+            reqMap.put(key,v);
+        }
+        if (reqMap.size() > 0) {
+            return JSON.parseObject(JSON.toJSONString(reqMap),type);
+        }
+
+        JSONObject jsonObj = (JSONObject) request.getAttribute("REQ_JSON_OBJ");
+        if(jsonObj != null){
+            return jsonObj.toJavaObject(type);
+        }
+        String reqMessage = (String) request.getAttribute("REQ_JSON");
+        if(reqMessage == null)
+            return null;
+        jsonObj = JSON.parseObject(reqMessage);
+        request.setAttribute("REQ_JSON_OBJ",jsonObj);
+        return jsonObj.toJavaObject(type);
     }
 }

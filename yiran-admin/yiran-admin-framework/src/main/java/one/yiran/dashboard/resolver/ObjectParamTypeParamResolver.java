@@ -1,7 +1,8 @@
 package one.yiran.dashboard.resolver;
 
-import one.yiran.dashboard.common.annotation.ApiParam;
 import one.yiran.common.exception.BusinessException;
+import one.yiran.dashboard.common.annotation.ApiObject;
+import one.yiran.dashboard.common.annotation.ApiParam;
 import one.yiran.db.common.util.ServletRequestUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
@@ -11,16 +12,21 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
  */
-public class SimpleParamTypeParamResolver implements HandlerMethodArgumentResolver {
+public class ObjectParamTypeParamResolver implements HandlerMethodArgumentResolver {
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
-		if (parameter.hasParameterAnnotation(ApiParam.class)) {
+		if (parameter.hasParameterAnnotation(ApiObject.class)) {
 			return true;
 		}
 		return false;
@@ -32,26 +38,29 @@ public class SimpleParamTypeParamResolver implements HandlerMethodArgumentResolv
 								  WebDataBinderFactory binderFactory) throws Exception {
 		HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
 
-		String parameterName = parameter.getParameterName();
 		Type parameterType = parameter.getGenericParameterType();
-		ApiParam apiParam = parameter.getParameterAnnotation(ApiParam.class);
-		String apiName = apiParam.name();
-		if(StringUtils.isNotBlank(apiName)) {
-			parameterName = apiName;
-		}
+		ApiObject apiParam = parameter.getParameterAnnotation(ApiObject.class);
 
-		Object v = ServletRequestUtil.getValueFromRequest(httpServletRequest, parameterName, parameterType);
-		if(apiParam != null && apiParam.required()) {
-			boolean isNull = false;
-			if (String.class.getName().equals(parameterType.getTypeName()) &&
-					(v ==null || StringUtils.isBlank(v.toString())) ) {
-				isNull = true;
-			} else if(v == null){
-				isNull = true;
+		Object v = ServletRequestUtil.getObjectFromRequest(httpServletRequest, parameterType);
+		if(apiParam != null && apiParam.validate()) {
+			List<String> res = valid(v);
+			if(res.size() > 0) {
+				String msg = String.join(",", res);
+				throw BusinessException.build(msg);
 			}
-			if(isNull)
-				throw BusinessException.build("请求参数校验异常:" + parameterName + "不能为空");
 		}
 		return v;
+	}
+
+	private <T> List<String> valid(T obj){
+		Set<ConstraintViolation<T>> validRes = Validation
+				.buildDefaultValidatorFactory()
+				.getValidator()
+				.validate(obj);
+		List<String> res = validRes
+				.stream()
+				.map(ConstraintViolation::getMessage)
+				.collect(Collectors.toList());
+		return res;
 	}
 }

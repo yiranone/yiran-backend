@@ -280,11 +280,10 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
     }
 
     @Override
-    public boolean isPhoneNumberExist(SysUser user) {
-        Assert.notNull(user, "user 不能为空");
-        Assert.notNull(user.getPhoneNumber(), "phoneNumber 不能为空");
-        Long userId = user.getUserId() == null ? 0L : user.getUserId();
-        SysUser sysUser = findUserByPhoneNumber(user.getPhoneNumber());
+    public boolean isPhoneNumberExist(String phoneNumber,Long userId) {
+        Assert.notNull(phoneNumber, "phoneNumber 不能为空");
+        userId = userId == null ? 0L : userId;
+        SysUser sysUser = findUserByPhoneNumber(phoneNumber);
         if (sysUser != null && !sysUser.getUserId().equals(userId)) {
             return true;
         }
@@ -306,7 +305,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
     @Override
     public boolean isLoginNameExist(SysUser user) {
         Assert.notNull(user, "user 不能为空");
-        Assert.notNull(user.getLoginName(), "loginName 不能为空");
+        Assert.hasLength(user.getLoginName(), "loginName 不能为空");
         Long userId = user.getUserId() == null ? 0L : user.getUserId();
         SysUser sysUser = findUserByLoginName(user.getLoginName());
         if (sysUser != null && !sysUser.getUserId().equals(userId)) {

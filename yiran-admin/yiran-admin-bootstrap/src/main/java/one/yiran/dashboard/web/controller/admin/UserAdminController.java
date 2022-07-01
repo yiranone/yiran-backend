@@ -32,6 +32,8 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -290,10 +292,10 @@ public class UserAdminController {
     }
 
     /**
-     * 校验用户名是否重复，
+     * 校验用户名是否重复， 参数 loginName userId
      */
     @PostMapping("/isLoginNameExist")
-    public boolean isLoginNameExist(SysUser user) {
+    public boolean isLoginNameExist(@ApiObject(validate = true) SysUser user) {
         return sysUserService.isLoginNameExist(user);
     }
 
@@ -301,15 +303,16 @@ public class UserAdminController {
      * 校验手机号码是否重复
      */
     @PostMapping("/isPhoneNumberExist")
-    public boolean isPhoneNumberExist(SysUser user) {
-        return sysUserService.isPhoneNumberExist(user);
+    public boolean isPhoneNumberExist(@ApiParam(required = true) String phoneNumber,
+                                      @ApiParam Long userId) {
+        return sysUserService.isPhoneNumberExist(phoneNumber,userId);
     }
 
     /**
      * 校验email邮箱是否重复
      */
     @PostMapping("/isEmailExist")
-    public boolean isEmailExist(SysUser user) {
+    public boolean isEmailExist(@Valid @RequestBody SysUser user) {
         return sysUserService.isEmailExist(user);
     }
 
@@ -320,7 +323,7 @@ public class UserAdminController {
         if (sysUserService.isLoginNameExist(user)) {
             throw BusinessException.build("用户名字:"+user.getLoginName()+"已经存在");
         }
-        if (sysUserService.isPhoneNumberExist(user)) {
+        if (sysUserService.isPhoneNumberExist(user.getPhoneNumber(),user.getUserId())) {
             throw BusinessException.build("手机号:"+user.getPhoneNumber()+"已经存在");
         }
     }

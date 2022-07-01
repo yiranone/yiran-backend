@@ -48,6 +48,16 @@ public class QClassUtil {
     public static Path getFieldPath(Class qClazz,String fieldName){
         return getFieldPath(qClazz.getName(),fieldName);
     }
+    public static Path searchFieldOrderPath(String fieldName, EntityPath... paths){
+        if (paths != null) {
+            for (EntityPath p : paths) {
+                Path fPath = QClassUtil.getFieldPath(p.getClass(), fieldName);
+                if (fPath != null)
+                    return fPath;
+            }
+        }
+        return null;
+    }
     public static Path getFieldPath(String qFullName,String fieldName){
         EntityPath entityPath = getPath(qFullName);
         if(entityPath == null)

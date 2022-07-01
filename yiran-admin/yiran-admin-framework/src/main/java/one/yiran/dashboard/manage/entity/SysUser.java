@@ -33,7 +33,7 @@ public class SysUser extends TimedBasedEntity {
     @Excel(name = "登录名称")
     @Search(op = Search.Op.REGEX)
     @NotBlank(message = "登录账号不能为空")
-    @Size(min = 0, max = 30, message = "登录账号长度不能超过30个字符")
+    @Size(min = 0, max = 30, message = "登录账号长度不能大于30个字符")
     @Column
     private String loginName;
 

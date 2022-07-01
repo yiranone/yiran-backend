@@ -22,7 +22,11 @@ public class UserCacheUtil {
     private static final String SMS_PREFIX = ".sms.{";
     private static final String SMS_SUFFIX = "}.code";
 
-    private static final int SESSION_TIMEOUT = 604800; //session 修改为7天
+    private static final int SESSION_TIMEOUT = 604800; //session单位为s 604800=7天
+
+    public static int getSessionTimeout(){
+        return SESSION_TIMEOUT;
+    }
 
     public static String getUserToken(Long userId) {
         return userId + "_" + UUID.randomUUID().toString().replaceAll("-", "");
