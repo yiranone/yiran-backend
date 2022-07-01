@@ -30,8 +30,9 @@ public class QClassUtil {
             try {
                 Constructor cs = Class.forName(qFullName).getConstructor(String.class);
                 Object o = cs.newInstance(lowerName);
-                clazz.put(qFullName,(EntityPath)o);
-                entityPath = (EntityPath)o;
+                Object staticQField = FieldUtils.readField(o,lowerName);
+                clazz.put(qFullName,(EntityPath)staticQField);
+                entityPath = clazz.get(qFullName);
             } catch (Exception e) {
                 log.error("{}对象不存在",qFullName);
                 return null;

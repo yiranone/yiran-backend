@@ -318,10 +318,10 @@ public class UserAdminController {
         if (sysUserService.isLoginNameExist(user)) {
             throw BusinessException.build("用户名字["+user.getLoginName()+"]已经存在");
         }
-        if (sysUserService.isPhoneNumberExist(user.getPhoneNumber(),user.getUserId())) {
+        if (StringUtils.isNotBlank(user.getPhoneNumber()) && sysUserService.isPhoneNumberExist(user.getPhoneNumber(),user.getUserId())) {
             throw BusinessException.build("手机号["+user.getPhoneNumber()+"]已经存在");
         }
-        if (sysUserService.isPhoneNumberExist(user.getEmail(),user.getUserId())) {
+        if (StringUtils.isNotBlank(user.getEmail()) && sysUserService.isEmailExist(user.getEmail(),user.getUserId())) {
             throw BusinessException.build("邮箱["+user.getEmail()+"]已经存在");
         }
     }

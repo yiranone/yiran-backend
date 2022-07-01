@@ -1,4 +1,4 @@
-package com.bid.bidmanage.entity;
+package com.biz.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

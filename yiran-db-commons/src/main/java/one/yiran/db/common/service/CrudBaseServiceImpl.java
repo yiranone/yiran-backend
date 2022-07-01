@@ -61,6 +61,47 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
     }
 
     @Override
+    public T selectByPId(K pId) {
+        Assert.notNull(pId,"");
+        String fieldName = doGetPrimaryId();
+
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery query = builder.createQuery((Class)tClass);
+        Root root = query.from((Class)tClass);
+
+        javax.persistence.criteria.Predicate pre1 = builder.equal(root.get(fieldName), pId);
+
+        query.where(pre1);
+
+        List<T> rs = entityManager.createQuery(query.select(root)).getResultList();
+        if(rs == null || rs.size() == 0){
+            return null;
+        } else if(rs.size() > 1) {
+            throw BusinessException.build("selectByPId查询到多个结果");
+        }
+        return rs.get(0);
+    }
+
+    @Override
+    public T selectOne(Predicate predicate) {
+        List<T> rs = selectList(predicate);
+        if(rs == null || rs.size() == 0){
+            return null;
+        } else if(rs.size() > 1) {
+            throw BusinessException.build("selectOne查询到多个结果");
+        }
+        return rs.get(0);
+    }
+
+    @Override
+    public List<T> selectAll() {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery query = builder.createQuery((Class)tClass);
+        Root root = query.from((Class)tClass);
+        return entityManager.createQuery(query.select(root)).getResultList();
+    }
+
+    @Override
     public PageModel<T> selectPage(PageRequest request, T target) {
         return selectPage(request, target, new ArrayList<>());
     }
@@ -196,36 +237,6 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
             });
         }
         return query.fetchCount();
-    }
-
-    @Override
-    public T selectByPId(K pId) {
-        Assert.notNull(pId,"");
-        String fieldName = doGetPrimaryId();
-
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery query = builder.createQuery((Class)tClass);
-        Root root = query.from((Class)tClass);
-
-        javax.persistence.criteria.Predicate pre1 = builder.equal(root.get(fieldName), pId);
-
-        query.where(pre1);
-
-        List<T> rs = entityManager.createQuery(query.select(root)).getResultList();
-        if(rs == null || rs.size() == 0){
-            return null;
-        } else if(rs.size() > 1) {
-            throw BusinessException.build("查询到多个结果");
-        }
-        return rs.get(0);
-    }
-
-    @Override
-    public List<T> selectAll() {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery query = builder.createQuery((Class)tClass);
-        Root root = query.from((Class)tClass);
-        return entityManager.createQuery(query.select(root)).getResultList();
     }
 
     @Transactional

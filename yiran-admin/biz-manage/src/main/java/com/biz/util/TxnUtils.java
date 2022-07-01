@@ -1,4 +1,4 @@
-package com.bid.bidmanage.util;
+package com.biz.util;
 
 import org.apache.commons.lang3.RandomStringUtils;
 

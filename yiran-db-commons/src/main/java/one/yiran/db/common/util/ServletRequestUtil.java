@@ -32,6 +32,8 @@ public class ServletRequestUtil {
             return null;
         jsonObj = JSON.parseObject(reqMessage);
         request.setAttribute("REQ_JSON_OBJ",jsonObj);
+        if(jsonObj == null)
+            return null;
         return jsonObj.getObject(name,type);
     }
 
@@ -56,6 +58,8 @@ public class ServletRequestUtil {
             return null;
         jsonObj = JSON.parseObject(reqMessage);
         request.setAttribute("REQ_JSON_OBJ",jsonObj);
+        if(jsonObj == null)
+            return null;
         return jsonObj.toJavaObject(type);
     }
 }

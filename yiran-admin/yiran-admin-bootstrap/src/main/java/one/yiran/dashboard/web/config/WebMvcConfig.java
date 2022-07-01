@@ -7,10 +7,7 @@ import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.manage.interceptor.AuthInterceptor;
-import one.yiran.dashboard.resolver.ApiUserParamResolver;
-import one.yiran.dashboard.resolver.ObjectParamTypeParamResolver;
-import one.yiran.dashboard.resolver.PageRequestParamResolver;
-import one.yiran.dashboard.resolver.SimpleParamTypeParamResolver;
+import one.yiran.dashboard.resolver.*;
 import one.yiran.dashboard.web.filter.AjaxMethodReturnValueHandler;
 import one.yiran.dashboard.web.filter.MyInterceptor;
 import org.springframework.beans.factory.InitializingBean;
@@ -153,23 +150,19 @@ public class WebMvcConfig implements WebMvcConfigurer, InitializingBean {
         return new SimpleParamTypeParamResolver();
     }
 
+    @Bean
+    public ApiChannelParamResolver apiChannelParamResolver(){
+        return new ApiChannelParamResolver();
+    }
+
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(pageRequestParamResolver());
         argumentResolvers.add(simpleParamTypeParamResolver());
         argumentResolvers.add(new ObjectParamTypeParamResolver());
         argumentResolvers.add(new ApiUserParamResolver());
+        argumentResolvers.add(apiChannelParamResolver());
     }
-
-
-//    @Bean
-//    @ConditionalOnMissingBean
-//    public InternalResourceViewResolver defaultViewResolver() {
-//        InternalResourceViewResolver resolver = new InternalResourceViewResolver();
-//        resolver.setPrefix("templates/");
-//        resolver.setSuffix(".html");
-//        return resolver;
-//    }
 
 //    @Override
 //    public void addCorsMappings(CorsRegistry registry) {

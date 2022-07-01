@@ -90,8 +90,7 @@ public class SysDictTypeServiceImpl extends CrudBaseServiceImpl<Long, SysDictTyp
         return ztrees;
     }
 
-    public String transDictName(SysDictType dictType)
-    {
+    public String transDictName(SysDictType dictType) {
         StringBuffer sb = new StringBuffer();
         sb.append("(" + dictType.getDictName() + ")");
         sb.append("&nbsp;&nbsp;&nbsp;" + dictType.getDictType());

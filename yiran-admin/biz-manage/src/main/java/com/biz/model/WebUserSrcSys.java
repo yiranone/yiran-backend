@@ -1,4 +1,4 @@
-package com.bid.bidmanage.model;
+package com.biz.model;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Builder;

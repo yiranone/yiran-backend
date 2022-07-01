@@ -251,6 +251,9 @@ public class Global {
         return getConfig("dashboard.ip.filepath");
     }
 
+    public static String getChannelKey() {
+        return "Channel";
+    }
     public static String getAuthKey() {
         String s = getConfig("dashboard.auth.key");
         return StringUtils.isBlank(s) ? "Authorization" :s;

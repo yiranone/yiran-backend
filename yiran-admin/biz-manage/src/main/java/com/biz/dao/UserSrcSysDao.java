@@ -1,4 +1,4 @@
-package com.bid.bidmanage.dao;
+package com.biz.dao;
 
 //import com.bid.bidmanage.entity.UserSrcSys;
 //import one.yiran.db.common.dao.BaseDao;

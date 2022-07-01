@@ -1,11 +1,13 @@
 package one.yiran.dashboard.manage.service.impl;
 
 import one.yiran.dashboard.manage.dao.ChannelDao;
+import one.yiran.dashboard.manage.entity.QSysChannel;
 import one.yiran.dashboard.manage.entity.SysChannel;
 import one.yiran.dashboard.manage.service.SysChannelService;
 import one.yiran.db.common.service.CrudBaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 @Service
 public class SysChannelServiceImpl extends CrudBaseServiceImpl<Long, SysChannel> implements SysChannelService {
@@ -24,5 +26,11 @@ public class SysChannelServiceImpl extends CrudBaseServiceImpl<Long, SysChannel>
             return false;
         }
         return true;
+    }
+
+    @Override
+    public SysChannel selectByChannelCode(String channelCode) {
+        Assert.hasLength(channelCode,"channelCode不能为空");
+        return selectOne(QSysChannel.sysChannel.channelCode.eq(channelCode));
     }
 }

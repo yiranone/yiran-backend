@@ -6,4 +6,6 @@ import one.yiran.db.common.service.CrudBaseService;
 public interface SysChannelService extends CrudBaseService<Long, SysChannel> {
 
     boolean checkChannelKeyUnique(SysChannel sysChannel);
+
+    SysChannel selectByChannelCode(String channelCode);
 }

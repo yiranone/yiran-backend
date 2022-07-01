@@ -9,6 +9,10 @@ import java.util.List;
 
 public interface CrudBaseService<K,T> {
 
+     T selectByPId(K pId);
+     T selectOne(Predicate predicate);
+     List<T> selectAll();
+
      PageModel<T> selectPage(PageRequest request, T target);
      PageModel<T> selectPage(PageRequest request, T target, Predicate predicate);
      PageModel<T> selectPage(PageRequest request, T target, List<Predicate> pres);
@@ -26,10 +30,6 @@ public interface CrudBaseService<K,T> {
      long count(Predicate predicate);
      long count(List<Predicate> pres);
      long count();
-
-     T selectByPId(K pId);
-
-     List<T> selectAll();
 
      /**
       * 逻辑删除
@@ -54,7 +54,6 @@ public interface CrudBaseService<K,T> {
      long remove(K pId);
      long remove(List<K> pIds);
      long removeAll();
-
      long removeByPIds(K[] pIds) throws BusinessException;
 
 }

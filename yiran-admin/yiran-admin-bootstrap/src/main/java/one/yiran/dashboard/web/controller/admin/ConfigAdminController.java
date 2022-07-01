@@ -21,8 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 @RequestMapping("/system/config")
 public class ConfigAdminController {
-    private String prefix = "system/config";
-
     @Autowired
     private SysConfigService sysConfigService;
 
@@ -45,15 +43,6 @@ public class ConfigAdminController {
     }
 
     /**
-     * 新增参数配置
-     */
-    @RequirePermission(PermissionConstants.Config.ADD)
-    @GetMapping("/add")
-    public String add() {
-        return prefix + "/add";
-    }
-
-    /**
      * 新增保存参数配置
      */
     @RequirePermission(PermissionConstants.Config.ADD)
@@ -65,16 +54,6 @@ public class ConfigAdminController {
             throw BusinessException.build("新增参数'" + sysConfig.getConfigName() + "'失败，参数键名已存在");
         }
         return sysConfigService.insert(sysConfig);
-    }
-
-    /**
-     * 修改参数配置
-     */
-    @RequirePermission(PermissionConstants.Config.EDIT)
-    @GetMapping("/edit/{configId}")
-    public String edit(@PathVariable("configId") Long configId, ModelMap mmap) {
-        mmap.put("config", sysConfigService.selectByPId(configId));
-        return prefix + "/edit";
     }
 
     @RequirePermission(PermissionConstants.Config.EDIT)
