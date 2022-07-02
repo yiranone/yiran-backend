@@ -15,7 +15,6 @@ import javax.annotation.PostConstruct;
 
 @ServletComponentScan
 @SpringBootApplication(exclude = {JacksonAutoConfiguration.class })
-//,MongoAutoConfiguration.class ErrorMvcAutoConfiguration.class
 //@EnableCaching
 @ComponentScan(value = {"one.yiran","com.biz"})
 @EntityScan({"one.yiran","com.biz"})

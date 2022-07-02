@@ -252,7 +252,11 @@ public class Global {
     }
 
     public static String getChannelKey() {
-        return "Channel";
+        return "CHANNEL";
+    }
+    public static String getMemberAuthKey() {
+        String s = getConfig("dashboard.auth.member.key");
+        return StringUtils.isBlank(s) ? "MEMBER_AUTH" :s;
     }
     public static String getAuthKey() {
         String s = getConfig("dashboard.auth.key");

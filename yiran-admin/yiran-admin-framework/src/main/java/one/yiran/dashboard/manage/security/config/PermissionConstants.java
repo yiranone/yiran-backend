@@ -115,4 +115,12 @@ public class PermissionConstants {
         public static final String FORCE_LOGOUT = PREFIX + "forceLogout";
     }
 
+    public static class Member {
+        public static final String PREFIX = SYSTEM_PREFIX + ":member:";
+        public static final String VIEW = PREFIX + "view";
+        public static final String EDIT = PREFIX + "edit";
+        public static final String REMOVE = PREFIX + "remove";
+        public static final String ADD = PREFIX + "add";
+    }
+
 }

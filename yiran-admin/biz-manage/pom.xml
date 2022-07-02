@@ -18,7 +18,6 @@
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>one.yiran</groupId>
             <artifactId>yiran-db-commons</artifactId>

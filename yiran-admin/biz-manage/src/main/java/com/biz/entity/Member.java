@@ -1,14 +1,18 @@
 package com.biz.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import one.yiran.dashboard.common.annotation.Excel;
+import one.yiran.dashboard.common.annotation.Option;
 import one.yiran.db.common.annotation.Search;
 import one.yiran.db.common.domain.TimedBasedEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Date;
 
 @EqualsAndHashCode(callSuper = false)
 @Table(name = "ext_member",indexes = {
@@ -25,19 +29,74 @@ public class Member extends TimedBasedEntity {
     @Excel(name = "参数主键", cellType = Excel.ColumnType.NUMERIC)
     @Search
     @Id
-    private Long userId;
+    private Long memberId;
 
     @Search
     @NotBlank(message = "手机号不能为空")
     @Column(length = 13,nullable = false)
     private String phone;
 
-    /** 参数键名 */
-    @Excel(name = "参数键名")
+    @Option(value = {"0","1"}, message = "状态只能是0，1; 0=正常,1=停用")
+    @Excel(name = "帐号状态", readConverterExp = "0=正常,1=停用")
     @Search
-    @NotBlank(message = "系统来源长度不能为空")
-    @Size(min = 0, max = 100, message = "系统来源长度不能超过100个字符")
-    @Column(length = 32,nullable = false)
+    @Column(length = 8,nullable = false)
+    private String status;
+
+    @Column(length = 32)
+    private String name;
+
+    @Column(length = 256)
+    private String avatar;
+
+    @JSONField(serialize = false)
+    @Column
+    private String password;
+
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    @Column
+    private Date passwordUpdateTime;
+
+    @Column
+    private Long passwordErrorCount;
+    @Column
+    private Date passwordErrorTime;
+
+    @JSONField(serialize = false)
+    @Column
+    private String assertPassword;
+
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    @Column
+    private Date assertPasswordUpdateTime;
+    /**
+     * 盐加密
+     */
+    @Column(nullable = true,length = 32)
+    private String assertSalt;
+
+    /**
+     * 盐加密
+     */
+    @Column(nullable = false,length = 32)
+    private String salt;
+
+    /**
+     * 最后登陆IP
+     */
+    @Excel(name = "最后登陆IP", type = Excel.Type.EXPORT)
+    @Column(length = 64)
+    private String loginIp;
+
+    /**
+     * 最后登陆时间
+     */
+    @Excel(name = "最后登陆时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss", type = Excel.Type.EXPORT)
+    @Column
+    private Date loginDate;
+
+    @Search
+    @NotNull(message = "渠道不能为空")
+    @Column(nullable = false)
     private Long channelId;
 
 }

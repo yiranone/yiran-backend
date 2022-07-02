@@ -31,7 +31,7 @@ public class UserInfo implements Serializable {
     private Boolean isLocked;
     private String token;
     private Long tokenExpires; //token过期时间 毫秒
-    private String srcSys;
+    private Long channelId;
 
     private String createBy;
     private String updateBy;

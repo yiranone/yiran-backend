@@ -21,6 +21,10 @@ public class UserInfoContextHelper {
         return getLoginUser() == null ? null : getLoginUser().getUserId();
     }
 
+    public static Long getChannelId() {
+        return getLoginUser() == null ? null : getLoginUser().getChannelId();
+    }
+
 //    public static String getSessionId() {
 //        return SecurityUtils.getSubject().getSession() == null ? null : String.valueOf(SecurityUtils.getSubject().getSession().getId());
 //    }

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.serializer.SimpleDateFormatSerializer;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.biz.interceptor.MemberInterceptor;
 import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.manage.interceptor.AuthInterceptor;
 import one.yiran.dashboard.resolver.*;
@@ -56,12 +57,15 @@ public class WebMvcConfig implements WebMvcConfigurer, InitializingBean {
 
     @Autowired
     private AuthInterceptor authInterceptor;
+    @Autowired
+    private MemberInterceptor memberInterceptor;
     //添加拦截器
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         MyInterceptor interceptor = new MyInterceptor();
         registry.addInterceptor(interceptor).addPathPatterns("/**");
         registry.addInterceptor(authInterceptor).addPathPatterns("/**");
+        registry.addInterceptor(memberInterceptor).addPathPatterns("/**");
     }
 
     @Override

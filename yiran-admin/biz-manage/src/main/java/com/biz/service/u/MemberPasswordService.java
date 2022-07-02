@@ -1,5 +1,7 @@
-package one.yiran.dashboard.manage.security.service;
+package com.biz.service.u;
 
+import com.biz.entity.Member;
+import com.biz.service.MemberService;
 import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.common.constants.SystemConstants;
@@ -18,16 +20,16 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Component
-public class PasswordService {
+public class MemberPasswordService {
 
     @Autowired
-    private SysUserService sysUserService;
+    private MemberService memberService;
 
-    public void validate(SysUser user, String password) {
-        String loginName = user.getLoginName();
+    public void validate(Member member, String password) {
+        String loginName = member.getPhone();
 
-        long passwordErrorCount = user.getPasswordErrorCount() == null ? 0 : user.getPasswordErrorCount().longValue();
-        Date passwordErrorTime = user.getPasswordErrorTime();
+        long passwordErrorCount = member.getPasswordErrorCount() == null ? 0 : member.getPasswordErrorCount().longValue();
+        Date passwordErrorTime = member.getPasswordErrorTime();
         long passwordLimitCount = Global.getPasswordLimitCount();
         long passwordLimitTime = Global.getPasswordLimitTime();
         if(!timeExpire(passwordErrorTime)) {
@@ -36,18 +38,27 @@ public class PasswordService {
             }
         }
 
-        Long loginUserId = user.getUserId();
-        if (!matches(user, password)) {
+        Long loginUserId = member.getMemberId();
+        if (!matches(member, password)) {
             AsyncManager.me().execute(AsyncFactory.recordLoginInfo(loginName, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.password.retry.limit.count", passwordErrorCount)));
             if(timeExpire(passwordErrorTime)) {
                 passwordErrorCount = 1;
             } else {
                 passwordErrorCount = passwordErrorCount + 1;
             }
-            sysUserService.recordLoginFail(loginUserId, passwordErrorCount);
+            memberService.recordLoginFail(loginUserId, passwordErrorCount);
             throw new UserPasswordNotMatchException("密码不正确",loginName);
         } else {
-            sysUserService.resetLoginFail(loginUserId);
+            memberService.resetLoginFail(loginUserId);
+        }
+    }
+
+    public void validateAssert(Member member, String assertRawPassword) {
+        String loginName = member.getPhone();
+        Long memberId = member.getMemberId();
+        if (!assertMatches(member, assertRawPassword)) {
+            AsyncManager.me().execute(AsyncFactory.recordLoginInfo(loginName, SystemConstants.LOGIN_FAIL, "支付密码错误"));
+            throw new UserPasswordNotMatchException("支付密码错误",loginName);
         }
     }
 
@@ -59,8 +70,14 @@ public class PasswordService {
         return false;
     }
 
-    public boolean matches(SysUser user, String rawPassword) {
-        return user.getPassword().equals(encryptPassword(rawPassword, user.getSalt()));
+    public boolean matches(Member member, String rawPassword) {
+        return member.getPassword().equals(encryptPassword(rawPassword, member.getSalt()));
+    }
+
+    public boolean assertMatches(Member member, String assertRawPassword) {
+        if(member.getAssertSalt() == null)
+            return false;
+        return member.getAssertPassword().equals(encryptPassword(assertRawPassword, member.getAssertSalt()));
     }
 
     public String encryptPassword(String password, String salt) {

@@ -1,4 +1,4 @@
-package one.yiran.dashboard.web.util;
+package one.yiran.dashboard.common.util;
 
 import java.util.HashMap;
 import java.util.Map;

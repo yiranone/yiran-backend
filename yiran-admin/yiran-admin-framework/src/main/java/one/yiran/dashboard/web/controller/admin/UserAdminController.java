@@ -26,8 +26,7 @@ import one.yiran.dashboard.manage.service.SysDeptService;
 import one.yiran.dashboard.manage.service.SysRoleService;
 import one.yiran.dashboard.manage.service.SysUserService;
 import one.yiran.dashboard.vo.UserPageVO;
-import one.yiran.dashboard.web.service.ThirdPartyService;
-import one.yiran.dashboard.web.util.WrapUtil;
+import one.yiran.dashboard.common.util.WrapUtil;
 import one.yiran.db.common.util.PageRequestUtil;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +39,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -63,8 +61,6 @@ public class UserAdminController {
     @Autowired
     private PasswordService passwordService;
 
-    @Autowired
-    private ThirdPartyService thirdPartyService;
 
     @Autowired
     private UserRoleDao userRoleDao;
@@ -270,23 +266,23 @@ public class UserAdminController {
         sysUserService.resetLoginFail(userId);
     }
 
-    @RequireUserLogin
-    @PostMapping("/sendSms")
-    public Map sendSms(HttpServletRequest request) {
-        UserInfo user = UserCacheUtil.getSessionInfo(request);
-        if (StringUtils.isBlank(user.getPhoneNumber())) {
-            throw BusinessException.build("未设置手机号");
-        }
-        String randomNumber = RandomStringUtils.randomNumeric(6);
-        log.info("用户{}发送短信验证码:{}",user.getPhoneNumber(),randomNumber);
-        thirdPartyService.sendSms(user.getPhoneNumber(), new JSONObject() {{
-            put("code", randomNumber);
-        }}, false);
-
-        String randomToken = RandomStringUtils.randomNumeric(32) + "_" + user.getPhoneNumber();
-        UserCacheUtil.setSmsInfo(randomToken, randomNumber);
-        return WrapUtil.wrap("token", randomToken);
-    }
+//    @RequireUserLogin
+//    @PostMapping("/sendSms")
+//    public Map sendSms(HttpServletRequest request) {
+//        UserInfo user = UserCacheUtil.getSessionInfo(request);
+//        if (StringUtils.isBlank(user.getPhoneNumber())) {
+//            throw BusinessException.build("未设置手机号");
+//        }
+//        String randomNumber = RandomStringUtils.randomNumeric(6);
+//        log.info("用户{}发送短信验证码:{}",user.getPhoneNumber(),randomNumber);
+//        thirdPartyService.sendSms(user.getPhoneNumber(), new JSONObject() {{
+//            put("code", randomNumber);
+//        }}, false);
+//
+//        String randomToken = RandomStringUtils.randomNumeric(32) + "_" + user.getPhoneNumber();
+//        UserCacheUtil.setSmsInfo(randomToken, randomNumber);
+//        return WrapUtil.wrap("token", randomToken);
+//    }
 
     /**
      * 校验用户名是否重复， 参数 loginName userId

@@ -1,4 +1,4 @@
-package one.yiran.dashboard.web.response.ali;
+package one.yiran.dashboard.web.ali;
 
 import lombok.Data;
 

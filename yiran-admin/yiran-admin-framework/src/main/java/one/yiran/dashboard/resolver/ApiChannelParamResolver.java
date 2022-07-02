@@ -48,7 +48,7 @@ public class ApiChannelParamResolver implements HandlerMethodArgumentResolver {
 		}
 		SysChannel channel = channelService.selectByChannelCode(channelCode);
 		if (channel == null && required) {
-			throw BusinessException.build("渠道不存在");
+			throw BusinessException.build("渠道不存在:"+channelCode);
 		}
 		return ChannelVO.from(channel);
 	}
