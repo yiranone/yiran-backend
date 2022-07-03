@@ -24,13 +24,16 @@ public class QClassUtil {
         String isQ = qFullName.substring( lastDot + 1,lastDot +2);
         if(!StringUtils.equals(isQ,"Q"))
             return null;
+        if(StringUtils.equals(qFullName,"com.querydsl.core.QTuple"))
+            return null;
 
         EntityPath entityPath = clazz.get(qFullName);
         if(entityPath == null) {
             try {
-                Constructor cs = Class.forName(qFullName).getConstructor(String.class);
-                Object o = cs.newInstance(lowerName);
-                Object staticQField = FieldUtils.readField(o,lowerName);
+//                Constructor cs = Class.forName(qFullName).getConstructor(String.class);
+//                Object o = cs.newInstance(lowerName);
+                Class<?> qClass = Class.forName(qFullName);
+                Object staticQField = FieldUtils.readStaticField(qClass,lowerName,true);
                 clazz.put(qFullName,(EntityPath)staticQField);
                 entityPath = clazz.get(qFullName);
             } catch (Exception e) {
