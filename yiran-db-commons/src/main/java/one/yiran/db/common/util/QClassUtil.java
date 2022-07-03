@@ -33,6 +33,9 @@ public class QClassUtil {
 //                Constructor cs = Class.forName(qFullName).getConstructor(String.class);
 //                Object o = cs.newInstance(lowerName);
                 Class<?> qClass = Class.forName(qFullName);
+                if(!StringUtils.equals(qClass.getSuperclass().getName(),"com.querydsl.core.types.dsl.EntityPathBase")){
+                    return null;
+                }
                 Object staticQField = FieldUtils.readStaticField(qClass,lowerName,true);
                 clazz.put(qFullName,(EntityPath)staticQField);
                 entityPath = clazz.get(qFullName);
