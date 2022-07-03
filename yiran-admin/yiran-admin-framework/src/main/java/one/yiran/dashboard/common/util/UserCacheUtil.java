@@ -3,7 +3,7 @@ package one.yiran.dashboard.common.util;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.cache.Cache;
-import one.yiran.dashboard.common.model.UserInfo;
+import one.yiran.dashboard.common.model.AdminSession;
 import one.yiran.dashboard.common.constants.Global;
 import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.Jedis;
@@ -32,7 +32,7 @@ public class UserCacheUtil {
         return userId + "_" + UUID.randomUUID().toString().replaceAll("-", "");
     }
 
-    public static void setSessionInfo(String key, UserInfo sessionInfo) {
+    public static void setSessionInfo(String key, AdminSession sessionInfo) {
         String s = JSON.toJSONString(sessionInfo);
         if(Global.userLocalCache()) {
             Cache cache = getCache();
@@ -64,13 +64,13 @@ public class UserCacheUtil {
         }
     }
 
-    public static UserInfo getSessionInfo(String key) {
+    public static AdminSession getSessionInfo(String key) {
         if(Global.userLocalCache()) {
             Cache cache = getCache();
             Object o = cache.getIfPresent(Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX);
             if (o == null)
                 return null;
-            return JSONObject.parseObject(o.toString(), UserInfo.class);
+            return JSONObject.parseObject(o.toString(), AdminSession.class);
         }
         Jedis pool = getJedis();
         try {
@@ -78,14 +78,14 @@ public class UserCacheUtil {
             if (o == null)
                 return null;
             pool.expire(Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX, SESSION_TIMEOUT);
-            return JSONObject.parseObject(o.toString(), UserInfo.class);
+            return JSONObject.parseObject(o.toString(), AdminSession.class);
         } finally {
             if (pool != null)
                 pool.close();
         }
     }
 
-    public static UserInfo getSessionInfo(HttpServletRequest request) {
+    public static AdminSession getSessionInfo(HttpServletRequest request) {
         String token = request.getHeader(Global.getAuthKey());
         if (StringUtils.isBlank(token)) {
             return null;

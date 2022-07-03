@@ -1,9 +1,12 @@
 package one.yiran.dashboard.manage.aspect;
 
 import com.alibaba.fastjson.JSON;
-import one.yiran.dashboard.common.model.UserInfo;
+import one.yiran.dashboard.common.constants.UserConstants;
+import one.yiran.dashboard.common.model.MemberSession;
+import one.yiran.dashboard.common.model.AdminSession;
 import one.yiran.dashboard.common.annotation.Log;
 import one.yiran.dashboard.common.constants.SystemConstants;
+import one.yiran.dashboard.common.util.MemberCacheUtil;
 import one.yiran.dashboard.manage.entity.SysOperLog;
 import one.yiran.dashboard.manage.factory.AsyncManager;
 import one.yiran.dashboard.manage.factory.AsyncFactory;
@@ -19,6 +22,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
@@ -33,26 +38,13 @@ public class LogAspect {
     public void logPointCut() {
     }
 
-    /**
-     * 处理完请求后执行
-     *
-     * @param joinPoint 切点
-     */
     @AfterReturning(pointcut = "logPointCut()", returning = "jsonResult")
-    public void doAfterReturning(JoinPoint joinPoint, Object jsonResult)
-    {
+    public void doAfterReturning(JoinPoint joinPoint, Object jsonResult) {
         handleLog(joinPoint, null, jsonResult);
     }
 
-    /**
-     * 拦截异常操作
-     *
-     * @param joinPoint 切点
-     * @param e         异常
-     */
     @AfterThrowing(value = "logPointCut()", throwing = "e")
-    public void doAfterThrowing(JoinPoint joinPoint, Exception e)
-    {
+    public void doAfterThrowing(JoinPoint joinPoint, Exception e) {
         handleLog(joinPoint, e, null);
     }
 
@@ -65,15 +57,26 @@ public class LogAspect {
             }
 
             // 获取当前的用户
-            UserInfo currentUser = UserInfoContextHelper.getLoginUser();
+            AdminSession currentUser = UserInfoContextHelper.getLoginUser();
 
-            if (currentUser == null)
+            HttpServletRequest request = ServletUtil.getRequest();
+            MemberSession memberSession = MemberCacheUtil.getSessionInfo(request);
+
+            if (currentUser == null && memberSession == null)
                 return;
-            // *========数据库日志=========*//
             SysOperLog sysOperLog = new SysOperLog();
+            String loginName = "";
+            if (currentUser != null) {
+                sysOperLog.setSessionType(UserConstants.SESSION_TYPE_ADMIN);
+                loginName = currentUser.getLoginName();
+            } else if (memberSession != null) {
+                sysOperLog.setSessionType(UserConstants.SESSION_TYPE_MEMBER);
+                loginName = memberSession.getPhone();
+            }
+            // *========数据库日志=========*//
+            sysOperLog.setCreateBy(currentUser.getLoginName());
             sysOperLog.setStatus(SystemConstants.SUCCESS);
             // 请求的地址
-            HttpServletRequest request = ServletUtil.getRequest();
             if (request != null) {
                 String ip = IpUtil.getIpAddr(request);
                 sysOperLog.setOperIp(ip);
@@ -84,7 +87,7 @@ public class LogAspect {
                 sysOperLog.setJsonResult(JSON.toJSONString(jsonResult));
             }
             sysOperLog.setOperUrl(ServletUtil.getRequest().getRequestURI());
-            sysOperLog.setOperName(currentUser.getLoginName());
+            sysOperLog.setOperName(loginName);
             if (StringUtils.isNotEmpty(currentUser.getDeptName())) {
                 sysOperLog.setDeptName(currentUser.getDeptName());
             }
@@ -102,7 +105,7 @@ public class LogAspect {
             // 处理设置注解上的参数
             getControllerMethodDescription(controllerLog, sysOperLog);
             // 保存数据库
-            AsyncManager.me().execute(AsyncFactory.recordOper(sysOperLog));
+            AsyncManager.me().execute(AsyncFactory.recordOperateInfo(sysOperLog));
         } catch (Exception exp) {
             // 记录本地异常日志
             //log.error("==前置通知异常==");

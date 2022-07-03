@@ -1,6 +1,10 @@
 package one.yiran.dashboard.common.constants;
 
 public class UserConstants {
+
+    public static final String SESSION_TYPE_ADMIN = "ADMIN";
+    public static final String SESSION_TYPE_MEMBER = "MEMBER";
+
     /**
      * 正常状态
      */

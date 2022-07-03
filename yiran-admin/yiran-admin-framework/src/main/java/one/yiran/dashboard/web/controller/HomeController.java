@@ -1,9 +1,8 @@
 package one.yiran.dashboard.web.controller;
 
-import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
 import one.yiran.dashboard.common.expection.user.UserNotLoginException;
-import one.yiran.dashboard.common.model.UserInfo;
+import one.yiran.dashboard.common.model.AdminSession;
 import one.yiran.dashboard.common.util.StringUtil;
 import one.yiran.dashboard.manage.entity.SysMenu;
 import one.yiran.dashboard.manage.entity.SysPerm;
@@ -46,7 +45,7 @@ public class HomeController {
     @AjaxWrapper
     @RequestMapping("/menu")
     public List<WebMenu> menu(ModelMap model) {
-        UserInfo user = UserInfoContextHelper.getLoginUser();
+        AdminSession user = UserInfoContextHelper.getLoginUser();
         if(user == null)
             throw new UserNotLoginException();
         List<SysMenu> menusList;
@@ -61,7 +60,7 @@ public class HomeController {
     @AjaxWrapper
     @RequestMapping("/perms")
     public List<Map<String, Object>> perms(ModelMap model) {
-        UserInfo user = UserInfoContextHelper.getLoginUser();
+        AdminSession user = UserInfoContextHelper.getLoginUser();
         List<SysPerm> list;
         if (user.isAdmin()) {
             list = sysPermService.selectAll();

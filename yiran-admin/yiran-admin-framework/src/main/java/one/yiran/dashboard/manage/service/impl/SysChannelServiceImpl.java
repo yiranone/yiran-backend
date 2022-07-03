@@ -1,5 +1,6 @@
 package one.yiran.dashboard.manage.service.impl;
 
+import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.manage.dao.ChannelDao;
 import one.yiran.dashboard.manage.entity.QSysChannel;
 import one.yiran.dashboard.manage.entity.SysChannel;
@@ -32,5 +33,15 @@ public class SysChannelServiceImpl extends CrudBaseServiceImpl<Long, SysChannel>
     public SysChannel selectByChannelCode(String channelCode) {
         Assert.hasLength(channelCode,"channelCode不能为空");
         return selectOne(QSysChannel.sysChannel.channelCode.eq(channelCode));
+    }
+
+    @Override
+    public SysChannel selectByChannelIdWithCheck(Long channelId) {
+        Assert.notNull(channelId,"channelId不能为空");
+        SysChannel channel = selectOne(QSysChannel.sysChannel.channelId.eq(channelId));
+        if(channel ==null) {
+            throw BusinessException.build("渠道不存在:channelId=" + channelId);
+        }
+        return channel;
     }
 }

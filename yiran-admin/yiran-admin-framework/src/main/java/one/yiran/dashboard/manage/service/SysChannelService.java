@@ -8,4 +8,5 @@ public interface SysChannelService extends CrudBaseService<Long, SysChannel> {
     boolean checkChannelKeyUnique(SysChannel sysChannel);
 
     SysChannel selectByChannelCode(String channelCode);
+    SysChannel selectByChannelIdWithCheck(Long channelId);
 }

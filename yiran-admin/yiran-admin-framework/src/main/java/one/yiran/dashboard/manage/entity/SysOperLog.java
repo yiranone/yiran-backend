@@ -1,5 +1,6 @@
 package one.yiran.dashboard.manage.entity;
 
+import one.yiran.dashboard.common.annotation.Option;
 import one.yiran.db.common.domain.TimedBasedEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,7 +35,7 @@ public class SysOperLog extends TimedBasedEntity {
      */
     @Excel(name = "操作模块")
     @Search
-    @Column
+    @Column(length = 32)
     private String title;
 
     /**
@@ -93,33 +94,33 @@ public class SysOperLog extends TimedBasedEntity {
      * 请求url
      */
     @Excel(name = "请求地址")
-    @Column
+    @Column(length = 256)
     private String operUrl;
 
     /**
      * 操作地址
      */
     @Excel(name = "操作地址")
-    @Column
+    @Column(length = 32)
     private String operIp;
 
     /**
      * 操作地点
      */
     @Excel(name = "操作地点")
-    @Column
+    @Column(length = 64)
     private String operLocation;
 
     /**
      * 请求参数
      */
     @Excel(name = "请求参数")
-    @Column
+    @Column(length = 256)
     private String operParam;
 
     /** 返回参数 */
     @Excel(name = "返回参数")
-    @Column
+    @Column(length = 2048)
     private String jsonResult;
 
     /**
@@ -145,6 +146,10 @@ public class SysOperLog extends TimedBasedEntity {
     @Column
     private Date operTime;
 
+    @Option(value = {"ADMIN","MEMBER"}, message = "sessionType只能是ADMIN，MEMBER")
+    @Column(length = 8)
+    private String sessionType;
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -163,6 +168,7 @@ public class SysOperLog extends TimedBasedEntity {
                 .append("status", getStatus())
                 .append("errorMsg", getErrorMsg())
                 .append("operTime", getOperTime())
+                .append("sessionType", getSessionType())
                 .toString();
     }
 }

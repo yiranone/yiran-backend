@@ -23,11 +23,9 @@ import java.util.Date;
 @Data
 public class Member extends TimedBasedEntity {
 
-    /**
-     * 参数主键
-     */
-    @Excel(name = "参数主键", cellType = Excel.ColumnType.NUMERIC)
+    @Excel(name = "会员ID", cellType = Excel.ColumnType.NUMERIC)
     @Search
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long memberId;
 

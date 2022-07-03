@@ -3,7 +3,8 @@ package com.biz.extcontroller;
 import com.biz.entity.Member;
 import com.biz.service.MemberService;
 import com.biz.service.u.MemberPasswordService;
-import com.biz.util.MemberCacheUtil;
+import one.yiran.dashboard.common.model.MemberSession;
+import one.yiran.dashboard.common.util.MemberCacheUtil;
 import com.biz.vo.MemberVO;
 import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
@@ -47,14 +48,14 @@ public class ExtMemberController {
 
     @RequireMemberLogin
     @RequestMapping("/current")
-    public MemberVO current(@ApiChannel ChannelVO channelVO, HttpServletRequest request){
+    public MemberSession current(@ApiChannel ChannelVO channelVO, HttpServletRequest request){
         return MemberCacheUtil.getSessionInfo(request);
     }
 
     @PostMapping("/login")
-    public MemberVO loginByPhone(@ApiChannel ChannelVO channelVO,
-                                 @ApiParam(required = true) String phone,
-                                 @ApiParam(required = true) String password) {
+    public MemberSession loginByPhone(@ApiChannel ChannelVO channelVO,
+                                      @ApiParam(required = true) String phone,
+                                      @ApiParam(required = true) String password) {
         Member m = memberService.selectByPhone(channelVO.getChannelId(),phone);
         if(m == null) {
             throw BusinessException.build("用户不存在");
@@ -80,12 +81,20 @@ public class ExtMemberController {
         m.setLoginDate(new Date());
 
         String randomKey = RandomStringUtils.randomAlphanumeric(38);
-        MemberCacheUtil.setSessionInfo(randomKey,memberVO);
-        memberVO.setToken(randomKey);
+
+        MemberSession memberSession = new MemberSession();
+        memberSession.setMemberId(m.getMemberId());
+        memberSession.setPhone(m.getPhone());
+        memberSession.setName(m.getName());
+        memberSession.setChannelCode(channel.getChannelCode());
+        memberSession.setChannelName(channel.getChannelName());
+
+        MemberCacheUtil.setSessionInfo(randomKey,memberSession);
+        memberSession.setToken(randomKey);
         Calendar c = Calendar.getInstance();
         c.add(Calendar.SECOND,UserCacheUtil.getSessionTimeout());
-        memberVO.setTokenExpires(c.getTimeInMillis());
+        memberSession.setTokenExpires(c.getTimeInMillis());
 
-        return memberVO;
+        return memberSession;
     }
 }

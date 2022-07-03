@@ -4,12 +4,14 @@ import eu.bitwalker.useragentutils.UserAgent;
 import one.yiran.dashboard.common.constants.SystemConstants;
 import one.yiran.dashboard.manage.entity.SysLoginInfo;
 import one.yiran.dashboard.manage.entity.SysOperLog;
+import one.yiran.dashboard.manage.security.UserInfoContextHelper;
 import one.yiran.dashboard.manage.service.SysLoginInfoService;
 import one.yiran.dashboard.manage.service.SysOperLogService;
 import one.yiran.dashboard.common.util.IpUtil;
 import one.yiran.dashboard.common.util.LogUtil;
 import one.yiran.dashboard.common.util.ServletUtil;
 import one.yiran.dashboard.common.util.SpringUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,18 +21,14 @@ import java.util.TimerTask;
 
 public class AsyncFactory {
     private static final Logger sys_user_logger = LoggerFactory.getLogger("sys-user");
-    /**
-     * 操作日志记录
-     *
-     * @param sysOperLog 操作日志信息
-     * @return 任务task
-     */
-    public static TimerTask recordOper(final SysOperLog sysOperLog) {
+
+    public static TimerTask recordOperateInfo(final SysOperLog sysOperLog) {
         return new TimerTask() {
             @Override
             public void run() {
-                // 远程查询操作地点
+                sysOperLog.setJsonResult(StringUtils.substring(sysOperLog.getJsonResult(),0,2048));
                 sysOperLog.setOperLocation(IpUtil.getRealAddressByIP(sysOperLog.getOperIp()));
+                sysOperLog.setCreateTime(new Date());
                 SpringUtil.getBean(SysOperLogService.class).insert(sysOperLog);
             }
         };
@@ -57,6 +55,8 @@ public class AsyncFactory {
                 String browser = userAgent.getBrowser().getName();
                 // 封装对象
                 SysLoginInfo logininfor = new SysLoginInfo();
+                logininfor.setCreateBy(username);
+                logininfor.setCreateTime(new Date());
                 logininfor.setLoginName(username);
                 logininfor.setIpAddr(ip);
                 logininfor.setLoginLocation(ipString);
@@ -72,7 +72,6 @@ public class AsyncFactory {
                 }
                 // 插入数据
                 SpringUtil.getBean(SysLoginInfoService.class).insert(logininfor);
-
 
             }
         };

@@ -33,9 +33,6 @@ import java.util.List;
 //@EnableWebMvc
 public class WebMvcConfig implements WebMvcConfigurer, InitializingBean {
 
-//    @Autowired
-    //private ObjectMapper objectMapper;
-
     private static SerializeConfig serializeConfig = new SerializeConfig();
     private static String dateFormat;
 
@@ -130,10 +127,6 @@ public class WebMvcConfig implements WebMvcConfigurer, InitializingBean {
         newHandels.add(0, new AjaxMethodReturnValueHandler(converts));
 
         requestMappingHandlerAdapter.setReturnValueHandlers(newHandels);
-//        System.out.println(newHandels);
-//        HandlerMethodReturnValueHandlerComposite composite = exceptionHandlerExceptionResolver.getReturnValueHandlers();
-//        composite.addHandler(new AjaxMethodReturnValueHandler(converts));
-
     }
 
 

@@ -1,7 +1,7 @@
 package com.biz.interceptor;
 
-import com.biz.util.MemberCacheUtil;
-import com.biz.vo.MemberVO;
+import one.yiran.dashboard.common.model.MemberSession;
+import one.yiran.dashboard.common.util.MemberCacheUtil;
 import lombok.extern.slf4j.Slf4j;
 import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.common.annotation.RequireMemberLogin;
@@ -47,7 +47,7 @@ public class MemberInterceptor extends HandlerInterceptorAdapter {
             throw new UserNotLoginException();
         }
 
-        MemberVO session = null;
+        MemberSession session = null;
         if((session = MemberCacheUtil.getSessionInfo(token)) == null) {
             log.info("用户没有登陆或者登录已经过期 {}",token);
             throw new UserNotLoginException("用户未登录,或者登录已经过期");

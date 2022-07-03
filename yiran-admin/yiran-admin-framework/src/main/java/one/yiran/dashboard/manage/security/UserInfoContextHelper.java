@@ -1,6 +1,7 @@
 package one.yiran.dashboard.manage.security;
 
-import one.yiran.dashboard.common.model.UserInfo;
+import one.yiran.common.exception.BusinessException;
+import one.yiran.dashboard.common.model.AdminSession;
 import one.yiran.dashboard.common.util.UserCacheUtil;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -24,21 +25,15 @@ public class UserInfoContextHelper {
     public static Long getChannelId() {
         return getLoginUser() == null ? null : getLoginUser().getChannelId();
     }
-
-//    public static String getSessionId() {
-//        return SecurityUtils.getSubject().getSession() == null ? null : String.valueOf(SecurityUtils.getSubject().getSession().getId());
-//    }
-
-//    public static OnlineSession getSession() {
-//        Subject subject = SecurityUtils.getSubject();
-//        Session session = SpringUtil.getBean(SysShiroService.class).getSession(subject.getSession().getId());
-//        OnlineSession onlineSession = (OnlineSession)session;
-//        return onlineSession;
-//    }
+    public static Long getChannelIdWithCheck() {
+        Long channelId = getChannelId();
+        if(channelId == null)
+            throw BusinessException.build("登陆用户渠道号不能为空");
+        return channelId;
+    }
 
     public static String getIp() {
-       // return getSubject().getSession().getHost();
-        return null;
+        return getLoginUser() == null ? null : getLoginUser().getLoginIp();
     }
 
 
@@ -46,51 +41,18 @@ public class UserInfoContextHelper {
         return getLoginUser() == null ? null : getLoginUser().getPhoneNumber();
     }
 
-//    public static SysUser getUser() {
-//        SysUser user = null;
-//        Object obj = getSubject().getPrincipal();
-//        if (obj != null) {
-//            user = new SysUser();
-//            BeanUtils.copyProperties(obj, user);
-//        }
-//        return user;
-//    }
-
-    public static UserInfo getLoginUser() {
+    public static AdminSession getLoginUser() {
         HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
         Object o = request.getAttribute("YIRAN_LOGIN_USER");
         if(o != null) {
-            return (UserInfo)o;
+            return (AdminSession)o;
         }
-        UserInfo user = UserCacheUtil.getSessionInfo(request);
+        AdminSession user = UserCacheUtil.getSessionInfo(request);
         request.setAttribute("YIRAN_LOGIN_USER", user);
-
-//        Object obj = getSubject().getPrincipal();
-//        if (obj != null) {
-//            if(obj instanceof UserInfo) {
-//                return (UserInfo)obj;
-//            } else {
-//                user = new UserInfo();
-//                BeanUtils.copyProperties(obj, user);
-//            }
-//        }
         return user;
     }
 
     public static void checkScopePermission(String perm, Long deptId){
         //getLoginUser().checkScopePermission(perm,deptId);
     }
-
-    public static void setUser(UserInfo user) {
-//        Subject subject = getSubject();
-//        PrincipalCollection principalCollection = subject.getPrincipals();
-//        String realmName = principalCollection.getRealmNames().iterator().next();
-//        PrincipalCollection newPrincipalCollection = new SimplePrincipalCollection(user, realmName);
-//        // 重新加载Principal
-//        subject.runAs(newPrincipalCollection);
-    }
-
-    //public static Subject getSubject() {
-//        return SecurityUtils.getSubject();
-//    }
 }

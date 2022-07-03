@@ -1,7 +1,7 @@
 package one.yiran.dashboard.resolver;
 
-import one.yiran.dashboard.common.annotation.ApiUser;
-import one.yiran.dashboard.common.model.UserInfo;
+import one.yiran.dashboard.common.annotation.ApiSessionAdmin;
+import one.yiran.dashboard.common.model.AdminSession;
 import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.common.util.UserCacheUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +20,7 @@ public class ApiUserParamResolver implements HandlerMethodArgumentResolver {
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
-		if (parameter.hasParameterAnnotation(ApiUser.class)) {
+		if (parameter.hasParameterAnnotation(ApiSessionAdmin.class)) {
 			return true;
 		}
 		return false;
@@ -31,13 +31,13 @@ public class ApiUserParamResolver implements HandlerMethodArgumentResolver {
 								  ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
 								  WebDataBinderFactory binderFactory) throws Exception {
 		HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
-		
+
 		String token = httpServletRequest.getHeader(Global.getAuthKey());
 		if (StringUtils.isBlank(token)) {
 			return null;
 		}
 
-		UserInfo u = UserCacheUtil.getSessionInfo(token);
+		AdminSession u = UserCacheUtil.getSessionInfo(token);
 		return u;
 	}
 }

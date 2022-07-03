@@ -1,11 +1,10 @@
-package com.biz.util;
+package one.yiran.dashboard.common.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.biz.vo.MemberVO;
 import com.google.common.cache.Cache;
 import one.yiran.dashboard.common.constants.Global;
-import one.yiran.dashboard.common.util.SpringUtil;
+import one.yiran.dashboard.common.model.MemberSession;
 import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -33,8 +32,8 @@ public class MemberCacheUtil {
         return userId + "_" + UUID.randomUUID().toString().replaceAll("-", "");
     }
 
-    public static void setSessionInfo(String key, MemberVO memberVO) {
-        String s = JSON.toJSONString(memberVO);
+    public static void setSessionInfo(String key, MemberSession member) {
+        String s = JSON.toJSONString(member);
         if(Global.userLocalCache()) {
             Cache cache = getCache();
             cache.put(Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX, s);
@@ -65,13 +64,13 @@ public class MemberCacheUtil {
         }
     }
 
-    public static MemberVO getSessionInfo(String key) {
+    public static MemberSession getSessionInfo(String key) {
         if(Global.userLocalCache()) {
             Cache cache = getCache();
             Object o = cache.getIfPresent(Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX);
             if (o == null)
                 return null;
-            return JSONObject.parseObject(o.toString(), MemberVO.class);
+            return JSONObject.parseObject(o.toString(), MemberSession.class);
         }
         Jedis pool = getJedis();
         try {
@@ -79,14 +78,17 @@ public class MemberCacheUtil {
             if (o == null)
                 return null;
             pool.expire(Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX, SESSION_TIMEOUT);
-            return JSONObject.parseObject(o.toString(), MemberVO.class);
+            return JSONObject.parseObject(o.toString(), MemberSession.class);
         } finally {
             if (pool != null)
                 pool.close();
         }
     }
 
-    public static MemberVO getSessionInfo(HttpServletRequest request) {
+    public static MemberSession getSessionInfo(HttpServletRequest request) {
+        if(request == null) {
+            return null;
+        }
         String token = request.getHeader(Global.getAuthKey());
         if (StringUtils.isBlank(token)) {
             return null;

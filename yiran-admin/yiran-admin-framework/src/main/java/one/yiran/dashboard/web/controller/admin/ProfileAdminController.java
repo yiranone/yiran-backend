@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
 import one.yiran.dashboard.common.annotation.ApiParam;
 import one.yiran.common.exception.BusinessException;
-import one.yiran.dashboard.common.model.UserInfo;
+import one.yiran.dashboard.common.model.AdminSession;
 import one.yiran.dashboard.common.annotation.Log;
 import one.yiran.dashboard.common.annotation.RequireUserLogin;
 import one.yiran.dashboard.common.constants.BusinessType;
@@ -39,7 +39,7 @@ public class ProfileAdminController {
     @RequireUserLogin
     @GetMapping("/checkPassword")
     public boolean checkPassword(String password) {
-        UserInfo user = UserInfoContextHelper.getLoginUser();
+        AdminSession user = UserInfoContextHelper.getLoginUser();
         SysUser dbUser = sysUserService.findUser(user.getUserId());
 
         if (passwordService.matches(dbUser, password)) {
@@ -52,7 +52,7 @@ public class ProfileAdminController {
     @PostMapping("/modifyPwd")
     @RequireUserLogin
     public void modifyPwd(@ApiParam(required = true) String oldPassword,@ApiParam(required = true) String newPassword) {
-        UserInfo loginUser = UserInfoContextHelper.getLoginUser();
+        AdminSession loginUser = UserInfoContextHelper.getLoginUser();
         SysUser user = sysUserService.findUser(loginUser.getUserId());
         if (StringUtils.isEmpty(newPassword)) {
             throw BusinessException.build("修改密码失败，新密码不能为空");
@@ -72,7 +72,7 @@ public class ProfileAdminController {
     public void resetAssertPwd(@ApiParam(required = true) String token,
                                @ApiParam(required = true) String code,
                                @ApiParam(required = true) String password) {
-        UserInfo loginUser = UserInfoContextHelper.getLoginUser();
+        AdminSession loginUser = UserInfoContextHelper.getLoginUser();
         SysUser user = sysUserService.findUser(loginUser.getUserId());
         if (StringUtils.isEmpty(password)) {
             throw BusinessException.build("修改密码失败，新支付密码不能为空");
@@ -115,7 +115,7 @@ public class ProfileAdminController {
     @Log(title = "个人信息", businessType = BusinessType.UPDATE)
     @PostMapping("/update")
     public void update(String userName, String phoneNumber, String email, String sex) {
-        UserInfo loginUser = UserInfoContextHelper.getLoginUser();
+        AdminSession loginUser = UserInfoContextHelper.getLoginUser();
         sysUserService.updateMyInfos(loginUser.getUserId(),userName,email,phoneNumber,sex);
     }
 
@@ -126,7 +126,7 @@ public class ProfileAdminController {
     @Log(title = "个人头像", businessType = BusinessType.UPDATE)
     @PostMapping("/updateAvatar")
     public void updateAvatar(@RequestParam("avatarfile") MultipartFile file) {
-        UserInfo loginUser = UserInfoContextHelper.getLoginUser();
+        AdminSession loginUser = UserInfoContextHelper.getLoginUser();
         try {
             if (!file.isEmpty()) {
                 String avatar = FileUploadUtil.upload(Global.getAvatarPath(), file);

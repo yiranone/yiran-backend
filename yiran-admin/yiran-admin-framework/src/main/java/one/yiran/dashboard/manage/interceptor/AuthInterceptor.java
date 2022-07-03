@@ -3,15 +3,13 @@ package one.yiran.dashboard.manage.interceptor;
 import lombok.extern.slf4j.Slf4j;
 import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.common.annotation.RequirePermission;
-import one.yiran.dashboard.common.model.UserInfo;
+import one.yiran.dashboard.common.model.AdminSession;
 import one.yiran.dashboard.common.annotation.RequireUserLogin;
 import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.common.expection.user.UserNotLoginException;
 import one.yiran.dashboard.common.util.UserCacheUtil;
-import one.yiran.dashboard.manage.service.SysUserService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -49,7 +47,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
             throw new UserNotLoginException();
         }
 
-        UserInfo session = null;
+        AdminSession session = null;
         if((session = UserCacheUtil.getSessionInfo(token)) == null) {
             throw new UserNotLoginException("用户未登录,或者登录已经过期");
         } else if (session.getIsLocked() == Boolean.TRUE) {

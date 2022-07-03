@@ -42,16 +42,16 @@ public class MemberServiceImpl extends CrudBaseServiceImpl<Long, Member> impleme
     }
 
     @Override
-    public PageModel<MemberVO> selectPageDetail(PageRequest pageRequest, MemberVO m,
+    public PageModel<MemberVO> selectPageDetail(PageRequest pageRequest, MemberVO search,
                                                 Long channelId) {
 
         QMember qMember = QMember.member;
         QSysChannel qSysChannel = QSysChannel.sysChannel;
 
         Predicate[] pres = PredicateBuilder.builder()
-                .addLikeIfNotBlank(qMember.name, m.getName())
+                //.addLikeIfNotBlank(qMember.name, search.getName())
                 .addEqualIfNotBlank(qSysChannel.channelId, channelId)
-                .addEntityByAnnotation(m,qMember)
+                .addEntityByAnnotation(search,qMember)
                 .toArray();
 
         JPAQuery<Tuple> q = queryFactory.select(qMember,qSysChannel).from(qMember).leftJoin(qSysChannel)

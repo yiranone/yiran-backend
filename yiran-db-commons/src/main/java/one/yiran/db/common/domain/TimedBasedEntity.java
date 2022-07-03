@@ -41,6 +41,6 @@ public class TimedBasedEntity implements Serializable {
     /**
      * 备注
      */
-    @Column
+    @Column(length = 64)
     private String remark;
 }

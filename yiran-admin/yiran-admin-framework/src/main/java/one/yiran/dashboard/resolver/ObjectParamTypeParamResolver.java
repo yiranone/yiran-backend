@@ -1,5 +1,6 @@
 package one.yiran.dashboard.resolver;
 
+import lombok.extern.slf4j.Slf4j;
 import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.common.annotation.ApiObject;
 import one.yiran.dashboard.common.annotation.ApiParam;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 /**
  *
  */
+@Slf4j
 public class ObjectParamTypeParamResolver implements HandlerMethodArgumentResolver {
 
 	@Override

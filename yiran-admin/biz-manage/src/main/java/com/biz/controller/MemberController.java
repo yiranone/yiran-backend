@@ -56,14 +56,15 @@ public class MemberController {
     @Log(title = "会员管理", businessType = BusinessType.ADD)
     @RequirePermission(PermissionConstants.User.ADD)
     @PostMapping("/add")
-    public MemberVO addMember(@ApiObject(validate = true) Member member) {
-        Long channelId = UserInfoContextHelper.getChannelId();
+    public MemberVO addMember(@ApiObject(validate = true) MemberVO member,
+                              @ApiParam String password) {
+        Long channelId = UserInfoContextHelper.getChannelIdWithCheck();
         Member db = new Member();
-        if (StringUtils.isBlank(member.getPassword())) {
+        if (StringUtils.isBlank(password)) {
             throw BusinessException.build("密码不能为空");
         } else {
             db.setSalt(Global.getSalt());
-            db.setPassword(passwordService.encryptPassword(member.getPassword(), Global.getSalt()));
+            db.setPassword(passwordService.encryptPassword(password, Global.getSalt()));
             db.setPasswordUpdateTime(new Date());
         }
 
@@ -75,8 +76,9 @@ public class MemberController {
         db.setCreateBy(UserInfoContextHelper.getCurrentLoginName());
         db.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
 
-        db = memberService.insert(db);
         SysChannel channel = channelService.selectByPId(channelId);
+        db.setChannelId(channelId);
+        db = memberService.insert(db);
 
         return MemberVO.from(db,channel);
     }
@@ -84,7 +86,8 @@ public class MemberController {
     @Log(title = "会员管理", businessType = BusinessType.UPDATE)
     @RequirePermission(PermissionConstants.User.EDIT)
     @PostMapping("edit")
-    public MemberVO editUser(@ApiObject(validate = true) Member member) {
+    public MemberVO editUser(@ApiObject(validate = true) MemberVO member,
+                             @ApiParam String password) {
         if (member == null) {
             throw BusinessException.build("member不能为空");
         }

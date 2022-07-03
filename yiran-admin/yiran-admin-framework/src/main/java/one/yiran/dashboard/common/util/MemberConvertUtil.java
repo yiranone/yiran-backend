@@ -3,7 +3,7 @@ package one.yiran.dashboard.common.util;
 import one.yiran.dashboard.common.model.AdminSession;
 import one.yiran.dashboard.manage.entity.SysUser;
 
-public class UserConvertUtil {
+public class MemberConvertUtil {
     public static AdminSession convert(SysUser sysUser) {
         AdminSession u = new AdminSession();
         if (sysUser != null) {

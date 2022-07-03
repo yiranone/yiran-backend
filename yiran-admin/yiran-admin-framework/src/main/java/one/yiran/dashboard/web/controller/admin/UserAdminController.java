@@ -1,6 +1,5 @@
 package one.yiran.dashboard.web.controller.admin;
 
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import one.yiran.common.domain.PageModel;
 import one.yiran.common.domain.PageRequest;
@@ -10,9 +9,8 @@ import one.yiran.dashboard.common.constants.BusinessType;
 import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.common.expection.user.UserHasNotPermissionException;
 import one.yiran.dashboard.common.expection.user.UserNotFoundException;
-import one.yiran.dashboard.common.model.UserInfo;
+import one.yiran.dashboard.common.model.AdminSession;
 import one.yiran.dashboard.common.util.ExcelUtil;
-import one.yiran.dashboard.common.util.UserCacheUtil;
 import one.yiran.dashboard.common.util.UserConvertUtil;
 import one.yiran.dashboard.manage.dao.UserRoleDao;
 import one.yiran.dashboard.manage.entity.SysDept;
@@ -28,7 +26,6 @@ import one.yiran.dashboard.manage.service.SysUserService;
 import one.yiran.dashboard.vo.UserPageVO;
 import one.yiran.dashboard.common.util.WrapUtil;
 import one.yiran.db.common.util.PageRequestUtil;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -77,7 +74,7 @@ public class UserAdminController {
     @Log(title = "用户管理", businessType = BusinessType.ADD)
     @RequirePermission(PermissionConstants.User.ADD)
     @PostMapping("/add")
-    public UserInfo addAdmin(@ApiObject(validate = true) SysUser user) {
+    public AdminSession addAdmin(@ApiObject(validate = true) SysUser user) {
 //        UserInfoContextHelper.getLoginUser().checkScopePermission(PermissionConstants.User.ADD,user.getDeptId());
         checkUserFields(user);
         SysUser dbUser = new SysUser();
@@ -115,7 +112,7 @@ public class UserAdminController {
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @RequirePermission(PermissionConstants.User.EDIT)
     @PostMapping("edit")
-    public UserInfo editUser(@ApiObject(validate = true) SysUser user) {
+    public AdminSession editUser(@ApiObject(validate = true) SysUser user) {
 //        UserInfoContextHelper.checkScopePermission(PermissionConstants.User.EDIT,user.getDeptId());
         if (user == null) {
             throw BusinessException.build("user不能为空");
