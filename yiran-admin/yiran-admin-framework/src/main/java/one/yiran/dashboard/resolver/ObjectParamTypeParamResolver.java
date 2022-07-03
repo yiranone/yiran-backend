@@ -61,7 +61,8 @@ public class ObjectParamTypeParamResolver implements HandlerMethodArgumentResolv
 				.validate(obj);
 		List<String> res = validRes
 				.stream()
-				.map(ConstraintViolation::getMessage)
+				.map(e-> "" + e.getPropertyPath() +
+				e.getMessage())
 				.collect(Collectors.toList());
 		return res;
 	}

@@ -55,7 +55,7 @@ public interface SysUserService {
 
     boolean isEmailExist(String email,Long userId);
 
-    boolean isLoginNameExist(SysUser user);
+    boolean isLoginNameExist(String loginName,Long userId);
 
     PageModel<SysUser> selectUnallocatedList(PageRequest request, Long roleId, SysUser searchUser, List<Long> deptIds);
 

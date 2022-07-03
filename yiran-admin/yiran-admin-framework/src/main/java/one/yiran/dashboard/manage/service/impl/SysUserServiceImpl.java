@@ -203,7 +203,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
                     user.setUserId(dbuser.getUserId());
                 }
             }
-            if (isLoginNameExist(user)) {
+            if (isLoginNameExist(user.getLoginName(),user.getUserId())) {
                 throw BusinessException.build(String.format("用户名字[%s]重复", user.getLoginName()));
             }
 
@@ -301,11 +301,10 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
     }
 
     @Override
-    public boolean isLoginNameExist(SysUser user) {
-        Assert.notNull(user, "user 不能为空");
-        Assert.hasLength(user.getLoginName(), "loginName 不能为空");
-        Long userId = user.getUserId() == null ? 0L : user.getUserId();
-        SysUser sysUser = findUserByLoginName(user.getLoginName());
+    public boolean isLoginNameExist(String loginName,Long userId) {
+        Assert.hasLength(loginName, "loginName 不能为空");
+        userId = userId == null ? 0L : userId;
+        SysUser sysUser = findUserByLoginName(loginName);
         if (sysUser != null && !sysUser.getUserId().equals(userId)) {
             return true;
         }

@@ -285,8 +285,9 @@ public class UserAdminController {
      * 校验用户名是否重复， 参数 loginName userId
      */
     @PostMapping("/isLoginNameExist")
-    public Map<String, Object> isLoginNameExist(@ApiObject(validate = true) SysUser user) {
-        return WrapUtil.wrapWithExist(sysUserService.isLoginNameExist(user));
+    public Map<String, Object> isLoginNameExist(@ApiParam(required = true) String loginName,
+                                                @ApiParam Long userId) {
+        return WrapUtil.wrapWithExist(sysUserService.isLoginNameExist(loginName,userId));
     }
 
     /**
@@ -308,7 +309,7 @@ public class UserAdminController {
     }
 
     private void checkUserFields(SysUser user){
-        if (sysUserService.isLoginNameExist(user)) {
+        if (sysUserService.isLoginNameExist(user.getLoginName(),user.getUserId())) {
             throw BusinessException.build("用户名字["+user.getLoginName()+"]已经存在");
         }
         if (StringUtils.isNotBlank(user.getPhoneNumber()) && sysUserService.isPhoneNumberExist(user.getPhoneNumber(),user.getUserId())) {
