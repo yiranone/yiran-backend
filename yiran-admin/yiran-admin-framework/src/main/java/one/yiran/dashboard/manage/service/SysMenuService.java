@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface SysMenuService extends CrudBaseService<Long, SysMenu> {
 
-    List<SysMenu> selectVisibleMenus();
+    List<SysMenu> selectVisibleTreeMenus(boolean onlyMenu);
 
-    List<SysMenu> selectVisibleMenusByUser(Long userId);
+    List<SysMenu> selectVisibleTreeMenusByUser(Long userId,boolean onlyMenu);
 
     List<SysMenu> selectMenuList(PageRequest request, SysMenu sysMenu);
 

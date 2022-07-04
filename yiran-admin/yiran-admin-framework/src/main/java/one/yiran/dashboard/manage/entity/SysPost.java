@@ -1,5 +1,6 @@
 package one.yiran.dashboard.manage.entity;
 
+import one.yiran.dashboard.common.annotation.Option;
 import one.yiran.db.common.domain.TimedBasedEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -7,6 +8,7 @@ import one.yiran.dashboard.common.annotation.Excel;
 import one.yiran.db.common.annotation.Search;
 import org.springframework.data.annotation.Transient;
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @EqualsAndHashCode(callSuper = false)
 @Table(name = "sys_post")
@@ -50,9 +52,11 @@ public class SysPost extends TimedBasedEntity {
     /**
      * 状态（0正常 1停用）
      */
+    @Option(value = {"0","1"}, message = "状态只能是0，1; 0=正常,1=停用")
+    @NotBlank(message = "状态不能为空")
     @Search
     @Excel(name = "状态", readConverterExp = "0=正常,1=停用")
-    @Column
+    @Column(length = 8,nullable = false)
     private String status;
 
     /**

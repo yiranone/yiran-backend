@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -30,12 +31,15 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long, SysMenu> imple
     private SysPermService sysPermService;
 
     @Override
-    public List<SysMenu> selectVisibleMenusByUser(Long userId) {
+    public List<SysMenu> selectVisibleTreeMenusByUser(Long userId,boolean onlyMenu) {
         Assert.notNull(userId, "用户ID不能为空");
         List<SysPerm> permList = sysPermService.findPermsByUserId(userId);
         List<String> permOperationList = permList.stream().map(e -> e.getPermOperation()).collect(toList());
         List<SysMenu> sysMenus = menuDao.findAll();
         if (sysMenus != null && sysMenus.size() > 0) {
+            if(onlyMenu) {
+                sysMenus = sysMenus.stream().filter(e -> !StringUtils.equals(e.getMenuType(),"F")).collect(Collectors.toList());
+            }
             sysMenus = sysMenus.stream().filter(e -> permOperationList.contains(e.getPerms()))
                     .filter(e -> StringUtils.equals("0", e.getVisible()))
                     .filter(e -> e.getIsDelete() == null || !e.getIsDelete().booleanValue()).collect(toList());
@@ -45,8 +49,11 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long, SysMenu> imple
     }
 
     @Override
-    public List<SysMenu> selectVisibleMenus() {
-        List<SysMenu> sysMenus = menuDao.findAll();;
+    public List<SysMenu> selectVisibleTreeMenus(boolean onlyMenu) {
+        List<SysMenu> sysMenus = menuDao.findAll();
+        if(onlyMenu) {
+            sysMenus = sysMenus.stream().filter(e -> !StringUtils.equals(e.getMenuType(),"F")).collect(Collectors.toList());
+        }
         if(sysMenus != null && sysMenus.size() > 0) {
             sysMenus = sysMenus.stream().filter(e -> StringUtils.equals("0", e.getVisible()))
                     .filter(e -> e.getIsDelete() == null || !e.getIsDelete().booleanValue()).collect(toList());
@@ -193,6 +200,8 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long, SysMenu> imple
 //            if (StringUtils.equals(m.getMenuType(), "C") && StringUtils.isBlank(m.getTarget())) {
 //                throw BusinessException.build("打开方式不能为空");
 //            }
+        } else if (StringUtils.equals(m.getMenuType(), "F")) {
+            m.setRouter("");
         }
 
         if (m.getParentId() != null && m.getParentId().longValue() > 0) {

@@ -1,6 +1,7 @@
 package one.yiran.dashboard.manage.dao;
 
 import one.yiran.dashboard.manage.entity.SysUserRole;
+import one.yiran.dashboard.manage.entity.pk.SysRolePK;
 import one.yiran.db.common.dao.BaseDao;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface UserRoleDao extends BaseDao<SysUserRole, Long> {
+public interface UserRoleDao extends BaseDao<SysUserRole, SysRolePK> {
 
     @Modifying(clearAutomatically = true,flushAutomatically = true)
     @Query("delete from SysUserRole where userId = ?1")

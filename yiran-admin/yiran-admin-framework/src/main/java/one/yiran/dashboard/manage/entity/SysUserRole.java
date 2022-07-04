@@ -1,9 +1,8 @@
 package one.yiran.dashboard.manage.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import one.yiran.dashboard.manage.entity.pk.SysRolePK;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -33,10 +32,3 @@ public class SysUserRole implements Serializable {
     private Long roleId;
 }
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class SysRolePK implements Serializable {
-    private Long userId;
-    private Long roleId;
-}

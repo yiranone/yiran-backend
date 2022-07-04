@@ -1,5 +1,6 @@
 package one.yiran.dashboard.manage.entity;
 
+import one.yiran.dashboard.common.annotation.Option;
 import one.yiran.db.common.domain.TimedBasedEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -65,12 +66,11 @@ public class SysDictData extends TimedBasedEntity {
     @Column
     private String isDefault;
 
-    /**
-     * 状态（0正常 1停用）
-     */
-    @Excel(name = "状态", readConverterExp = "0=正常,1=停用")
-    @Column
+    @Option(value = {"0","1"}, message = "状态只能是0，1; 0=正常,1=停用")
+    @NotBlank(message = "状态不能为空")
     @Search
+    @Excel(name = "状态", readConverterExp = "0=正常,1=停用")
+    @Column(length = 8,nullable = false)
     private String status;
 
     public boolean getDefault() {

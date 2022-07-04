@@ -2,6 +2,7 @@ package one.yiran.dashboard.web.controller.admin;
 
 import lombok.extern.slf4j.Slf4j;
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
+import one.yiran.dashboard.common.annotation.ApiObject;
 import one.yiran.dashboard.common.annotation.Log;
 import one.yiran.dashboard.common.constants.BusinessType;
 import one.yiran.dashboard.manage.entity.SysMenu;
@@ -61,7 +62,7 @@ public class MenuAdminController {
     @Log(title = "菜单管理", businessType = BusinessType.ADD)
     @RequirePermission(PermissionConstants.Menu.ADD)
     @PostMapping("/add")
-    public int addSave(@Validated @RequestBody SysMenu sysMenu) {
+    public int addSave(@ApiObject(validate = true) SysMenu sysMenu) {
         if (!sysMenuService.checkMenuNameUnique(sysMenu)) {
             throw BusinessException.build("新增菜单'" + sysMenu.getMenuName() + "'失败，菜单名称已存在");
         }
@@ -74,7 +75,7 @@ public class MenuAdminController {
     @Log(title = "菜单管理", businessType = BusinessType.UPDATE)
     @RequirePermission(PermissionConstants.Menu.EDIT)
     @PostMapping("/edit")
-    public int editSave(@Validated @RequestBody SysMenu sysMenu) {
+    public int editSave(@ApiObject(validate = true) SysMenu sysMenu) {
         if (!sysMenuService.checkMenuNameUnique(sysMenu)) {
             throw BusinessException.build("修改菜单'" + sysMenu.getMenuName() + "'失败，菜单名称已存在");
         }

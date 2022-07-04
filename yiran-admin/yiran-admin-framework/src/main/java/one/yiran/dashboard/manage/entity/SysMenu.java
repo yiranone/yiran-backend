@@ -1,5 +1,6 @@
 package one.yiran.dashboard.manage.entity;
 
+import one.yiran.dashboard.common.annotation.Option;
 import one.yiran.db.common.domain.TimedBasedEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -62,6 +63,7 @@ public class SysMenu extends TimedBasedEntity {
      * 类型:M目录,C菜单,F按钮
      */
     @Search
+    @Option(value = {"M","C","F"}, message = "菜单类型只能是M，C，F; M=目录,C=菜单,F=按钮")
     @NotBlank(message = "菜单类型不能为空")
     @Column(length = 1,nullable = false)
     private String menuType;
@@ -70,6 +72,7 @@ public class SysMenu extends TimedBasedEntity {
      * 菜单状态:0显示,1隐藏
      */
     @Search
+    @Option(value = {"0","1"}, message = "菜单状态只能是0，1; 0=显示,1=隐藏")
     @Column(length = 1,nullable = false)
     private String visible;
 

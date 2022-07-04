@@ -1,25 +1,20 @@
 package one.yiran.db.common.service;
 
 import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
-import one.yiran.db.common.annotation.CreateTimeAdvise;
-import one.yiran.db.common.annotation.Search;
-import one.yiran.db.common.annotation.UpdateTimeAdvise;
 import one.yiran.common.domain.PageModel;
 import one.yiran.common.domain.PageRequest;
 import one.yiran.common.exception.BusinessException;
+import one.yiran.db.common.annotation.CreateTimeAdvise;
+import one.yiran.db.common.annotation.UpdateTimeAdvise;
 import one.yiran.db.common.util.PageRequestUtil;
 import one.yiran.db.common.util.PredicateBuilder;
-import one.yiran.db.common.util.PredicateUtil;
 import one.yiran.db.common.util.QClassUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.reflections.Reflections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -32,15 +27,12 @@ import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
@@ -242,7 +234,7 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
     @Transactional
     @Override
     public long deleteByPId(K pId) throws BusinessException {
-        T ent = entityManager.find((Class<T>) tClass, 1);
+        T ent = entityManager.find((Class<T>) tClass, pId);
         entityManager.remove(ent);
         return 1;
     }

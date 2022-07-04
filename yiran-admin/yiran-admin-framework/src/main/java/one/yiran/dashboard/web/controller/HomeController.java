@@ -3,16 +3,11 @@ package one.yiran.dashboard.web.controller;
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
 import one.yiran.dashboard.common.expection.user.UserNotLoginException;
 import one.yiran.dashboard.common.model.AdminSession;
-import one.yiran.dashboard.common.util.StringUtil;
 import one.yiran.dashboard.manage.entity.SysMenu;
-import one.yiran.dashboard.manage.entity.SysPerm;
 import one.yiran.dashboard.manage.security.UserInfoContextHelper;
 import one.yiran.dashboard.manage.service.SysMenuService;
 import one.yiran.dashboard.manage.service.SysPermService;
-import one.yiran.dashboard.manage.service.SysRoleService;
-import one.yiran.dashboard.web.service.ConfigService;
 import one.yiran.dashboard.web.model.WebMenu;
-import one.yiran.dashboard.web.service.PermissionService;
 import one.yiran.dashboard.web.util.MenuUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +25,6 @@ public class HomeController {
     private SysMenuService sysMenuService;
 
     @Autowired
-    private PermissionService permissionService;
-
-    @Autowired
-    private ConfigService configService;
-
-    @Autowired
-    private SysRoleService sysRoleService;
-
-    @Autowired
     private SysPermService sysPermService;
 
     //后台首页菜单获取接口，树形
@@ -50,44 +36,26 @@ public class HomeController {
             throw new UserNotLoginException();
         List<SysMenu> menusList;
         if (user.isAdmin()) {
-            menusList = sysMenuService.selectVisibleMenus();
+            menusList = sysMenuService.selectVisibleTreeMenus(true);
         } else {
-            menusList = sysMenuService.selectVisibleMenusByUser(user.getUserId());
+            menusList = sysMenuService.selectVisibleTreeMenusByUser(user.getUserId(),true);
         }
+
         return MenuUtil.toWebMenu(menusList);
     }
 
     @AjaxWrapper
     @RequestMapping("/perms")
-    public List<Map<String, Object>> perms(ModelMap model) {
+    public List<WebMenu> perms(ModelMap model) {
         AdminSession user = UserInfoContextHelper.getLoginUser();
-        List<SysPerm> list;
+        if(user == null)
+            throw new UserNotLoginException();
+        List<SysMenu> menusList;
         if (user.isAdmin()) {
-            list = sysPermService.selectAll();
+            menusList = sysMenuService.selectVisibleTreeMenus(false);
         } else {
-            list = sysPermService.findPermsByUserId(user.getUserId());
+            menusList = sysMenuService.selectVisibleTreeMenusByUser(user.getUserId(),false);
         }
-        List<Map<String, Object>> retLists = new ArrayList<>();
-        for (SysPerm sysPerm : list) {
-            String group = sysPerm.getPermGroup();
-            String permOperation = sysPerm.getPermOperation();
-
-            boolean exist = retLists.stream().filter(e -> StringUtils.equals(group, (String) e.get("id"))).count() > 0;
-            Map<String, Object> rts;
-            if (!exist) {
-                rts = new HashMap<>();
-                retLists.add(rts);
-                rts.put("id", group);
-                rts.put("operation", new HashSet<>());
-            } else {
-                rts = retLists.stream().filter(e -> StringUtils.equals(group, (String) e.get("id"))).collect(Collectors.toList()).get(0);
-            }
-            if (StringUtil.isNotEmpty(permOperation)) {
-                Set ee = (Set) rts.get("operation");
-                ee.add(permOperation);
-            }
-        }
-        return retLists;
+        return MenuUtil.toWebMenu(menusList);
     }
-
 }

@@ -10,4 +10,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiObject {
     boolean validate() default false;
+    boolean createIfNull() default false;
 }

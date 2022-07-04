@@ -1,6 +1,7 @@
 package one.yiran.dashboard.web.controller.admin;
 
 import one.yiran.common.domain.PageRequest;
+import one.yiran.dashboard.common.annotation.ApiObject;
 import one.yiran.dashboard.manage.dao.RolePermDao;
 import one.yiran.dashboard.manage.entity.SysRolePerm;
 import one.yiran.dashboard.manage.entity.SysRole;
@@ -35,7 +36,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/system/role")
 @AjaxWrapper
 public class RoleAdminController {
-    private String prefix = "system/role";
 
     @Autowired
     private SysRoleService sysRoleService;
@@ -48,7 +48,7 @@ public class RoleAdminController {
 
     @RequirePermission(PermissionConstants.Role.VIEW)
     @PostMapping("/list")
-    public PageModel<SysRole> list(@RequestBody SysRole sysRole, HttpServletRequest request) {
+    public PageModel<SysRole> list(@ApiObject(createIfNull = true) SysRole sysRole, HttpServletRequest request) {
         sysRole.setIsDelete(false);
         PageRequest pageRequest = PageRequestUtil.fromRequest(request);
 //        if(!UserInfoContextHelper.getLoginUser().isHasAllDeptPerm())
@@ -65,7 +65,7 @@ public class RoleAdminController {
     @Log(title = "角色管理", businessType = BusinessType.ADD)
     @RequirePermission(PermissionConstants.Role.ADD)
     @PostMapping("/add")
-    public int addSave(@RequestBody SysRole sysRole) {
+    public int addSave(@ApiObject(validate = true) SysRole sysRole) {
         if (!sysRoleService.checkRoleNameUnique(sysRole)) {
             throw BusinessException.build("新增角色'" + sysRole.getRoleName() + "'失败，角色名称已存在");
         } else if (!sysRoleService.checkRoleKeyUnique(sysRole)) {
@@ -82,7 +82,7 @@ public class RoleAdminController {
     @Log(title = "角色管理", businessType = BusinessType.UPDATE)
     @RequirePermission(PermissionConstants.Role.EDIT)
     @PostMapping("/edit")
-    public int editSave(@RequestBody SysRole sysRole) {
+    public int editSave(@ApiObject(validate = true) SysRole sysRole) {
         if (!sysRoleService.checkRoleNameUnique(sysRole)) {
             throw BusinessException.build("修改角色'" + sysRole.getRoleName() + "'失败，角色名称已存在");
         } else if (!sysRoleService.checkRoleKeyUnique(sysRole)) {
@@ -145,15 +145,6 @@ public class RoleAdminController {
     @AjaxWrapper
     public long cancelAuthUserAll(Long roleId, String userIds) {
         return sysRoleService.deleteAuthUsers(roleId, userIds);
-    }
-
-    /**
-     * 选择用户
-     */
-    @GetMapping("/authUser/selectUser/{roleId}")
-    public String selectUser(@PathVariable("roleId") Long roleId, ModelMap mmap) {
-        mmap.put("role", sysRoleService.selectByPId(roleId));
-        return prefix + "/selectUser";
     }
 
     /**

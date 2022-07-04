@@ -42,14 +42,19 @@ public class ObjectParamTypeParamResolver implements HandlerMethodArgumentResolv
 
 		Type parameterType = parameter.getGenericParameterType();
 		ApiObject apiParam = parameter.getParameterAnnotation(ApiObject.class);
+		if(apiParam == null)
+			return null;
 
 		Object v = ServletRequestUtil.getObjectFromRequest(httpServletRequest, parameterType);
-		if(apiParam != null && apiParam.validate()) {
+		if(apiParam.validate()) {
 			List<String> res = valid(v);
 			if(res.size() > 0) {
 				String msg = String.join(",", res);
 				throw BusinessException.build(msg);
 			}
+		}
+		if(apiParam.createIfNull() && v == null) {
+			return Class.forName(parameterType.getTypeName()).newInstance();
 		}
 		return v;
 	}

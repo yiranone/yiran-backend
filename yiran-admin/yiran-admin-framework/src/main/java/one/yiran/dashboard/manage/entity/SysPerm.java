@@ -3,6 +3,7 @@ package one.yiran.dashboard.manage.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import one.yiran.dashboard.common.annotation.Excel;
+import one.yiran.dashboard.common.annotation.Option;
 import one.yiran.db.common.annotation.Search;
 import one.yiran.db.common.domain.TimedBasedEntity;
 
@@ -65,10 +66,11 @@ public class SysPerm extends TimedBasedEntity {
     /**
      * 权限状态（0正常 1停用）
      */
-    @NotBlank
+    @Option(value = {"0","1"}, message = "状态只能是0，1; 0=正常,1=停用")
+    @NotBlank(message = "状态不能为空")
     @Excel(name = "权限状态", readConverterExp = "0=正常,1=停用")
     @Search
-    @Column
+    @Column(length = 8,nullable = false)
     private String status;
 
     @Transient
