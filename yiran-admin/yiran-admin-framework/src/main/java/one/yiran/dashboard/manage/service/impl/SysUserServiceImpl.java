@@ -497,7 +497,6 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
     private void insertUserRole(Long userId, List<Long> roleIds) {
         if (roleIds != null && roleIds.size() > 0) {
             // 新增用户与角色管理
-            List<SysUserRole> list = new ArrayList<>();
             for (Long roleId : roleIds) {
                 if(sysRoleService.selectByPId(roleId) == null){
                     throw BusinessException.build("角色异常，角色["+roleId+"]不存在");
@@ -505,10 +504,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
                 SysUserRole ur = new SysUserRole();
                 ur.setUserId(userId);
                 ur.setRoleId(roleId);
-                list.add(ur);
-            }
-            if (list.size() > 0) {
-                userRoleDao.saveAll(list);
+                entityManager.persist(ur);
             }
         }
     }
@@ -522,7 +518,6 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
         List<Long> posts = user.getPostIds();
         if (posts != null && posts.size() > 0) {
             // 新增用户与岗位管理
-            List<SysUserPost> list = new ArrayList<>();
             for (Long postId : user.getPostIds()) {
                 if(sysPostService.selectByPId(postId) == null){
                     throw BusinessException.build("岗位异常，岗位["+postId+"]不存在");
@@ -530,10 +525,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
                 SysUserPost up = new SysUserPost();
                 up.setUserId(user.getUserId());
                 up.setPostId(postId);
-                list.add(up);
-            }
-            if (list.size() > 0) {
-                userPostDao.saveAll(list);
+                entityManager.persist(up);
             }
         }
     }
