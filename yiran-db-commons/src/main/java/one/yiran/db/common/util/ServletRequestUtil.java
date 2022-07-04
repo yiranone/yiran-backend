@@ -1,6 +1,7 @@
 package one.yiran.db.common.util;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 
@@ -34,6 +35,12 @@ public class ServletRequestUtil {
         request.setAttribute("REQ_JSON_OBJ",jsonObj);
         if(jsonObj == null)
             return null;
+        if (StringUtils.contains(type.getTypeName(),"[]")) {
+            JSONArray jarr = jsonObj.getJSONArray(name);
+            if(jarr == null)
+                return null;
+            return jarr.toJavaObject(type);
+        }
         return jsonObj.getObject(name,type);
     }
 

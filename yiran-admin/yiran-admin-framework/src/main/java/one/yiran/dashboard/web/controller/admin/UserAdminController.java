@@ -236,7 +236,7 @@ public class UserAdminController {
     @RequirePermission("system:user:role")
     @Log(title = "用户管理", businessType = BusinessType.GRANT)
     @PostMapping("/authRole/insertAuthRole")
-    public void insertAuthRole(Long userId, Long[] roleIds) {
+    public void insertAuthRole(@ApiParam(required = true) Long userId,@ApiParam(required = true) Long[] roleIds) {
         if (roleIds != null && !Arrays.asList(roleIds).contains(1L))
             sysUserService.checkAdminModifyAllowed(new SysUser(userId), "取消授权");
         SysUser user = sysUserService.findUser(userId);
@@ -255,7 +255,7 @@ public class UserAdminController {
     @RequirePermission(PermissionConstants.User.EDIT)
     @Log(title = "状态修改", businessType = BusinessType.UPDATE)
     @PostMapping("/changeStatus")
-    public void changeStatus(SysUser user) {
+    public void changeStatus(@ApiObject SysUser user) {
         sysUserService.checkAdminModifyAllowed(user, "修改状态");
         SysUser u = sysUserService.findUser(user.getUserId());
         UserInfoContextHelper.checkScopePermission(PermissionConstants.User.EDIT, u.getDeptId());
