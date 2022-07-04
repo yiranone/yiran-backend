@@ -40,39 +40,23 @@ public interface SysRoleService extends CrudBaseService<Long, SysRole> {
      * @return 结果
      * @throws Exception 异常
      */
-    public long removeRoleInfo(Long[] ids) throws BusinessException;
+    long removeRoleInfo(Long[] ids) throws BusinessException;
 
-    /**
-     * 新增保存角色信息
-     *
-     * @param sysRole 角色信息
-     * @return 结果
-     */
-    public int insertRole(SysRole sysRole);
+    //保存role和role-perm
+    int insertRole(SysRole sysRole);
 
-    /**
-     * 修改保存角色信息
-     *
-     * @param sysRole 角色信息
-     * @return 结果
-     */
-    public int updateRole(SysRole sysRole);
+    //更新role和role-perm
+    int updateRole(SysRole sysRole);
 
     /**
      * 校验角色名称是否唯一
-     *
-     * @param sysRole 角色信息
-     * @return 结果
      */
-    public boolean checkRoleNameUnique(SysRole sysRole);
+    boolean checkRoleNameUnique(SysRole sysRole);
 
     /**
      * 校验角色权限是否唯一
-     *
-     * @param sysRole 角色信息
-     * @return 结果
      */
-    public boolean checkRoleKeyUnique(SysRole sysRole);
+    boolean checkRoleKeyUnique(SysRole sysRole);
 
     /**
      * 通过角色ID查询角色使用数量
@@ -80,7 +64,14 @@ public interface SysRoleService extends CrudBaseService<Long, SysRole> {
      * @param roleId 角色ID
      * @return 结果
      */
-    public int countUserRoleByRoleId(Long roleId);
+    int countUserRoleByRoleId(Long roleId);
+
+    /**
+     * 查询角色都分配给哪些loginName了
+     * @param roleId
+     * @return
+     */
+    List<String> selectLoginNameUserRoleByRoleId(Long roleId);
 
     /**
      * 角色状态修改
@@ -88,7 +79,7 @@ public interface SysRoleService extends CrudBaseService<Long, SysRole> {
      * @param sysRole 角色信息
      * @return 结果
      */
-    public int changeStatus(SysRole sysRole);
+    int changeStatus(SysRole sysRole);
 
     /**
      * 取消授权用户角色
@@ -96,7 +87,7 @@ public interface SysRoleService extends CrudBaseService<Long, SysRole> {
      * @param sysUserRole 用户和角色关联信息
      * @return 结果
      */
-    public long deleteAuthUser(SysUserRole sysUserRole);
+    long deleteAuthUser(SysUserRole sysUserRole);
 
     /**
      * 批量取消授权用户角色
@@ -105,10 +96,10 @@ public interface SysRoleService extends CrudBaseService<Long, SysRole> {
      * @param userIds 需要删除的用户数据ID
      * @return 结果
      */
-    public long deleteAuthUsers(Long roleId, String userIds);
+    long deleteAuthUsers(Long roleId, String userIds);
 
-    public long deleteAuthUsers(List<Long> roleId, Long userId);
-    public int deleteAuthUsers(Long userId);
+    long deleteAuthUsers(List<Long> roleId, Long userId);
+    int deleteAuthUsers(Long userId);
 
     /**
      * 批量选择授权用户角色
@@ -117,7 +108,7 @@ public interface SysRoleService extends CrudBaseService<Long, SysRole> {
      * @param userIds 需要删除的用户数据ID
      * @return 结果
      */
-    public int insertAuthUsers(Long roleId, String userIds);
+    int insertAuthUsers(Long roleId, String userIds);
 
     void checkRoleAllowed(SysRole sysRole);
 

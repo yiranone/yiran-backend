@@ -37,6 +37,8 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
 
     @Autowired
     private SysUserService sysUserService;
+    @Autowired
+    private SysRoleService sysRoleService;
 
     @Override
     public List<SysRole> selectAllRolesByUserId(Long userId) {
@@ -108,9 +110,13 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
         for (Long roleId : roleIds) {
             SysRole sysRole = selectByPId(roleId);
             checkRoleAllowed(sysRole);
-            if (countUserRoleByRoleId(roleId) > 0) {
-                throw BusinessException.build(String.format("%1$s已分配,不能删除", sysRole.getRoleName()));
+            List<String> loginNames = this.selectLoginNameUserRoleByRoleId(roleId);
+            if(loginNames != null && loginNames.size() >0) {
+                throw BusinessException.build(String.format("角色[%s]已经分配给%s，不能删除",sysRole.getRoleName(),loginNames));
             }
+//            if (countUserRoleByRoleId(roleId) > 0) {
+//                throw BusinessException.build(String.format("角色[%s]已分配,不能删除", sysRole.getRoleName()));
+//            }
             rolePermDao.deleteAllByRoleId(roleId);
         }
         return super.removeByPIds(ids);
@@ -164,6 +170,17 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
     @Override
     public int countUserRoleByRoleId(Long roleId) {
         return userRoleDao.countByRoleId(roleId);
+    }
+
+    @Override
+    public List<String> selectLoginNameUserRoleByRoleId(Long roleId) {
+        QSysUser qSysUser = QSysUser.sysUser;
+        QSysUserRole qSysUserRole = QSysUserRole.sysUserRole;
+        JPAQuery<String> jpa = queryFactory.select(qSysUser.loginName).from(qSysUser)
+                .innerJoin(qSysUserRole)
+                .on(qSysUser.userId.eq(qSysUserRole.userId))
+                .on(qSysUserRole.roleId.eq(roleId));
+        return jpa.fetch();
     }
 
     /**
