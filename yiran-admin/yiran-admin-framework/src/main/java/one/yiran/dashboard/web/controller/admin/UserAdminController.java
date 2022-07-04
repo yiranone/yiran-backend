@@ -20,6 +20,7 @@ import one.yiran.dashboard.manage.entity.SysUserRole;
 import one.yiran.dashboard.manage.security.UserInfoContextHelper;
 import one.yiran.dashboard.manage.security.config.PermissionConstants;
 import one.yiran.dashboard.manage.security.service.PasswordService;
+import one.yiran.dashboard.manage.service.SysChannelService;
 import one.yiran.dashboard.manage.service.SysDeptService;
 import one.yiran.dashboard.manage.service.SysRoleService;
 import one.yiran.dashboard.manage.service.SysUserService;
@@ -58,6 +59,8 @@ public class UserAdminController {
     @Autowired
     private PasswordService passwordService;
 
+    @Autowired
+    private SysChannelService sysChannelService;
 
     @Autowired
     private UserRoleDao userRoleDao;
@@ -102,6 +105,11 @@ public class UserAdminController {
         }
         dbUser.setRoleIds(user.getRoleIds());
         dbUser.setRemark(user.getRemark());
+        if(user.getChannelId() == null) {
+            throw BusinessException.build("渠道号不能为空");
+        }
+        sysChannelService.selectByChannelIdWithCheck(user.getChannelId());
+        dbUser.setChannelId(user.getChannelId());
 
         dbUser.setCreateBy(UserInfoContextHelper.getCurrentLoginName());
         dbUser.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());

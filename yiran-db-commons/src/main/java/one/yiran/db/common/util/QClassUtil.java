@@ -87,7 +87,6 @@ public class QClassUtil {
 
     public static EntityPath getPath(String qFullName){
         String qSimpleName = qFullName.substring(qFullName.lastIndexOf(".") + 1);
-//        String lowerName = qSimpleName.substring(0,1).toLowerCase() + qSimpleName.substring(1);
         String lowerName = qSimpleName.substring(1,2).toLowerCase() + qSimpleName.substring(2);
         return cacheEntityPath(qFullName,lowerName);
     }

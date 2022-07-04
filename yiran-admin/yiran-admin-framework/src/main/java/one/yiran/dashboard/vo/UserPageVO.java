@@ -16,6 +16,7 @@ public class UserPageVO {
     private String userName;
     private String phoneNumber;
     private String status;
+    private String createTime;
     private String updateTime;
     private String createBy;
     private String updateBy;
@@ -25,6 +26,7 @@ public class UserPageVO {
 
     private Long deptId;
     private String deptName;
+    private Long channelId;
 
     public static UserPageVO from(SysUser sysUser) {
         UserPageVO vo = new UserPageVO();
@@ -33,7 +35,9 @@ public class UserPageVO {
         vo.setUserName(sysUser.getUserName());
         vo.setPhoneNumber(sysUser.getPhoneNumber());
         vo.setDeptId(sysUser.getDeptId());
+        vo.setChannelId(sysUser.getChannelId());
         vo.setStatus(sysUser.getStatus());
+        vo.setCreateTime(DateUtil.dateTime(sysUser.getCreateTime()));
         vo.setUpdateTime(DateUtil.dateTime(sysUser.getUpdateTime()));
         vo.setCreateBy(sysUser.getCreateBy());
         vo.setUpdateBy(sysUser.getUpdateBy());
