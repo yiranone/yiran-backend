@@ -135,8 +135,8 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
         Assert.notNull(sysRole.getRoleId(), "roleId cant be null");
         roleDao.save(sysRole);
         long deletedRolePermSize = rolePermDao.deleteAllByRoleId(sysRole.getRoleId());
+        entityManager.flush(); //保证上面的delete先执行
         log.info("清理原有角色数量{} 新增数量{}",deletedRolePermSize,sysRole.getPermIds().size());
-        rolePermDao.flush();
         return insertRolePerm(sysRole.getRoleId(), sysRole.getPermIds());
     }
 
@@ -292,19 +292,13 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
     }
 
     private int insertRolePerm(Long roleId, List<Long> permIds) {
-        int rows = 1;
-        List<SysRolePerm> list = new ArrayList<>();
         for (Long permId : permIds) {
             SysRolePerm rm = new SysRolePerm();
             rm.setRoleId(roleId);
             rm.setPermId(permId);
-            list.add(rm);
+            entityManager.persist(rm);
         }
-        if (list.size() > 0) {
-            List<SysRolePerm> rm = rolePermDao.saveAll(list);
-            rows = rm.size();
-        }
-        return rows;
+        return permIds.size();
     }
 
     /**

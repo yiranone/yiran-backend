@@ -68,6 +68,7 @@ public class RoleAdminController {
         } else if (!sysRoleService.checkRoleKeyUnique(sysRole)) {
             throw BusinessException.build("新增角色'" + sysRole.getRoleName() + "'失败，角色权限已存在");
         }
+        sysRole.setRoleId(null);
         if (StringUtils.isBlank(sysRole.getStatus())) {
             sysRole.setStatus("0");
         }

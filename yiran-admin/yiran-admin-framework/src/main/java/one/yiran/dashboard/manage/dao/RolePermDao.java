@@ -10,8 +10,10 @@ import java.util.List;
 @Repository
 public interface RolePermDao extends BaseDao<SysRolePerm, Long> {
 
+    @Modifying(flushAutomatically = true,clearAutomatically = true)
     long deleteAllByRoleId(Long roleId);
 
+    @Modifying(flushAutomatically = true,clearAutomatically = true)
     long deleteAllByRoleIdAndPermIdIn(Long roleId, List<Long> permIds);
 
     long countByRoleIdAndPermId(Long roleId, Long permId);
