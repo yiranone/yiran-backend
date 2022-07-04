@@ -157,7 +157,6 @@ public class UserAdminController {
         dbUser.setRemark(user.getRemark());
         dbUser.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
 
-        sysUserService.checkAdminModifyAllowed(user, "修改");
         return UserConvertUtil.convert(sysUserService.saveUserAndPerms(dbUser));
     }
 

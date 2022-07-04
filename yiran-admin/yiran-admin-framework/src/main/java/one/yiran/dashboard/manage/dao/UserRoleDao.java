@@ -11,11 +11,11 @@ import java.util.List;
 @Repository
 public interface UserRoleDao extends BaseDao<SysUserRole, Long> {
 
-    @Modifying
+    @Modifying(clearAutomatically = true,flushAutomatically = true)
     @Query("delete from SysUserRole where userId = ?1")
     int deleteAllByUserId(Long userId);
 
-    @Modifying
+    @Modifying(clearAutomatically = true,flushAutomatically = true)
     @Query("delete from SysUserRole where userId = ?1 and roleId = ?2")
     long deleteAllByUserIdAndRoleId(Long userId, Long roleId);
 

@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -109,7 +110,21 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
     @Transactional
     @Override
     public SysUser saveUserAndPerms(SysUser user) throws BusinessException {
-        checkAdminModifyAllowed(user,"操作");
+        //checkAdminModifyAllowed(user,"操作");
+        SysUser db = findUser(user.getUserId());
+        if(db.isAdmin()) {
+            List<SysUserRole> userRoleList = userRoleDao.findAllByUserId(db.getUserId());
+            List<Long> roleIds = userRoleList.stream().map(t -> t.getRoleId()).collect(Collectors.toList());
+            if(user.getRoleIds() == null || !user.getRoleIds().containsAll(roleIds)){
+                throw BusinessException.build("超级用户的角色不能修改");
+            }
+            if(user.getDeptId() == null || user.getDeptId().longValue() != db.getDeptId().longValue()) {
+                throw BusinessException.build("超级用户的部门不能修改");
+            }
+            if(user.getStatus() == null || !user.getStatus().equals(db.getStatus())) {
+                throw BusinessException.build("超级用户的状态不能修改");
+            }
+        }
         saveUser(user);
         doUserPerms(user);
         return user;
