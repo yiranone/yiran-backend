@@ -77,6 +77,9 @@ public class MemberController {
 
         SysChannel channel = channelService.selectByPId(channelId);
         db.setChannelId(channelId);
+        if(memberService.selectByPhone(db.getChannelId(),db.getPhone()) != null ){
+            throw BusinessException.build("手机号已经存在");
+        }
         db = memberService.insert(db);
 
         return MemberVO.from(db,channel);
@@ -104,6 +107,11 @@ public class MemberController {
         db.setName(member.getName());
 
         db.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
+
+        Member check = memberService.selectByPhone(db.getChannelId(),db.getPhone());
+        if(check != null && !check.getMemberId().equals(db.getMemberId()))
+            throw BusinessException.build("手机号已经存在");
+
         db = memberService.update(db);
         SysChannel channel = channelService.selectByPId(db.getChannelId());
 
