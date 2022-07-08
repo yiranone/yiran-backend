@@ -52,7 +52,7 @@ public class PermAdminController {
         return sysPermService.removePerm(permIds);
     }
 
-    @Log(title = "权限管理", businessType = BusinessType.UPDATE)
+    @Log(title = "权限管理", businessType = BusinessType.EDIT)
     @RequirePermission(PermissionConstants.Perm.EDIT)
     @PostMapping("/edit")
     public int editSave(@Validated @RequestBody SysPerm sysPerm) {

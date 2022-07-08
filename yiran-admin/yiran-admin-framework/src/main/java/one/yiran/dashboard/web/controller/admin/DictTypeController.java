@@ -72,7 +72,7 @@ public class DictTypeController {
         return sysDictTypeService.insertDictType(dict);
     }
 
-    @Log(title = "字典类型", businessType = BusinessType.UPDATE)
+    @Log(title = "字典类型", businessType = BusinessType.EDIT)
     @RequirePermission(PermissionConstants.Dict.EDIT)
     @PostMapping("/edit")
     public SysDictType editSave(@Validated @RequestBody SysDictType bean) {

@@ -69,7 +69,7 @@ public class PostAdminController {
     }
 
     @RequirePermission(PermissionConstants.Post.EDIT)
-    @Log(title = "岗位管理", businessType = BusinessType.UPDATE)
+    @Log(title = "岗位管理", businessType = BusinessType.EDIT)
     @PostMapping("/edit")
     public SysPost editSave(@Validated SysPost sysPost) {
         if (!sysPostService.checkPostNameUnique(sysPost)) {

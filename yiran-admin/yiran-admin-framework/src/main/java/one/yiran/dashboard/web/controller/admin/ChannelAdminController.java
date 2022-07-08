@@ -1,6 +1,5 @@
 package one.yiran.dashboard.web.controller.admin;
 
-import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Predicate;
 import one.yiran.common.domain.PageModel;
 import one.yiran.common.exception.BusinessException;
@@ -17,7 +16,6 @@ import one.yiran.dashboard.manage.security.config.PermissionConstants;
 import one.yiran.dashboard.manage.service.SysChannelService;
 import one.yiran.db.common.util.PageRequestUtil;
 import one.yiran.db.common.util.PredicateBuilder;
-import one.yiran.db.common.util.PredicateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -25,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -81,7 +78,7 @@ public class ChannelAdminController {
     }
 
     @RequirePermission(PermissionConstants.Channel.EDIT)
-    @Log(title = PermissionConstants.Channel.NAME, businessType = BusinessType.UPDATE)
+    @Log(title = PermissionConstants.Channel.NAME, businessType = BusinessType.EDIT)
     @PostMapping("/edit")
     @AjaxWrapper
     public SysChannel editSave(@Validated @RequestBody SysChannel channel) {

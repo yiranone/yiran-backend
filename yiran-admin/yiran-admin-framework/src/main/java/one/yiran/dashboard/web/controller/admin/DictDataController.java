@@ -54,7 +54,7 @@ public class DictDataController {
         return sysDictDataService.insert(dict);
     }
 
-    @Log(title = "字典数据", businessType = BusinessType.UPDATE)
+    @Log(title = "字典数据", businessType = BusinessType.EDIT)
     @RequirePermission(PermissionConstants.Dict.EDIT)
     @PostMapping("/edit")
     public SysDictData editSave(@Validated @RequestBody SysDictData dict) {

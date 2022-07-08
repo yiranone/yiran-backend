@@ -95,11 +95,16 @@ public class PredicateBuilder {
                     }
                     if (value != null) {
                         Field pathField = FieldUtils.getDeclaredField(path.getClass(), f.getName(), true);
+                        if(pathField == null) {
+                            log.info("path:{} 不存在 field:{}",path.getClass(),f.getName());
+                            continue;
+                        }
                         Path pathValue = null;
                         try {
                             pathValue = (Path) FieldUtils.readField(pathField, path);
                         } catch (IllegalAccessException e) {
-                            log.error("", e);
+                            log.error("系统错误", e);
+                            continue;
                         }
 
                         if (op.equals(Search.Op.IS)) {

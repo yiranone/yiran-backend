@@ -1,5 +1,7 @@
 package one.yiran.dashboard.resolver;
 
+import com.oracle.tools.packager.Log;
+import lombok.extern.slf4j.Slf4j;
 import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.common.annotation.ApiChannel;
 import one.yiran.dashboard.common.constants.Global;
@@ -19,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  *
  */
+@Slf4j
 public class ApiChannelParamResolver implements HandlerMethodArgumentResolver {
 
 	@Autowired
@@ -42,8 +45,10 @@ public class ApiChannelParamResolver implements HandlerMethodArgumentResolver {
 		boolean required = apiChannel.required();
 		String channelCode = httpServletRequest.getHeader(Global.getChannelKey());
 		if (StringUtils.isBlank(channelCode)) {
-			if(required)
+			if(required) {
+				log.info("渠道号没有传，接口:{}",httpServletRequest.getRequestURI());
 				throw BusinessException.build("渠道号没传");
+			}
 			return null;
 		}
 		SysChannel channel = channelService.selectByChannelCode(channelCode);

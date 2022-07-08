@@ -2,6 +2,7 @@ package com.biz.controller;
 
 import com.biz.entity.Member;
 import com.biz.service.MemberService;
+import com.biz.service.u.MemberPasswordService;
 import com.biz.vo.MemberVO;
 import one.yiran.common.domain.PageModel;
 import one.yiran.common.domain.PageRequest;
@@ -13,9 +14,7 @@ import one.yiran.dashboard.common.expection.user.UserNotFoundException;
 import one.yiran.dashboard.manage.entity.SysChannel;
 import one.yiran.dashboard.manage.security.UserInfoContextHelper;
 import one.yiran.dashboard.manage.security.config.PermissionConstants;
-import one.yiran.dashboard.manage.security.service.PasswordService;
 import one.yiran.dashboard.manage.service.SysChannelService;
-import one.yiran.dashboard.vo.ChannelVO;
 import one.yiran.dashboard.common.util.WrapUtil;
 import one.yiran.db.common.util.PageRequestUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -41,7 +40,7 @@ public class MemberController {
     private SysChannelService channelService;
 
     @Autowired
-    private PasswordService passwordService;
+    private MemberPasswordService passwordService;
 
     @RequirePermission(PermissionConstants.Member.VIEW)
     @RequestMapping("/list")
@@ -83,7 +82,7 @@ public class MemberController {
         return MemberVO.from(db,channel);
     }
 
-    @Log(title = "会员管理", businessType = BusinessType.UPDATE)
+    @Log(title = "会员管理", businessType = BusinessType.EDIT)
     @RequirePermission(PermissionConstants.User.EDIT)
     @PostMapping("edit")
     public MemberVO editUser(@ApiObject(validate = true) MemberVO member,
@@ -101,7 +100,6 @@ public class MemberController {
         }
         db.setStatus(member.getStatus());
         db.setStatus(member.getStatus());
-        db.setIsDelete(false);
         db.setPhone(member.getPhone());
         db.setName(member.getName());
 
@@ -121,12 +119,32 @@ public class MemberController {
 
     @RequirePermission(PermissionConstants.Member.VIEW)
     @PostMapping("/detail")
-    public MemberVO detail(@ApiChannel ChannelVO channelVO,
-                           @ApiParam(required = true) Long memberId) {
+    public MemberVO detail(@ApiParam(required = true) Long memberId) {
         Member db =  memberService.selectByPId(memberId);
         if (db == null)
             throw new UserNotFoundException();
-        SysChannel channel = channelService.selectByPId(channelVO.getChannelId());
+
+        SysChannel channel = channelService.selectByPId(db.getChannelId());
+        return MemberVO.from(db,channel);
+    }
+
+    @Log(title = "会员管理", businessType = BusinessType.EDIT)
+    @RequirePermission(PermissionConstants.User.EDIT)
+    @PostMapping("resetPassword")
+    public MemberVO resetPassword(@ApiParam(required = true) Long memberId,
+                             @ApiParam(required = true) String password) {
+        Member db = memberService.selectByPId(memberId);
+        if (db == null) {
+            throw BusinessException.build("会员不存在");
+        }
+        db.setSalt(Global.getSalt());
+        db.setPassword(passwordService.encryptPassword(password, Global.getSalt()));
+        db.setPasswordUpdateTime(new Date());
+
+        db.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
+        db = memberService.update(db);
+        SysChannel channel = channelService.selectByPId(db.getChannelId());
+
         return MemberVO.from(db,channel);
     }
 

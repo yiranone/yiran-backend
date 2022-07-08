@@ -14,7 +14,6 @@ import one.yiran.dashboard.common.annotation.RequirePermission;
 import one.yiran.db.common.util.PageRequestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -72,7 +71,7 @@ public class MenuAdminController {
     /**
      * 修改保存菜单
      */
-    @Log(title = "菜单管理", businessType = BusinessType.UPDATE)
+    @Log(title = "菜单管理", businessType = BusinessType.EDIT)
     @RequirePermission(PermissionConstants.Menu.EDIT)
     @PostMapping("/edit")
     public int editSave(@ApiObject(validate = true) SysMenu sysMenu) {

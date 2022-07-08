@@ -43,7 +43,7 @@ public class NoticeAdminController {
     }
 
     @RequirePermission(PermissionConstants.Notice.EDIT)
-    @Log(title = "通知公告", businessType = BusinessType.UPDATE)
+    @Log(title = "通知公告", businessType = BusinessType.EDIT)
     @PostMapping("/edit")
     @AjaxWrapper
     public SysNotice editSave(@Validated @RequestBody SysNotice sysNotice) {

@@ -13,7 +13,6 @@ import one.yiran.dashboard.common.util.ExcelUtil;
 import one.yiran.dashboard.common.annotation.RequirePermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,7 +56,7 @@ public class ConfigAdminController {
     }
 
     @RequirePermission(PermissionConstants.Config.EDIT)
-    @Log(title = "参数管理", businessType = BusinessType.UPDATE)
+    @Log(title = "参数管理", businessType = BusinessType.EDIT)
     @PostMapping("/edit")
     @AjaxWrapper
     public SysConfig editSave(SysConfig sysConfig) {

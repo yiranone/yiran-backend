@@ -18,7 +18,7 @@ public enum BusinessType {
     /**
      * 修改
      */
-    UPDATE(2,"修改"),
+    EDIT(2,"修改"),
 
     /**
      * 删除

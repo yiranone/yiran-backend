@@ -20,12 +20,10 @@ import one.yiran.dashboard.common.util.ExcelUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -77,7 +75,7 @@ public class RoleAdminController {
         return sysRoleService.insertRole(sysRole);
     }
 
-    @Log(title = "角色管理", businessType = BusinessType.UPDATE)
+    @Log(title = "角色管理", businessType = BusinessType.EDIT)
     @RequirePermission(PermissionConstants.Role.EDIT)
     @PostMapping("/edit")
     public int editSave(@ApiObject(validate = true) SysRole sysRole) {
@@ -113,7 +111,7 @@ public class RoleAdminController {
         return sysRoleService.findDetailById(roleId);
     }
 
-    @Log(title = "角色管理", businessType = BusinessType.UPDATE)
+    @Log(title = "角色管理", businessType = BusinessType.EDIT)
     @RequirePermission(PermissionConstants.Role.EDIT)
     @PostMapping("/changeStatus")
     public int changeStatus(@ApiObject SysRole sysRole) {

@@ -117,7 +117,7 @@ public class UserAdminController {
         return UserConvertUtil.convert(sysUserService.saveUserAndPerms(dbUser));
     }
 
-    @Log(title = "用户管理", businessType = BusinessType.UPDATE)
+    @Log(title = "用户管理", businessType = BusinessType.EDIT)
     @RequirePermission(PermissionConstants.User.EDIT)
     @PostMapping("edit")
     public AdminSession editUser(@ApiObject(validate = true) SysUser user) {
@@ -211,7 +211,7 @@ public class UserAdminController {
 
 
     @RequirePermission(PermissionConstants.User.RESET_PWD)
-    @Log(title = "重置密码", businessType = BusinessType.UPDATE)
+    @Log(title = "重置密码", businessType = BusinessType.EDIT)
     @PostMapping("/resetPwd")
     public void resetPwd(@ApiParam(required = true) Long userId,
                          @ApiParam(required = true) String password) {
@@ -253,7 +253,7 @@ public class UserAdminController {
      * 用户状态修改
      */
     @RequirePermission(PermissionConstants.User.EDIT)
-    @Log(title = "状态修改", businessType = BusinessType.UPDATE)
+    @Log(title = "状态修改", businessType = BusinessType.EDIT)
     @PostMapping("/changeStatus")
     public void changeStatus(@ApiObject SysUser user) {
         sysUserService.checkAdminModifyAllowed(user, "修改状态");

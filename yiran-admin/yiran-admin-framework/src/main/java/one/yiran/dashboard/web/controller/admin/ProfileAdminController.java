@@ -48,7 +48,7 @@ public class ProfileAdminController {
         return false;
     }
 
-    @Log(title = "修改密码", businessType = BusinessType.UPDATE)
+    @Log(title = "修改密码", businessType = BusinessType.EDIT)
     @PostMapping("/modifyPwd")
     @RequireUserLogin
     public void modifyPwd(@ApiParam(required = true) String oldPassword,@ApiParam(required = true) String newPassword) {
@@ -66,7 +66,7 @@ public class ProfileAdminController {
         }
     }
 
-    @Log(title = "重置支付密码", businessType = BusinessType.UPDATE)
+    @Log(title = "重置支付密码", businessType = BusinessType.EDIT)
     @PostMapping("/resetAssertPwd")
     @RequireUserLogin
     public void resetAssertPwd(@ApiParam(required = true) String token,
@@ -112,7 +112,7 @@ public class ProfileAdminController {
      * 修改用户
      */
     @RequireUserLogin
-    @Log(title = "个人信息", businessType = BusinessType.UPDATE)
+    @Log(title = "个人信息", businessType = BusinessType.EDIT)
     @PostMapping("/update")
     public void update(String userName, String phoneNumber, String email, String sex) {
         AdminSession loginUser = UserInfoContextHelper.getLoginUser();
@@ -123,7 +123,7 @@ public class ProfileAdminController {
      * 保存头像
      */
     @RequireUserLogin
-    @Log(title = "个人头像", businessType = BusinessType.UPDATE)
+    @Log(title = "个人头像", businessType = BusinessType.EDIT)
     @PostMapping("/updateAvatar")
     public void updateAvatar(@RequestParam("avatarfile") MultipartFile file) {
         AdminSession loginUser = UserInfoContextHelper.getLoginUser();
