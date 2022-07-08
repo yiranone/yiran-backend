@@ -113,8 +113,8 @@ public class MemberController {
     @Log(title = "用户管理", businessType = BusinessType.DELETE)
     @RequirePermission(PermissionConstants.User.REMOVE)
     @PostMapping("/remove")
-    public Map<String, Object> remove(@ApiParam(required = true) Long[] memberIds) {
-        return WrapUtil.wrap("deleteCount",memberService.deleteByPIds(memberIds));
+    public Map<String, Object> remove(@ApiParam(required = true) Long[] ids) {
+        return WrapUtil.wrap("deleteCount",memberService.deleteByPIds(ids));
     }
 
     @RequirePermission(PermissionConstants.Member.VIEW)
