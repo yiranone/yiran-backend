@@ -24,6 +24,7 @@ public class MemberVO {
     private String updateTime;
     private String createBy;
     private String updateBy;
+    private Boolean isDelete;
 
     private Long tokenExpires; //token过期时间 毫秒
 

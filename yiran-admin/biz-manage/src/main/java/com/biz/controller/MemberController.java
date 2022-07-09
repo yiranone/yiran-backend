@@ -44,10 +44,11 @@ public class MemberController {
 
     @RequirePermission(PermissionConstants.Member.VIEW)
     @RequestMapping("/list")
-    public PageModel<MemberVO> list(@ApiObject MemberVO memberVO,
+    public PageModel<MemberVO> list(@ApiObject(createIfNull = true) MemberVO memberVO,
                                     @ApiParam String deptName, HttpServletRequest request) {
         PageRequest pageRequest = PageRequestUtil.fromRequest(request);
         Long channelId = UserInfoContextHelper.getChannelId();
+        memberVO.setIsDelete(false);
         PageModel pe = memberService.selectPageDetail(pageRequest, memberVO, channelId);
         return pe;
     }
