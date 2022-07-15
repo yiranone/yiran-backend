@@ -7,14 +7,12 @@ import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.common.annotation.*;
 import one.yiran.dashboard.common.constants.BusinessType;
 import one.yiran.dashboard.common.constants.Global;
-import one.yiran.dashboard.common.expection.user.UserHasNotPermissionException;
 import one.yiran.dashboard.common.expection.user.UserNotFoundException;
-import one.yiran.dashboard.common.model.AdminSession;
+import one.yiran.dashboard.common.model.UserSession;
 import one.yiran.dashboard.common.util.ExcelUtil;
 import one.yiran.dashboard.common.util.UserConvertUtil;
 import one.yiran.dashboard.manage.dao.UserRoleDao;
 import one.yiran.dashboard.manage.entity.SysDept;
-import one.yiran.dashboard.manage.entity.SysRole;
 import one.yiran.dashboard.manage.entity.SysUser;
 import one.yiran.dashboard.manage.entity.SysUserRole;
 import one.yiran.dashboard.manage.security.UserInfoContextHelper;
@@ -77,7 +75,7 @@ public class UserAdminController {
     @Log(title = "用户管理", businessType = BusinessType.ADD)
     @RequirePermission(PermissionConstants.User.ADD)
     @PostMapping("/add")
-    public AdminSession addAdmin(@ApiObject(validate = true) SysUser user) {
+    public UserSession addAdmin(@ApiObject(validate = true) SysUser user) {
 //        UserInfoContextHelper.getLoginUser().checkScopePermission(PermissionConstants.User.ADD,user.getDeptId());
         checkUserFields(user);
         SysUser dbUser = new SysUser();
@@ -120,7 +118,7 @@ public class UserAdminController {
     @Log(title = "用户管理", businessType = BusinessType.EDIT)
     @RequirePermission(PermissionConstants.User.EDIT)
     @PostMapping("edit")
-    public AdminSession editUser(@ApiObject(validate = true) SysUser user) {
+    public UserSession editUser(@ApiObject(validate = true) SysUser user) {
 //        UserInfoContextHelper.checkScopePermission(PermissionConstants.User.EDIT,user.getDeptId());
         if (user == null) {
             throw BusinessException.build("user不能为空");

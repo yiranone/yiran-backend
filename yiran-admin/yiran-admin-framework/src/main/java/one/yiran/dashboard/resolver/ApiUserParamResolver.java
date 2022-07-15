@@ -1,7 +1,7 @@
 package one.yiran.dashboard.resolver;
 
 import one.yiran.dashboard.common.annotation.ApiSessionAdmin;
-import one.yiran.dashboard.common.model.AdminSession;
+import one.yiran.dashboard.common.model.UserSession;
 import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.common.util.UserCacheUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +37,7 @@ public class ApiUserParamResolver implements HandlerMethodArgumentResolver {
 			return null;
 		}
 
-		AdminSession u = UserCacheUtil.getSessionInfo(token);
+		UserSession u = UserCacheUtil.getSessionInfo(token);
 		return u;
 	}
 }

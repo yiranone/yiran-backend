@@ -3,7 +3,7 @@ package one.yiran.dashboard.manage.aspect;
 import com.alibaba.fastjson.JSON;
 import one.yiran.dashboard.common.constants.UserConstants;
 import one.yiran.dashboard.common.model.MemberSession;
-import one.yiran.dashboard.common.model.AdminSession;
+import one.yiran.dashboard.common.model.UserSession;
 import one.yiran.dashboard.common.annotation.Log;
 import one.yiran.dashboard.common.constants.SystemConstants;
 import one.yiran.dashboard.common.util.MemberCacheUtil;
@@ -22,8 +22,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
@@ -57,7 +55,7 @@ public class LogAspect {
             }
 
             // 获取当前的用户
-            AdminSession currentUser = UserInfoContextHelper.getLoginUser();
+            UserSession currentUser = UserInfoContextHelper.getLoginUser();
 
             HttpServletRequest request = ServletUtil.getRequest();
             MemberSession memberSession = MemberCacheUtil.getSessionInfo(request);

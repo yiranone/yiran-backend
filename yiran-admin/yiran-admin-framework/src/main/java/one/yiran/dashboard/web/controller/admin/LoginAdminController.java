@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
 import one.yiran.dashboard.common.annotation.ApiParam;
 import one.yiran.common.exception.BusinessException;
-import one.yiran.dashboard.common.model.AdminSession;
+import one.yiran.dashboard.common.model.UserSession;
 import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.common.constants.ShiroConstants;
 import one.yiran.dashboard.common.constants.SystemConstants;
@@ -55,7 +55,7 @@ public class LoginAdminController {
 
     @PostMapping("/login")
     @AjaxWrapper
-    public AdminSession ajaxLogin(@ApiParam String username, @ApiParam String password) {
+    public UserSession ajaxLogin(@ApiParam String username, @ApiParam String password) {
         if(Global.isDebugMode()) {
             String debugUserName = Global.getDebugLoginName();
             String debugPassword = Global.getDebugPassword();
@@ -71,7 +71,7 @@ public class LoginAdminController {
             }
             log.info("DebugMode用户{}登陆成功",username);
             String randomKey = RandomStringUtils.randomAscii(32);
-            AdminSession ui = UserConvertUtil.convert(user);
+            UserSession ui = UserConvertUtil.convert(user);
             UserCacheUtil.setSessionInfo(randomKey,ui);
             return ui;
         }
@@ -129,7 +129,7 @@ public class LoginAdminController {
         AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, SystemConstants.LOGIN_SUCCESS, MessageUtil.message("user.login.success")));
         user = sysUserService.recordLoginIp(user.getUserId(), UserInfoContextHelper.getIp());
         String randomKey = RandomStringUtils.randomAlphanumeric(38);
-        AdminSession ui = UserConvertUtil.convert(user);
+        UserSession ui = UserConvertUtil.convert(user);
 
         //设置用户的来源系统
         ui.setChannelId(user.getChannelId());
@@ -158,7 +158,7 @@ public class LoginAdminController {
 
     @GetMapping("/logout")
     public void logout(HttpServletRequest request) {
-        AdminSession user = UserCacheUtil.getSessionInfo(request);
+        UserSession user = UserCacheUtil.getSessionInfo(request);
         if (user != null) {
             String loginName = user.getLoginName();
             // 记录用户退出日志

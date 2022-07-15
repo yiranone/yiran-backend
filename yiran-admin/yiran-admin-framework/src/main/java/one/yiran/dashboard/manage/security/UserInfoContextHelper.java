@@ -1,7 +1,7 @@
 package one.yiran.dashboard.manage.security;
 
 import one.yiran.common.exception.BusinessException;
-import one.yiran.dashboard.common.model.AdminSession;
+import one.yiran.dashboard.common.model.UserSession;
 import one.yiran.dashboard.common.util.UserCacheUtil;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -41,13 +41,13 @@ public class UserInfoContextHelper {
         return getLoginUser() == null ? null : getLoginUser().getPhoneNumber();
     }
 
-    public static AdminSession getLoginUser() {
+    public static UserSession getLoginUser() {
         HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
         Object o = request.getAttribute("YIRAN_LOGIN_USER");
         if(o != null) {
-            return (AdminSession)o;
+            return (UserSession)o;
         }
-        AdminSession user = UserCacheUtil.getSessionInfo(request);
+        UserSession user = UserCacheUtil.getSessionInfo(request);
         request.setAttribute("YIRAN_LOGIN_USER", user);
         return user;
     }

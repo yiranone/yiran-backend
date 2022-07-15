@@ -3,7 +3,7 @@ package one.yiran.dashboard.manage.interceptor;
 import lombok.extern.slf4j.Slf4j;
 import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.common.annotation.RequirePermission;
-import one.yiran.dashboard.common.model.AdminSession;
+import one.yiran.dashboard.common.model.UserSession;
 import one.yiran.dashboard.common.annotation.RequireUserLogin;
 import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.common.expection.user.UserNotLoginException;
@@ -47,7 +47,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
             throw new UserNotLoginException();
         }
 
-        AdminSession session = null;
+        UserSession session = null;
         if((session = UserCacheUtil.getSessionInfo(token)) == null) {
             throw new UserNotLoginException("用户未登录,或者登录已经过期");
         } else if (session.getIsLocked() == Boolean.TRUE) {

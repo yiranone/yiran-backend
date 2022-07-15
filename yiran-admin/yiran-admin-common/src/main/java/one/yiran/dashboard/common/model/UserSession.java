@@ -10,7 +10,7 @@ import java.util.*;
 
 @Getter
 @Setter
-public class AdminSession implements Serializable {
+public class UserSession implements Serializable {
 
     static final long serialVersionUID = 1L;
 
@@ -48,7 +48,7 @@ public class AdminSession implements Serializable {
 
     private boolean isAdmin = false;
 
-    public AdminSession() {
+    public UserSession() {
 
     }
 
@@ -61,7 +61,7 @@ public class AdminSession implements Serializable {
     @JSONField(serialize = false,deserialize = false)
     private Map<String,Set<Long>> scopes = new HashMap<>();
 
-    public AdminSession addScopeData(String perm, Long deptId){
+    public UserSession addScopeData(String perm, Long deptId){
         if(StringUtils.isBlank(perm) || deptId == null)
             return this;
         Set<Long> s = scopes.get(perm);
@@ -75,7 +75,7 @@ public class AdminSession implements Serializable {
         return this;
     }
 
-    public AdminSession addScopeData(String perm, List<Long> deptId){
+    public UserSession addScopeData(String perm, List<Long> deptId){
         for(Long id: deptId){
             addScopeData(perm,id);
         }
@@ -104,13 +104,13 @@ public class AdminSession implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof AdminSession) {
+        if (o instanceof UserSession) {
 
             if (o == this) {
                 return true;
             }
 
-            AdminSession anotherUser = (AdminSession) o;
+            UserSession anotherUser = (UserSession) o;
             return userId.equals(anotherUser.userId);
         } else {
             return false;

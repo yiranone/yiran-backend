@@ -1,11 +1,11 @@
 package one.yiran.dashboard.common.util;
 
-import one.yiran.dashboard.common.model.AdminSession;
+import one.yiran.dashboard.common.model.UserSession;
 import one.yiran.dashboard.manage.entity.SysUser;
 
 public class MemberConvertUtil {
-    public static AdminSession convert(SysUser sysUser) {
-        AdminSession u = new AdminSession();
+    public static UserSession convert(SysUser sysUser) {
+        UserSession u = new UserSession();
         if (sysUser != null) {
             u.setUserId(sysUser.getUserId());
             u.setLoginName(sysUser.getLoginName());
