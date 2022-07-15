@@ -2,12 +2,10 @@ package one.yiran.dashboard.manage.service.impl;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import lombok.extern.slf4j.Slf4j;
+import one.yiran.dashboard.common.expection.user.UserNotFoundException;
+import one.yiran.dashboard.manage.dao.*;
 import one.yiran.dashboard.manage.entity.*;
-import one.yiran.dashboard.manage.dao.PermDao;
 import one.yiran.dashboard.manage.service.SysUserService;
-import one.yiran.dashboard.manage.dao.RoleDao;
-import one.yiran.dashboard.manage.dao.RolePermDao;
-import one.yiran.dashboard.manage.dao.UserRoleDao;
 import one.yiran.db.common.service.CrudBaseServiceImpl;
 import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.manage.service.SysRoleService;
@@ -25,6 +23,9 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
 
     @Autowired
     private RoleDao roleDao;
+
+    @Autowired
+    private UserDao userDao;
 
     @Autowired
     private UserRoleDao userRoleDao;
@@ -199,18 +200,15 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
 
     /**
      * 取消授权用户角色
-     *
-     * @param sysUserRole 用户和角色关联信息
-     * @return 结果
      */
     @Override
-    public long deleteAuthUser(SysUserRole sysUserRole) {
-        Assert.notNull(sysUserRole.getUserId(), "userId cant be null");
-        Assert.notNull(sysUserRole.getRoleId(), "roleId cant be null");
-        if(sysUserRole.getRoleId().equals(1L)) {
-            sysUserService.checkAdminModifyAllowed(new SysUser(sysUserRole.getUserId()), "取消授权");
+    public long deleteAuthUser(Long userId, Long roleId) {
+        Assert.notNull(userId, "userId cant be null");
+        Assert.notNull(roleId, "roleId cant be null");
+        if(roleId.equals(1L)) {
+            sysUserService.checkAdminModifyAllowed(new SysUser(userId), "取消授权");
         }
-        return userRoleDao.deleteAllByUserIdAndRoleId(sysUserRole.getUserId(), sysUserRole.getRoleId());
+        return userRoleDao.deleteAllByUserIdAndRoleId(userId, roleId);
     }
 
     /**
@@ -256,11 +254,18 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
      * @return 结果
      */
     @Override
-    public int insertAuthUsers(Long roleId, String userIds) {
-        Long[] users = Convert.toLongArray(userIds);
+    public int insertAuthUsers(Long roleId, Long[] userIds) {
+        Assert.notNull(roleId, "roleId cant be null");
+        Assert.notNull(userIds, "userIds cant be null");
+        if(roleDao.findByRoleId(roleId) == null ) {
+            throw BusinessException.build("角色不存在roleId:"+ roleId);
+        }
         // 新增用户与角色管理
-        List<SysUserRole> list = new ArrayList<SysUserRole>();
-        for (Long userId : users) {
+        List<SysUserRole> list = new ArrayList<>();
+        for (Long userId : userIds) {
+            if(userDao.findByUserId(userId) == null ) {
+                throw UserNotFoundException.build("用户不存在userId:"+ userId);
+            }
             SysUserRole ur = new SysUserRole();
             ur.setUserId(userId);
             ur.setRoleId(roleId);

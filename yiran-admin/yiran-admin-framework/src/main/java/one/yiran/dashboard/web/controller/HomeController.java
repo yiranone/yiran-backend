@@ -1,6 +1,7 @@
 package one.yiran.dashboard.web.controller;
 
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
+import one.yiran.dashboard.common.annotation.ApiParam;
 import one.yiran.dashboard.common.expection.user.UserNotLoginException;
 import one.yiran.dashboard.common.model.AdminSession;
 import one.yiran.dashboard.manage.entity.SysMenu;
@@ -8,7 +9,9 @@ import one.yiran.dashboard.manage.security.UserInfoContextHelper;
 import one.yiran.dashboard.manage.service.SysMenuService;
 import one.yiran.dashboard.manage.service.SysPermService;
 import one.yiran.dashboard.web.model.WebMenu;
+import one.yiran.dashboard.web.model.WebPerm;
 import one.yiran.dashboard.web.util.MenuUtil;
+import one.yiran.dashboard.web.util.PermUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -46,7 +49,7 @@ public class HomeController {
 
     @AjaxWrapper
     @RequestMapping("/perms")
-    public List<WebMenu> perms(ModelMap model) {
+    public List<WebPerm> perms() {
         AdminSession user = UserInfoContextHelper.getLoginUser();
         if(user == null)
             throw new UserNotLoginException();
@@ -56,6 +59,6 @@ public class HomeController {
         } else {
             menusList = sysMenuService.selectVisibleTreeMenusByUser(user.getUserId(),false);
         }
-        return MenuUtil.toWebMenu(menusList);
+        return PermUtil.toWebPerm(menusList);
     }
 }

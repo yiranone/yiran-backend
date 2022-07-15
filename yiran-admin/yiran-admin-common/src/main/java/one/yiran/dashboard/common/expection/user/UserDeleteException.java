@@ -12,4 +12,8 @@ public class UserDeleteException extends UserException {
     public UserDeleteException(String message) {
         super(KEY, message);
     }
+
+    public static UserDeleteException withLoginName(String loginName){
+        return new UserDeleteException("用户已删除loginName:" + loginName);
+    }
 }

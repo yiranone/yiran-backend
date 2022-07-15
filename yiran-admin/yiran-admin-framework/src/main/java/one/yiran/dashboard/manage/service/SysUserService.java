@@ -14,6 +14,7 @@ public interface SysUserService {
     SysUser login(String username, String password);
 
     SysUser findUser(Long id);
+    SysUser findUserCheckExist(Long userId);
 
     SysUser findUserByLoginName(String username);
 
@@ -57,9 +58,9 @@ public interface SysUserService {
 
     boolean isLoginNameExist(String loginName,Long userId);
 
-    PageModel<SysUser> selectUnallocatedList(PageRequest request, Long roleId, SysUser searchUser, List<Long> deptIds);
+    PageModel<UserPageVO> selectUnallocatedList(PageRequest request, Long roleId, SysUser searchUser, List<Long> deptIds);
 
-    PageModel<SysUser> selectAllocatedList(PageRequest request, Long roleId, SysUser searchUser, List<Long> deptIds);
+    PageModel<UserPageVO> selectAllocatedList(PageRequest request, Long roleId, SysUser searchUser, List<Long> deptIds);
 
     long deleteUserByIds(Long[] userIds);
 

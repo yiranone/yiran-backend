@@ -7,6 +7,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import one.yiran.dashboard.common.constants.UserConstants;
 import one.yiran.common.domain.PageModel;
 import one.yiran.common.domain.PageRequest;
+import one.yiran.dashboard.common.expection.user.UserDeleteException;
 import one.yiran.dashboard.manage.dao.RoleDao;
 import one.yiran.dashboard.manage.dao.UserDao;
 import one.yiran.dashboard.manage.dao.UserPostDao;
@@ -73,8 +74,20 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
     }
 
     @Override
-    public SysUser findUser(Long id) {
-        SysUser u = userDao.findByUserId(id);
+    public SysUser findUser(Long userId) {
+        SysUser u = userDao.findByUserId(userId);
+        return u;
+    }
+
+    @Override
+    public SysUser findUserCheckExist(Long userId) {
+        SysUser u = findUser(userId);
+        if (u == null) {
+            throw new UserNotFoundException();
+        }
+        if (u.getIsDelete() != null && u.getIsDelete().booleanValue()) {
+            throw new UserDeleteException(u.getLoginName());
+        }
         return u;
     }
 
@@ -135,7 +148,8 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
     public void saveUserRoles(Long userId, List<Long> roleIds) {
         // 删除用户与角色关联
         userRoleDao.deleteAllByUserId(userId);
-        // 新增用户与角色管理
+        userRoleDao.flush();
+        // 新增用户与角色关联
         insertUserRole(userId,roleIds);
     }
 
@@ -332,12 +346,12 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
      * @return
      */
     @Override
-    public PageModel<SysUser> selectAllocatedList(PageRequest request, Long roleId, SysUser user, List<Long> deptIds) {
+    public PageModel<UserPageVO> selectAllocatedList(PageRequest request, Long roleId, SysUser user, List<Long> deptIds) {
         return doGetUserAllocatedList(request, roleId, user, deptIds, true);
     }
 
     @Override
-    public PageModel<SysUser> selectUnallocatedList(PageRequest request, Long roleId, SysUser user, List<Long> deptIds) {
+    public PageModel<UserPageVO> selectUnallocatedList(PageRequest request, Long roleId, SysUser user, List<Long> deptIds) {
         return doGetUserAllocatedList(request, roleId, user, deptIds, false);
     }
 
@@ -545,7 +559,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
         insertUserPost(user);
     }
 
-    private PageModel<SysUser> doGetUserAllocatedList(PageRequest request,
+    private PageModel<UserPageVO> doGetUserAllocatedList(PageRequest request,
                                                       Long roleId, SysUser user, List<Long> deptIds, boolean inRoles) {
 
         QSysUser qSysUser = QSysUser.sysUser;
@@ -561,19 +575,25 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
         } else {
             jpa.where(qSysUserRole.roleId.ne(roleId));
         }
-        if (StringUtils.isNotBlank(user.getLoginName())) {
-            jpa.where(qSysUser.loginName.like("%" + user.getLoginName().trim() + "%"));
-        }
-        if (StringUtils.isNotBlank(user.getPhoneNumber())) {
-            jpa.where(qSysUser.phoneNumber.eq( user.getPhoneNumber().trim()));
+        if (user != null) {
+            if (StringUtils.isNotBlank(user.getLoginName())) {
+                jpa.where(qSysUser.loginName.like("%" + user.getLoginName().trim() + "%"));
+            }
+            if (StringUtils.isNotBlank(user.getPhoneNumber())) {
+                jpa.where(qSysUser.phoneNumber.eq(user.getPhoneNumber().trim()));
+            }
         }
         jpa.where(qSysUser.isDelete.ne(Boolean.TRUE));
         long count = jpa.fetchCount();
 
-        jpa.where(qSysUser.isDelete.ne(Boolean.TRUE));
-        jpa.offset(request.getPageNum() * request.getPageSize()).limit(request.getPageNum());
+        jpa.offset((request.getPageNum() - 1) * request.getPageSize()).limit(request.getPageSize());
         List<SysUser> sysUserList = jpa.fetch();
-        return PageModel.instance(count, sysUserList);
+
+        List<UserPageVO> userPageVOs = new ArrayList<>();
+        for (SysUser u : sysUserList) {
+            userPageVOs.add(UserPageVO.from(u));
+        }
+        return PageModel.instance(count,userPageVOs);
     }
 
 

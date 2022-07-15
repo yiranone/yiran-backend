@@ -1,4 +1,4 @@
-package com.biz.service.u;
+package com.biz.service.util;
 
 import com.biz.entity.Member;
 import com.biz.service.MemberService;
@@ -9,10 +9,8 @@ import one.yiran.dashboard.common.expection.user.UserBlockedException;
 import one.yiran.dashboard.common.expection.user.UserPasswordNotMatchException;
 import one.yiran.dashboard.common.util.MD5Util;
 import one.yiran.dashboard.common.util.MessageUtil;
-import one.yiran.dashboard.manage.entity.SysUser;
 import one.yiran.dashboard.manage.factory.AsyncFactory;
 import one.yiran.dashboard.manage.factory.AsyncManager;
-import one.yiran.dashboard.manage.service.SysUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -231,25 +231,6 @@ public class UserAdminController {
     }
 
     /**
-     * 用户授权角色
-     */
-    @RequirePermission("system:user:role")
-    @Log(title = "用户管理", businessType = BusinessType.GRANT)
-    @PostMapping("/authRole/insertAuthRole")
-    public void insertAuthRole(@ApiParam(required = true) Long userId,@ApiParam(required = true) Long[] roleIds) {
-        if (roleIds != null && !Arrays.asList(roleIds).contains(1L))
-            sysUserService.checkAdminModifyAllowed(new SysUser(userId), "取消授权");
-        SysUser user = sysUserService.findUser(userId);
-        boolean hasUserDept = UserInfoContextHelper.getLoginUser().hashScopePermission(PermissionConstants.User.ROLE, user.getDeptId());
-        if (!hasUserDept)
-            throw UserHasNotPermissionException.buildWithPermission(PermissionConstants.User.ROLE);
-
-        List<Long> toSaveRoleIds = filterRoles(userId, Arrays.asList(roleIds));
-
-        sysUserService.saveUserRoles(userId, toSaveRoleIds);
-    }
-
-    /**
      * 用户状态修改
      */
     @RequirePermission(PermissionConstants.User.EDIT)
@@ -327,34 +308,5 @@ public class UserAdminController {
         }
     }
 
-    /**
-     * 有 PermissionConstants.User.ROLE 权限才能给其他人
-     *
-     * @param userId
-     * @param roleIds
-     * @return
-     */
-    private List<Long> filterRoles(Long userId, List<Long> roleIds) {
-        //这里不能让用户保存的时候选择太多权限
-        //这个用户以前就有的权限
-        List<Long> dbRoles = sysRoleService.selectRolesByUserId(userId).stream().map(e -> e.getRoleId()).collect(Collectors.toList());
-        //给客户端操作的角色
-        List<SysRole> toPageRoles = sysRoleService.selectAllVisibleRolesByUserId(UserInfoContextHelper.getCurrentUserId(), userId);
 
-        //除去给客户端展示的，剩下保持不变
-        dbRoles.removeAll(toPageRoles.stream().map(e -> e.getRoleId()).collect(Collectors.toList()));
-        //给客户端的检查有没有勾选
-        if (roleIds != null && roleIds.size() > 0) {
-            List<SysRole> requestRoles = sysRoleService.selectRolesByRoleIds(roleIds.toArray(new Long[]{}));
-            List<Long> pageRoleIds = toPageRoles.stream().map(e -> e.getRoleId()).collect(Collectors.toList());
-            //判断用户有没有添加新的角色
-            requestRoles.forEach(e -> {
-                //防止越权
-                if (pageRoleIds.contains(e.getRoleId())) {
-                    dbRoles.add(e.getRoleId());
-                }
-            });
-        }
-        return dbRoles;
-    }
 }

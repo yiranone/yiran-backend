@@ -2,7 +2,7 @@ package com.biz.controller;
 
 import com.biz.entity.Member;
 import com.biz.service.MemberService;
-import com.biz.service.u.MemberPasswordService;
+import com.biz.service.util.MemberPasswordService;
 import com.biz.vo.MemberVO;
 import one.yiran.common.domain.PageModel;
 import one.yiran.common.domain.PageRequest;

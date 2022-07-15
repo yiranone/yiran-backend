@@ -36,9 +36,6 @@ public class RoleAdminController {
     private SysRoleService sysRoleService;
 
     @Autowired
-    private SysUserService sysUserService;
-
-    @Autowired
     private RolePermDao rolePermDao;
 
     @RequirePermission(PermissionConstants.Role.VIEW)
@@ -117,59 +114,6 @@ public class RoleAdminController {
     public int changeStatus(@ApiObject SysRole sysRole) {
         sysRoleService.checkRoleAllowed(sysRole);
         return sysRoleService.changeStatus(sysRole);
-    }
-
-    /**
-     * 取消授权
-     */
-    @Log(title = "角色管理", businessType = BusinessType.GRANT)
-    @PostMapping("/authUser/cancel")
-    public long cancelAuthUser(@ApiObject SysUserRole sysUserRole) {
-        return sysRoleService.deleteAuthUser(sysUserRole);
-    }
-
-    /**
-     * 批量取消授权
-     */
-    @Log(title = "角色管理", businessType = BusinessType.GRANT)
-    @PostMapping("/authUser/cancelAll")
-    @AjaxWrapper
-    public long cancelAuthUserAll(@ApiParam(required = true) Long roleId,@ApiParam(required = true)  String userIds) {
-        return sysRoleService.deleteAuthUsers(roleId, userIds);
-    }
-
-    /**
-     * 查询已分配用户角色列表
-     */
-    @RequirePermission(PermissionConstants.Role.VIEW)
-    @PostMapping("/authUser/allocatedList")
-    @AjaxWrapper
-    public PageModel<SysUser> allocatedList(@ApiParam(required = true) Long roleId,
-                                            @ApiParam(required = true) SysUser user,
-                                            HttpServletRequest request) {
-        return sysUserService.selectAllocatedList(PageRequestUtil.fromRequest(request), roleId, user, null);
-    }
-
-    /**
-     * 查询未分配用户角色列表
-     */
-    @RequirePermission(PermissionConstants.Role.VIEW)
-    @PostMapping("/authUser/unallocatedList")
-    @AjaxWrapper
-    public PageModel<SysUser> unallocatedList(@ApiParam(required = true) Long roleId,
-                                              @ApiParam(required = true) SysUser user,
-                                              HttpServletRequest request) {
-        return sysUserService.selectUnallocatedList(PageRequestUtil.fromRequest(request), roleId, user, null);
-    }
-
-    /**
-     * 批量选择用户授权
-     */
-    @Log(title = "角色管理", businessType = BusinessType.GRANT)
-    @PostMapping("/authUser/selectAll")
-    @AjaxWrapper
-    public int selectAuthUserAll(@ApiParam(required = true) Long roleId,@ApiParam(required = true)  String userIds) {
-        return sysRoleService.insertAuthUsers(roleId, userIds);
     }
 
     @Log(title = "角色管理", businessType = BusinessType.EXPORT)

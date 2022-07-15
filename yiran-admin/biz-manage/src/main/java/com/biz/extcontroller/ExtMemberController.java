@@ -2,7 +2,7 @@ package com.biz.extcontroller;
 
 import com.biz.entity.Member;
 import com.biz.service.MemberService;
-import com.biz.service.u.MemberPasswordService;
+import com.biz.service.util.MemberPasswordService;
 import one.yiran.dashboard.common.model.MemberSession;
 import one.yiran.dashboard.common.util.MemberCacheUtil;
 import com.biz.vo.MemberVO;
