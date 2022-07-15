@@ -52,7 +52,8 @@ public class SysChannel extends TimedBasedEntity {
     private LocalDate expireDate;
 
     @Excel(name = "排序")
-    @Column
+    @NotBlank
+    @Column(nullable = false)
     private Integer channelSort;
 
     /**

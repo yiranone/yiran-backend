@@ -9,6 +9,7 @@ import one.yiran.db.common.annotation.Search;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class SysRole extends TimedBasedEntity {
     @Search(op = Search.Op.REGEX)
     @NotBlank(message = "角色名称不能为空")
     @Size(min = 0, max = 30, message = "角色名称长度不能超过30个字符")
-    @Column
+    @Column(length = 32,nullable = false)
     private String roleName;
 
     /**
@@ -43,15 +44,15 @@ public class SysRole extends TimedBasedEntity {
     @Search
     @NotBlank(message = "权限字符不能为空")
     @Size(min = 0, max = 100, message = "权限字符长度不能超过100个字符")
-    @Column
+    @Column(length = 32,nullable = false)
     private String roleKey;
 
     /**
      * 角色排序
      */
     @Excel(name = "角色排序")
-    @NotBlank(message = "显示顺序不能为空")
-    @Column
+    @NotNull(message = "显示顺序不能为空")
+    @Column(nullable = false)
     private Integer roleSort;
 
     /**

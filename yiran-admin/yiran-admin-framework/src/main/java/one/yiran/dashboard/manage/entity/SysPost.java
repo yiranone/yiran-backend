@@ -9,6 +9,7 @@ import one.yiran.db.common.annotation.Search;
 import org.springframework.data.annotation.Transient;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @EqualsAndHashCode(callSuper = false)
 @Table(name = "sys_post")
@@ -46,7 +47,8 @@ public class SysPost extends TimedBasedEntity {
      * 岗位排序
      */
     @Excel(name = "岗位排序")
-    @Column
+    @NotNull
+    @Column(nullable = false)
     private Integer postSort;
 
     /**
