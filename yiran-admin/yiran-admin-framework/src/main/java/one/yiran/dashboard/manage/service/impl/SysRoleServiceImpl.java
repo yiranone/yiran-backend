@@ -198,48 +198,6 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
         return 1;
     }
 
-    /**
-     * 取消授权用户角色
-     */
-    @Override
-    public long deleteAuthUser(Long userId, Long roleId) {
-        Assert.notNull(userId, "userId cant be null");
-        Assert.notNull(roleId, "roleId cant be null");
-        if(roleId.equals(1L)) {
-            sysUserService.checkAdminModifyAllowed(new SysUser(userId), "取消授权");
-        }
-        return userRoleDao.deleteAllByUserIdAndRoleId(userId, roleId);
-    }
-
-    /**
-     * 批量取消授权用户角色
-     *
-     * @param roleId  角色ID
-     * @param userIds 需要删除的用户数据ID
-     * @return 结果
-     */
-    @Override
-    public long deleteAuthUsers(Long roleId, String userIds) {
-        Assert.notNull(roleId, "roleId cant be null");
-        if(roleId.equals(1L)) {
-            List<Long> uids = Convert.toLongList(userIds);
-            uids.forEach(e -> {
-                sysUserService.checkAdminModifyAllowed(new SysUser(e), "取消授权");
-            });
-        }
-        List<SysUserRole> sysUserRoles = userRoleDao.findAllByRoleIdAndUserIdIn(roleId, Convert.toLongArray(userIds));
-        userRoleDao.deleteAll(sysUserRoles);
-        return sysUserRoles.size();
-    }
-
-    @Override
-    public long deleteAuthUsers(List<Long> roleIds, Long userId) {
-        sysUserService.checkAdminModifyAllowed(new SysUser(userId),"取消授权");
-        List<SysUserRole> sysUserRoles = userRoleDao.findAllByRoleIdInAndUserId(roleIds, userId);
-        userRoleDao.deleteAll(sysUserRoles);
-        return sysUserRoles.size();
-    }
-
     @Override
     public int deleteAuthUsers(Long userId) {
         sysUserService.checkAdminModifyAllowed(new SysUser(userId),"取消授权");
@@ -272,6 +230,30 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
             list.add(ur);
         }
         return userRoleDao.saveAll(list).size();
+    }
+
+    /**
+     * 批量取消授权用户角色
+     *
+     * @param roleId  角色ID
+     * @param userIds 需要删除的用户数据ID
+     * @return 结果
+     */
+    @Override
+    public long deleteAuthUsers(Long roleId, Long[] userIds) {
+        Assert.notNull(roleId, "roleId cant be null");
+        Assert.notNull(userIds, "userIds cant be null");
+        if(roleDao.findByRoleId(roleId) == null ) {
+            throw BusinessException.build("角色不存在roleId:"+ roleId);
+        }
+        if(roleId.equals(1L)) {
+            Arrays.stream(userIds).forEach(e -> {
+                sysUserService.checkAdminModifyAllowed(new SysUser(e), "取消授权");
+            });
+        }
+        List<SysUserRole> sysUserRoles = userRoleDao.findAllByRoleIdAndUserIdIn(roleId, userIds);
+        userRoleDao.deleteAll(sysUserRoles);
+        return sysUserRoles.size();
     }
 
     @Override

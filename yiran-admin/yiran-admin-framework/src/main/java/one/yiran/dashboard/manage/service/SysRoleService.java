@@ -81,18 +81,17 @@ public interface SysRoleService extends CrudBaseService<Long, SysRole> {
      */
     int changeStatus(SysRole sysRole);
 
-    /**
-     * 取消授权用户角色
-     */
-    long deleteAuthUser(Long userId, Long roleId);
-    long deleteAuthUsers(Long roleId, String userIds);
-    long deleteAuthUsers(List<Long> roleId, Long userId);
-    int deleteAuthUsers(Long userId);
 
     /**
      * 批量选择授权用户角色
      */
     int insertAuthUsers(Long roleId, Long[] userIds);
+    /**
+     * 取消授权用户角色
+     */
+    long deleteAuthUsers(Long roleId, Long[] userIds);
+    int deleteAuthUsers(Long userId);
+
 
     void checkRoleAllowed(SysRole sysRole);
 

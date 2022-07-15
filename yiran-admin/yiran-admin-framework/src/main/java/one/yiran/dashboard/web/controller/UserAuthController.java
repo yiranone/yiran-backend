@@ -52,6 +52,17 @@ public class UserAuthController {
                                  @ApiParam(required = true) Long[] userIds) {
         return sysRoleService.insertAuthUsers(roleId, userIds);
     }
+
+    /**
+     * 批量取消授权，用户-角色
+     */
+    @Log(title = "角色管理", businessType = BusinessType.GRANT)
+    @PostMapping("/roleUser/cancel")
+    public long cancelRoleUsers(@ApiParam(required = true) Long roleId,
+                                  @ApiParam(required = true) Long[] userIds) {
+        return sysRoleService.deleteAuthUsers(roleId, userIds);
+    }
+
     /**
      * 给用户授权角色，存量的角色会被清理，客户端一次性传所有角色
      */
@@ -70,30 +81,10 @@ public class UserAuthController {
     }
 
     /**
-     * 取消授权，用户-角色
-     */
-    @Log(title = "角色管理", businessType = BusinessType.GRANT)
-    @PostMapping("/userRole/cancel")
-    public long cancelAuthUser(@ApiParam(required = true) Long userId,
-                               @ApiParam(required = true) Long roleId) {
-        return sysRoleService.deleteAuthUser(userId,roleId);
-    }
-
-    /**
-     * 批量取消授权，用户-角色
-     */
-    @Log(title = "角色管理", businessType = BusinessType.GRANT)
-    @PostMapping("/userRole/cancelAll")
-    public long cancelAuthUserAll(@ApiParam(required = true) Long roleId,
-                                  @ApiParam(required = true)  String userIds) {
-        return sysRoleService.deleteAuthUsers(roleId, userIds);
-    }
-
-    /**
      * 查询已分配用户角色列表
      */
     @RequirePermission(PermissionConstants.Role.VIEW)
-    @PostMapping("/userRole/allocatedList")
+    @PostMapping("/roleUser/allocatedList")
     public PageModel<UserPageVO> allocatedList(@ApiParam(required = true) Long roleId,
                                             @ApiParam SysUser search,
                                             HttpServletRequest request) {
@@ -104,7 +95,7 @@ public class UserAuthController {
      * 查询未分配用户角色列表
      */
     @RequirePermission(PermissionConstants.Role.VIEW)
-    @PostMapping("/userRole/unallocatedList")
+    @PostMapping("/roleUser/unallocatedList")
     public PageModel<UserPageVO> unallocatedList(@ApiParam(required = true) Long roleId,
                                                  @ApiParam SysUser search,
                                                  HttpServletRequest request) {
