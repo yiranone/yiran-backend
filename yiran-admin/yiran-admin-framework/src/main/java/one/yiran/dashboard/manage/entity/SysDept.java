@@ -38,6 +38,9 @@ public class SysDept extends TimedBasedEntity {
     @Column(length = 32)
     private String deptName;
 
+    @Column
+    private Integer deptSort;
+
     @Search(op = Search.Op.REGEX)
     @Excel(name = "联系电话")
     @Column(length = 15)

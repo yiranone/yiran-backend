@@ -1,5 +1,7 @@
 package one.yiran.db.common.service;
 
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Predicate;
 import one.yiran.common.domain.PageModel;
 import one.yiran.common.domain.PageRequest;
@@ -22,7 +24,9 @@ public interface CrudBaseService<K,T> {
      List<T> selectList(PageRequest request, T target);
      List<T> selectList(T target);
      List<T> selectList(Predicate predicate);
+     List<T> selectList(Predicate predicate, Path orderColumn, Order orderDir);
      List<T> selectList(List<Predicate> pres);
+     List<T> selectList(List<Predicate> pres, Path orderColumn, Order orderDir);
 
      long count(PageRequest pageRequest, T searchUser, Predicate predicate);
      long count(PageRequest pageRequest, T searchUser, List<Predicate> pres);

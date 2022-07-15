@@ -1,7 +1,6 @@
 package one.yiran.db.common.service;
 
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.*;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -14,6 +13,7 @@ import one.yiran.db.common.annotation.UpdateTimeAdvise;
 import one.yiran.db.common.util.PageRequestUtil;
 import one.yiran.db.common.util.PredicateBuilder;
 import one.yiran.db.common.util.QClassUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -120,7 +120,10 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
     @Override
     public List<T> selectList(PageRequest request, T target, List<Predicate> predicates) {
         log.info("query list sql Entity:{},{}", tClass.getTypeName(),predicates);
+        return doSelectList(request, target, predicates, null, null);
+    }
 
+    private List<T> doSelectList(PageRequest request, T target, List<Predicate> predicates, Path orderColumn, Order orderDir) {
         JPAQuery q = queryFactory.selectFrom(entityPath());
         if(predicates != null) {
             predicates.forEach(e->{
@@ -131,7 +134,13 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
         if(request != null)
             PageRequestUtil.injectQuery(request,q);
         injectObject(target,q);
-
+        if(orderColumn != null) {
+            if(orderDir == Order.DESC) {
+                q.orderBy(new OrderSpecifier(Order.DESC,orderColumn));
+            } else {
+                q.orderBy(new OrderSpecifier(Order.ASC,orderColumn));
+            }
+        }
         return q.fetch();
     }
 
@@ -151,8 +160,18 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
     }
 
     @Override
+    public List<T> selectList(Predicate predicate, Path orderColumn, Order orderDir) {
+        return selectList(new ArrayList<Predicate>(){{add(predicate);}},orderColumn,orderDir);
+    }
+
+    @Override
     public List<T> selectList(List<Predicate> pres) {
         return selectList(null,null,pres);
+    }
+
+    @Override
+    public List<T> selectList(List<Predicate> pres, Path orderColumn, Order orderDir) {
+        return doSelectList(null,null, pres,orderColumn,orderDir);
     }
 
     private EntityPath entityPath(){
@@ -254,7 +273,7 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
             }
         }
         Query query = entityManager.createQuery(
-                "update " + ((Class) tClass).getName() + " set isDelete = true WHERE  " + fieldName + " in (" + sb + ")");
+                "update " + ((Class) tClass).getName() + " set 'isDelete' = true WHERE  " + fieldName + " in (" + sb + ")");
 
         if (Long.class.isAssignableFrom(filedType)) {
             for(int i = 0; i <ids.length; i ++) {
@@ -274,7 +293,7 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
     @Override
     public long deleteAll() {
         Query query = entityManager.createQuery(
-                "update " + ((Class) tClass).getName() + " set isDelete = true");
+                "update " + ((Class) tClass).getName() + " set 'isDelete' = true");
         int deletedCount = query.executeUpdate();
         return deletedCount;
     }

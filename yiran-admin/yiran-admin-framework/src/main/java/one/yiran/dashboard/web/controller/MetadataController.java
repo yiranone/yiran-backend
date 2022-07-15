@@ -1,0 +1,71 @@
+package one.yiran.dashboard.web.controller;
+
+import com.querydsl.core.types.Order;
+import one.yiran.dashboard.common.annotation.AjaxWrapper;
+import one.yiran.dashboard.manage.entity.*;
+import one.yiran.dashboard.manage.service.SysChannelService;
+import one.yiran.dashboard.manage.service.SysDeptService;
+import one.yiran.dashboard.manage.service.SysPostService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@AjaxWrapper
+@Controller
+@RequestMapping("/metadata")
+public class MetadataController {
+
+    @Autowired
+    private SysChannelService channelService;
+    @Autowired
+    private SysPostService postService;
+    @Autowired
+    private SysDeptService sysDeptService;
+
+    @PostMapping("/dept/all")
+    public List deptAll() {
+        List<SysDept> depts = sysDeptService.selectList(QSysDept.sysDept.isDelete.eq(Boolean.FALSE).or(QSysDept.sysDept.isDelete.isNull()),QSysDept.sysDept.deptSort, Order.ASC);
+        List list = new ArrayList();
+        for (SysDept d : depts) {
+            Map<String,Object> map = new HashMap<>();
+            map.put("deptName",d.getDeptName());
+            map.put("deptId",d.getDeptId());
+            list.add(map);
+        }
+        return list;
+    }
+
+    @PostMapping("/channel/all")
+    public List channelAll() {
+        QSysChannel qObj = QSysChannel.sysChannel;
+        List<SysChannel> channels = channelService.selectList(qObj.isDelete.eq(Boolean.FALSE).or(qObj.isDelete.isNull()), qObj.channelSort, Order.ASC);
+        List list = new ArrayList();
+        for (SysChannel d : channels) {
+            Map<String,Object> map = new HashMap<>();
+            map.put("channelName",d.getChannelName());
+            map.put("channelId",d.getChannelId());
+            list.add(map);
+        }
+        return list;
+    }
+
+    @PostMapping("/post/all")
+    public List postAll() {
+        List<SysPost> posts = postService.selectList(QSysPost.sysPost.isDelete.eq(Boolean.FALSE).or(QSysPost.sysPost.isDelete.isNull()),QSysPost.sysPost.postSort, Order.ASC);
+        List list = new ArrayList();
+        for (SysPost p : posts) {
+            Map<String,Object> map = new HashMap<>();
+            map.put("postName",p.getPostName());
+            map.put("postId",p.getPostId());
+            list.add(map);
+        }
+        return list;
+    }
+
+}

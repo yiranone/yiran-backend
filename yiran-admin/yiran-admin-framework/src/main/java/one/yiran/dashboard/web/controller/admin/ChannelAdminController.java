@@ -88,6 +88,7 @@ public class ChannelAdminController {
         SysChannel dbChannel = sysChannelService.selectByPId(channel.getChannelId());
         dbChannel.setChannelName(channel.getChannelName());
         dbChannel.setChannelCode(channel.getChannelCode());
+        dbChannel.setChannelSort(channel.getChannelSort());
         dbChannel.setStatus(channel.getStatus());
         dbChannel.setExpireDate(channel.getExpireDate());
         String loginName = UserInfoContextHelper.getCurrentLoginName();

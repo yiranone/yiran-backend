@@ -47,7 +47,7 @@ public class SysPost extends TimedBasedEntity {
      */
     @Excel(name = "岗位排序")
     @Column
-    private String postSort;
+    private Integer postSort;
 
     /**
      * 状态（0正常 1停用）
