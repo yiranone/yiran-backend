@@ -76,14 +76,14 @@ public class SysUser extends TimedBasedEntity {
      */
     @Excel(name = "用户性别", readConverterExp = "0=男,1=女,2=未知")
     @Search
-    @Column
+    @Column(length = 4)
     private String sex;
 
-    @Column
+    @Column(length = 255)
     private String avatar;
 
     @JSONField(serialize = false)
-    @Column
+    @Column(length = 32)
     private String password;
 
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
@@ -96,7 +96,7 @@ public class SysUser extends TimedBasedEntity {
     private String salt;
 
     @JSONField(serialize = false)
-    @Column
+    @Column(length = 32)
     private String assertPassword;
 
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
