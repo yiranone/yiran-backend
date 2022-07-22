@@ -9,6 +9,7 @@ import one.yiran.db.common.domain.TimedBasedEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
@@ -52,7 +53,7 @@ public class SysChannel extends TimedBasedEntity {
     private LocalDate expireDate;
 
     @Excel(name = "排序")
-    @NotBlank
+    @NotNull
     @Column(nullable = false)
     private Integer channelSort;
 
