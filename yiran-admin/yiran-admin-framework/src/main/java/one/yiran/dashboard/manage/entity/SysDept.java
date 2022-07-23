@@ -9,6 +9,7 @@ import one.yiran.db.common.domain.TimedBasedEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @EqualsAndHashCode(callSuper = false)
 @Table(name = "sys_dept")
@@ -26,6 +27,8 @@ public class SysDept extends TimedBasedEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long deptId;
 
+    @NotNull
+    @Column(nullable = false)
     private Long parentId;
 
     @Search
@@ -39,7 +42,7 @@ public class SysDept extends TimedBasedEntity {
     private String deptName;
 
     @Column
-    private Integer deptSort;
+    private Integer orderNum;
 
     @Search(op = Search.Op.REGEX)
     @Excel(name = "联系电话")

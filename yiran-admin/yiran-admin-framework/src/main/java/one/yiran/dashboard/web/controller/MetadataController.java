@@ -30,12 +30,13 @@ public class MetadataController {
 
     @PostMapping("/dept/all")
     public List deptAll() {
-        List<SysDept> depts = sysDeptService.selectList(QSysDept.sysDept.isDelete.eq(Boolean.FALSE).or(QSysDept.sysDept.isDelete.isNull()),QSysDept.sysDept.deptSort, Order.ASC);
+        List<SysDept> depts = sysDeptService.selectList(QSysDept.sysDept.isDelete.eq(Boolean.FALSE).or(QSysDept.sysDept.isDelete.isNull()),QSysDept.sysDept.orderNum, Order.ASC);
         List list = new ArrayList();
         for (SysDept d : depts) {
             Map<String,Object> map = new HashMap<>();
             map.put("deptName",d.getDeptName());
             map.put("deptId",d.getDeptId());
+            map.put("parentId",d.getParentId());
             list.add(map);
         }
         return list;
