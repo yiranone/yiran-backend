@@ -25,7 +25,7 @@ public class SysDictData extends TimedBasedEntity {
 
     @Excel(name = "字典排序")
     @Column
-    private Long dictSort;
+    private Integer orderNum;
 
     @Excel(name = "字典标签")
     @Search(op = Search.Op.REGEX)

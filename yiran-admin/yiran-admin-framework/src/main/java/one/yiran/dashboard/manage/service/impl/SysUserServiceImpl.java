@@ -125,7 +125,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
     public SysUser saveUserAndPerms(SysUser user) throws BusinessException {
         //checkAdminModifyAllowed(user,"操作");
         SysUser db = findUser(user.getUserId());
-        if(db.isAdmin()) {
+        if(db != null && db.isAdmin()) {
             List<SysUserRole> userRoleList = userRoleDao.findAllByUserId(db.getUserId());
             List<Long> roleIds = userRoleList.stream().map(t -> t.getRoleId()).collect(Collectors.toList());
             if(user.getRoleIds() == null || !user.getRoleIds().containsAll(roleIds)){

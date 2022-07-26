@@ -1,5 +1,6 @@
 package one.yiran.dashboard.manage.service.impl;
 
+import com.querydsl.core.types.Order;
 import com.querydsl.core.types.Predicate;
 import one.yiran.dashboard.manage.entity.QSysDictData;
 import one.yiran.dashboard.manage.dao.DictDataDao;
@@ -22,7 +23,7 @@ public class SysDictDataServiceImpl extends CrudBaseServiceImpl<Long,SysDictData
 
     @Override
     public List<SysDictData> selectDictDataByType(String dictType) {
-        return dictDataDao.findAllByDictTypeOrderByDictSortAsc(dictType);
+        return selectList(QSysDictData.sysDictData.dictType.eq(dictType),QSysDictData.sysDictData.orderNum, Order.ASC);
     }
 
     @Override

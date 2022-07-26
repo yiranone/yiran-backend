@@ -9,8 +9,6 @@ import java.util.List;
 @Repository
 public interface DictDataDao extends BaseDao<SysDictData, Long> {
 
-    List<SysDictData> findAllByDictTypeOrderByDictSortAsc(String dictType);
-
     int deleteAllByDictCode(Long dictCode);
 
     SysDictData findByDictCode(Long dictCode);

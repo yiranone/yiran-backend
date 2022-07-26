@@ -1,10 +1,14 @@
 package one.yiran.dashboard.web.controller;
 
 import com.querydsl.core.types.Order;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import one.yiran.common.domain.Ztree;
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
+import one.yiran.dashboard.common.annotation.ApiParam;
 import one.yiran.dashboard.manage.entity.*;
 import one.yiran.dashboard.manage.service.SysChannelService;
 import one.yiran.dashboard.manage.service.SysDeptService;
+import one.yiran.dashboard.manage.service.SysDictDataService;
 import one.yiran.dashboard.manage.service.SysPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,6 +31,21 @@ public class MetadataController {
     private SysPostService postService;
     @Autowired
     private SysDeptService sysDeptService;
+    @Autowired
+    private SysDictDataService sysDictDataService;
+
+    @PostMapping("/dict/list")
+    public List dictList(@ApiParam String dictType) {
+        List<SysDictData> dictDatas = sysDictDataService.selectDictDataByType(dictType);
+        List list = new ArrayList();
+        for (SysDictData d : dictDatas) {
+            Map<String,Object> map = new HashMap<>();
+            map.put("label",d.getDictLabel());
+            map.put("value",d.getDictValue());
+            list.add(map);
+        }
+        return list;
+    }
 
     @PostMapping("/dept/all")
     public List deptAll() {
@@ -40,6 +59,12 @@ public class MetadataController {
             list.add(map);
         }
         return list;
+    }
+
+    @PostMapping("/dept/tree")
+    public List deptTree() {
+        List<Ztree> depts = sysDeptService.deptTreeData();
+        return depts;
     }
 
     @PostMapping("/channel/all")
