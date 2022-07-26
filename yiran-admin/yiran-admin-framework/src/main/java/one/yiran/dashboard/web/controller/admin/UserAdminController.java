@@ -212,14 +212,14 @@ public class UserAdminController {
     @Log(title = "重置密码", businessType = BusinessType.EDIT)
     @PostMapping("/resetPwd")
     public void resetPwd(@ApiParam(required = true) Long userId,
-                         @ApiParam(required = true) String password) {
+                         @ApiParam(required = true) String newPassword) {
         SysUser dbUser = sysUserService.findUser(userId);
         if (dbUser == null)
             throw new UserNotFoundException();
         UserInfoContextHelper.checkScopePermission(PermissionConstants.User.RESET_PWD, dbUser.getDeptId());
         //设置新密码
         dbUser.setSalt(Global.getSalt());
-        dbUser.setPassword(passwordService.encryptPassword(password, dbUser.getSalt()));
+        dbUser.setPassword(passwordService.encryptPassword(newPassword, dbUser.getSalt()));
         //解锁账户
         sysUserService.resetLoginFail(dbUser.getUserId());
 
