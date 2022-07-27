@@ -1,7 +1,5 @@
 package one.yiran.dashboard.common.util;
 
-import com.sun.xml.internal.ws.util.UtilException;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
