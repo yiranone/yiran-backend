@@ -1,16 +1,15 @@
 package one.yiran.dashboard.web.controller.admin;
 
-import one.yiran.dashboard.common.annotation.AjaxWrapper;
+import one.yiran.dashboard.common.annotation.*;
+import one.yiran.dashboard.manage.entity.SysDictType;
 import one.yiran.db.common.util.PageRequestUtil;
 import one.yiran.common.domain.PageModel;
-import one.yiran.dashboard.common.annotation.Log;
 import one.yiran.dashboard.common.constants.BusinessType;
 import one.yiran.dashboard.manage.entity.SysDictData;
 import one.yiran.dashboard.manage.security.UserInfoContextHelper;
 import one.yiran.dashboard.manage.security.config.PermissionConstants;
 import one.yiran.dashboard.manage.service.SysDictDataService;
 import one.yiran.dashboard.common.util.ExcelUtil;
-import one.yiran.dashboard.common.annotation.RequirePermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -27,9 +26,15 @@ public class DictDataController {
     @Autowired
     private SysDictDataService sysDictDataService;
 
+    @PostMapping("/detail")
+    @RequirePermission(PermissionConstants.Dict.VIEW)
+    public SysDictData detail(@ApiParam(required = true) Long dictCode) {
+        return sysDictDataService.selectByPId(dictCode);
+    }
+
     @PostMapping("/list")
     @RequirePermission(PermissionConstants.Dict.VIEW)
-    public PageModel list(@RequestBody SysDictData sysDictData, HttpServletRequest request) {
+    public PageModel list(@ApiObject(createIfNull = true) SysDictData sysDictData, HttpServletRequest request) {
         sysDictData.setIsDelete(false);
         PageModel<SysDictData> list = sysDictDataService.selectPage(PageRequestUtil.fromRequest(request), sysDictData);
         return list;

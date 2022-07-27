@@ -3,6 +3,7 @@ package one.yiran.dashboard.web.controller.admin;
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
 import one.yiran.dashboard.common.annotation.ApiParam;
 import one.yiran.common.domain.PageRequest;
+import one.yiran.dashboard.manage.entity.SysDictData;
 import one.yiran.dashboard.manage.entity.SysDictType;
 import one.yiran.db.common.util.PageRequestUtil;
 import one.yiran.common.domain.PageModel;
@@ -32,6 +33,13 @@ public class DictTypeController {
 
     @Autowired
     private SysDictTypeService sysDictTypeService;
+
+
+    @PostMapping("/detail")
+    @RequirePermission(PermissionConstants.Dict.VIEW)
+    public SysDictType detail(@ApiParam(required = true) Long dictId) {
+        return sysDictTypeService.selectByPId(dictId);
+    }
 
     @RequirePermission(PermissionConstants.Dict.VIEW)
     @PostMapping("/list")
@@ -105,15 +113,6 @@ public class DictTypeController {
     @PostMapping("/delete")
     public long delete(@RequestBody Long[] ids) throws BusinessException {
         return sysDictTypeService.deleteByPIds(ids);
-    }
-//    public long remove(@RequestBody JSONObject jsons) throws BusinessException {
-//        return sysDictTypeService.deleteByPIds(jsons.getJSONArray("ids").toArray(new String[]{}));
-//    }
-
-    @RequirePermission(PermissionConstants.Dict.VIEW)
-    @GetMapping("/detail/{dictId}")
-    public SysDictType detail(@PathVariable("dictId") Long dictId) {
-        return sysDictTypeService.selectByPId(dictId);
     }
 
     @RequirePermission(PermissionConstants.Dict.VIEW)

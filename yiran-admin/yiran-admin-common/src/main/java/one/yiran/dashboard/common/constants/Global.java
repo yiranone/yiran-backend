@@ -82,13 +82,6 @@ public class Global {
     }
 
     /**
-     * 获取版权年份
-     */
-    public static String getCopyrightYear() {
-        return StringUtils.defaultIfBlank(getConfig("dashboard.copyrightYear"), "2019");
-    }
-
-    /**
      * 实例演示开关
      */
     public static String isDemoEnabled() {
