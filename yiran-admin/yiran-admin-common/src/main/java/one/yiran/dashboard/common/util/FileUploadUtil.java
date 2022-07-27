@@ -102,7 +102,7 @@ public class FileUploadUtil {
         return filename;
     }
 
-    private static final File getAbsoluteFile(String uploadDir, String filename) throws IOException {
+    public static final File getAbsoluteFile(String uploadDir, String filename) throws IOException {
         File desc = new File(uploadDir + File.separator + filename);
 
         if (!desc.getParentFile().exists()) {
@@ -190,4 +190,10 @@ public class FileUploadUtil {
         return extension;
     }
 
+    public static final String getPathFileName(String uploadDir, String fileName) throws IOException
+    {
+        int dirLastIndex = Global.getProfile().length() + 1;
+        String currentDir = StringUtils.substring(uploadDir, dirLastIndex);
+        return Global.getImportPath() + "/" + currentDir + "/" + fileName;
+    }
 }

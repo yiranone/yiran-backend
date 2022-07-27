@@ -1,5 +1,9 @@
 package one.yiran.dashboard.common.util;
 
+import one.yiran.common.util.DateUtil;
+import one.yiran.dashboard.common.constants.Global;
+import org.apache.commons.io.IOUtils;
+
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URLEncoder;
@@ -10,6 +14,51 @@ import java.net.URLEncoder;
 public class FileUtil {
     public static String FILENAME_PATTERN = "[a-zA-Z0-9_\\-\\|\\.\\u4e00-\\u9fa5]+";
 
+    public static String writeImportBytes(byte[] data) throws IOException
+    {
+        return writeBytes(data, Global.getImportPath());
+    }
+    public static String writeBytes(byte[] data, String uploadDir) throws IOException
+    {
+        FileOutputStream fos = null;
+        String pathName = "";
+        try
+        {
+            String extension = getFileExtendName(data);
+            pathName = DateUtil.datePath() + "/" + IdUtils.fastUUID() + "." + extension;
+            File file = FileUploadUtil.getAbsoluteFile(uploadDir, pathName);
+            fos = new FileOutputStream(file);
+            fos.write(data);
+        }
+        finally
+        {
+            IOUtils.closeQuietly(fos);
+        }
+        return FileUploadUtil.getPathFileName(uploadDir, pathName);
+    }
+
+    public static String getFileExtendName(byte[] photoByte)
+    {
+        String strFileExtendName = "jpg";
+        if ((photoByte[0] == 71) && (photoByte[1] == 73) && (photoByte[2] == 70) && (photoByte[3] == 56)
+                && ((photoByte[4] == 55) || (photoByte[4] == 57)) && (photoByte[5] == 97))
+        {
+            strFileExtendName = "gif";
+        }
+        else if ((photoByte[6] == 74) && (photoByte[7] == 70) && (photoByte[8] == 73) && (photoByte[9] == 70))
+        {
+            strFileExtendName = "jpg";
+        }
+        else if ((photoByte[0] == 66) && (photoByte[1] == 77))
+        {
+            strFileExtendName = "bmp";
+        }
+        else if ((photoByte[1] == 80) && (photoByte[2] == 78) && (photoByte[3] == 71))
+        {
+            strFileExtendName = "png";
+        }
+        return strFileExtendName;
+    }
     /**
      * 输出指定文件的byte数组
      *

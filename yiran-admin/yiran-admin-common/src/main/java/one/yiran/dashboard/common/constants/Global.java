@@ -107,11 +107,15 @@ public class Global {
         return Long.valueOf(getConfig("dashboard.password.limit.time"));
     }
 
-    /**
-     * 获取文件上传路径
-     */
+    public static String getResourcePrefix() {
+        return "prefix";
+    }
     public static String getProfile() {
         return getConfig("dashboard.filepath");
+    }
+
+    public static String getImportPath() {
+        return getProfile() + "/import";
     }
 
     public static String getContextPath() {

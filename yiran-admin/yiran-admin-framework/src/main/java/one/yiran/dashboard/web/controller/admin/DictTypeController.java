@@ -1,13 +1,11 @@
 package one.yiran.dashboard.web.controller.admin;
 
-import one.yiran.dashboard.common.annotation.AjaxWrapper;
-import one.yiran.dashboard.common.annotation.ApiParam;
+import one.yiran.dashboard.common.annotation.*;
 import one.yiran.common.domain.PageRequest;
 import one.yiran.dashboard.manage.entity.SysDictData;
 import one.yiran.dashboard.manage.entity.SysDictType;
 import one.yiran.db.common.util.PageRequestUtil;
 import one.yiran.common.domain.PageModel;
-import one.yiran.dashboard.common.annotation.Log;
 import one.yiran.dashboard.common.constants.BusinessType;
 import one.yiran.common.domain.Ztree;
 import one.yiran.common.exception.BusinessException;
@@ -15,56 +13,64 @@ import one.yiran.dashboard.manage.security.UserInfoContextHelper;
 import one.yiran.dashboard.manage.security.config.PermissionConstants;
 import one.yiran.dashboard.manage.service.SysDictTypeService;
 import one.yiran.dashboard.common.util.ExcelUtil;
-import one.yiran.dashboard.common.annotation.RequirePermission;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/system/dict")
-@AjaxWrapper
+@RequestMapping("/system/dict/type")
 public class DictTypeController {
 
     @Autowired
     private SysDictTypeService sysDictTypeService;
 
-
+    @AjaxWrapper
     @PostMapping("/detail")
     @RequirePermission(PermissionConstants.Dict.VIEW)
     public SysDictType detail(@ApiParam(required = true) Long dictId) {
         return sysDictTypeService.selectByPId(dictId);
     }
 
+    @AjaxWrapper
     @RequirePermission(PermissionConstants.Dict.VIEW)
     @PostMapping("/list")
-    public PageModel list(@RequestBody SysDictType sysDictType, @ApiParam String dictId, PageRequest pageRequest) {
+    public PageModel list(@ApiObject(createIfNull = true) SysDictType sysDictType, @ApiParam String dictId, PageRequest pageRequest) {
         sysDictType.setIsDelete(false);
         PageModel<SysDictType> list = sysDictTypeService.selectPage(pageRequest, sysDictType);
         return list;
     }
 
     @Log(title = "字典类型", businessType = BusinessType.EXPORT)
-    @RequirePermission(PermissionConstants.Dict.EXPORT)
-    @PostMapping("/export")
-    public Object export(@RequestBody SysDictType sysDictType, HttpServletRequest request) {
-        List<SysDictType> list = sysDictTypeService.selectList(PageRequestUtil.fromRequestIgnorePageSize(request), sysDictType);
-        ExcelUtil<SysDictType> util = new ExcelUtil<SysDictType>(SysDictType.class);
-        String name = util.exportExcel(list, "字典类型");
-        Map map = new HashMap<>();
-        map.put("name", name);
-        return name;
+//    @RequirePermission(PermissionConstants.Dict.EXPORT)
+    @RequestMapping("/export")
+    public void export(@ApiObject(createIfNull = true) SysDictType sysDictType, HttpServletRequest request, HttpServletResponse response) throws IOException {
+//        List<SysDictType> list = sysDictTypeService.selectList(PageRequestUtil.fromRequestIgnorePageSize(request), sysDictType);
+        List<SysDictType> list = sysDictTypeService.selectAll();
+        ExcelUtil<SysDictType> util = new ExcelUtil<>(SysDictType.class);
+        util.exportExcel(response, list, "字典类型");
+//        response.setCharacterEncoding("utf-8");
+//        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+//        byte[] x = FileUtils.readFileToByteArray(new File("/Users/jingjingzhong/Downloads/export.xlsx"));
+//        IOUtils.write(x,response.getOutputStream());
+        response.flushBuffer();
     }
 
     @Log(title = "字典类型", businessType = BusinessType.ADD)
+    @AjaxWrapper
     @RequirePermission(PermissionConstants.Dict.ADD)
     @PostMapping("/add")
-    public SysDictType addSave(@Validated @RequestBody SysDictType bean) {
+    public SysDictType addSave(@ApiObject SysDictType bean) {
         SysDictType dict = new SysDictType();
         dict.setDictType(bean.getDictType());
         dict.setDictName(bean.getDictName());
@@ -81,9 +87,10 @@ public class DictTypeController {
     }
 
     @Log(title = "字典类型", businessType = BusinessType.EDIT)
+    @AjaxWrapper
     @RequirePermission(PermissionConstants.Dict.EDIT)
     @PostMapping("/edit")
-    public SysDictType editSave(@Validated @RequestBody SysDictType bean) {
+    public SysDictType editSave(@ApiObject SysDictType bean) {
         if (bean.getDictId() == null) {
             throw BusinessException.build("修改字典失败，dictId不能为空");
         }
@@ -101,20 +108,22 @@ public class DictTypeController {
         return sysDictTypeService.updateDictType(dict);
     }
 
-    @Log(title = "字典类型", businessType = BusinessType.DELETE)
-    @RequirePermission(PermissionConstants.Dict.REMOVE)
-    @PostMapping("/remove")
-    public long remove(@RequestBody Long[] ids) throws BusinessException {
-        return sysDictTypeService.removeByPIds(ids);
-    }
+//    @Log(title = "字典类型", businessType = BusinessType.DELETE)
+//    @RequirePermission(PermissionConstants.Dict.REMOVE)
+//    @PostMapping("/remove")
+//    public long remove(@ApiParam Long[] dictIds) throws BusinessException {
+//        return sysDictTypeService.removeByPIds(dictIds);
+//    }
 
     @Log(title = "字典类型", businessType = BusinessType.DELETE)
+    @AjaxWrapper
     @RequirePermission(PermissionConstants.Dict.REMOVE)
     @PostMapping("/delete")
-    public long delete(@RequestBody Long[] ids) throws BusinessException {
-        return sysDictTypeService.deleteByPIds(ids);
+    public long delete(@ApiParam Long[] dictIds) throws BusinessException {
+        return sysDictTypeService.deleteByPIds(dictIds);
     }
 
+    @AjaxWrapper
     @RequirePermission(PermissionConstants.Dict.VIEW)
     @PostMapping("/checkDictTypeUnique")
     public boolean checkDictTypeUnique(String dictType, Long dictId) {
@@ -127,6 +136,7 @@ public class DictTypeController {
     /**
      * 加载字典列表树
      */
+    @AjaxWrapper
     @RequirePermission(PermissionConstants.Dict.VIEW)
     @GetMapping("/treeData")
     public List<Ztree> treeData(HttpServletRequest request) {

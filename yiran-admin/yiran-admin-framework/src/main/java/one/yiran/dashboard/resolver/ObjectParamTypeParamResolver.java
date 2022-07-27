@@ -44,8 +44,13 @@ public class ObjectParamTypeParamResolver implements HandlerMethodArgumentResolv
 		ApiObject apiParam = parameter.getParameterAnnotation(ApiObject.class);
 		if(apiParam == null)
 			return null;
-
-		Object v = ServletRequestUtil.getObjectFromRequest(httpServletRequest, parameterType);
+		Object v ;
+		try {
+			 v = ServletRequestUtil.getObjectFromRequest(httpServletRequest, parameterType);
+		} catch (Exception e) {
+			log.info("解析请求异常:{}", parameterType);
+			throw e;
+		}
 		if(apiParam.validate()) {
 			List<String> res = valid(v);
 			if(res.size() > 0) {
