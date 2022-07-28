@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@AjaxWrapper
 @Controller
 @RequestMapping("/system/dict/type")
 public class DictTypeController {
@@ -35,14 +36,12 @@ public class DictTypeController {
     @Autowired
     private SysDictTypeService sysDictTypeService;
 
-    @AjaxWrapper
     @PostMapping("/detail")
     @RequirePermission(PermissionConstants.Dict.VIEW)
     public SysDictType detail(@ApiParam(required = true) Long dictId) {
         return sysDictTypeService.selectByPId(dictId);
     }
 
-    @AjaxWrapper
     @RequirePermission(PermissionConstants.Dict.VIEW)
     @PostMapping("/list")
     public PageModel list(@ApiObject(createIfNull = true) SysDictType sysDictType, @ApiParam String dictId, PageRequest pageRequest) {
@@ -52,22 +51,16 @@ public class DictTypeController {
     }
 
     @Log(title = "字典类型", businessType = BusinessType.EXPORT)
-//    @RequirePermission(PermissionConstants.Dict.EXPORT)
+    @RequirePermission(PermissionConstants.Dict.EXPORT)
     @RequestMapping("/export")
     public void export(@ApiObject(createIfNull = true) SysDictType sysDictType, HttpServletRequest request, HttpServletResponse response) throws IOException {
-//        List<SysDictType> list = sysDictTypeService.selectList(PageRequestUtil.fromRequestIgnorePageSize(request), sysDictType);
-        List<SysDictType> list = sysDictTypeService.selectAll();
+        sysDictType.setIsDelete(false);
+        List<SysDictType> list = sysDictTypeService.selectList(PageRequestUtil.fromRequestIgnorePageSize(request), sysDictType);
         ExcelUtil<SysDictType> util = new ExcelUtil<>(SysDictType.class);
         util.exportExcel(response, list, "字典类型");
-//        response.setCharacterEncoding("utf-8");
-//        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-//        byte[] x = FileUtils.readFileToByteArray(new File("/Users/jingjingzhong/Downloads/export.xlsx"));
-//        IOUtils.write(x,response.getOutputStream());
-        response.flushBuffer();
     }
 
     @Log(title = "字典类型", businessType = BusinessType.ADD)
-    @AjaxWrapper
     @RequirePermission(PermissionConstants.Dict.ADD)
     @PostMapping("/add")
     public SysDictType addSave(@ApiObject SysDictType bean) {
@@ -87,7 +80,6 @@ public class DictTypeController {
     }
 
     @Log(title = "字典类型", businessType = BusinessType.EDIT)
-    @AjaxWrapper
     @RequirePermission(PermissionConstants.Dict.EDIT)
     @PostMapping("/edit")
     public SysDictType editSave(@ApiObject SysDictType bean) {
@@ -116,14 +108,12 @@ public class DictTypeController {
 //    }
 
     @Log(title = "字典类型", businessType = BusinessType.DELETE)
-    @AjaxWrapper
     @RequirePermission(PermissionConstants.Dict.REMOVE)
     @PostMapping("/delete")
     public long delete(@ApiParam Long[] dictIds) throws BusinessException {
         return sysDictTypeService.deleteByPIds(dictIds);
     }
 
-    @AjaxWrapper
     @RequirePermission(PermissionConstants.Dict.VIEW)
     @PostMapping("/checkDictTypeUnique")
     public boolean checkDictTypeUnique(String dictType, Long dictId) {
@@ -136,7 +126,6 @@ public class DictTypeController {
     /**
      * 加载字典列表树
      */
-    @AjaxWrapper
     @RequirePermission(PermissionConstants.Dict.VIEW)
     @GetMapping("/treeData")
     public List<Ztree> treeData(HttpServletRequest request) {

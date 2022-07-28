@@ -16,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @AjaxWrapper
@@ -34,43 +35,42 @@ public class DictDataController {
 
     @PostMapping("/list")
     @RequirePermission(PermissionConstants.Dict.VIEW)
-    public PageModel list(@ApiObject(createIfNull = true) SysDictData sysDictData, HttpServletRequest request) {
+    public List<SysDictData> list(@ApiObject(createIfNull = true) SysDictData sysDictData, HttpServletRequest request) {
         sysDictData.setIsDelete(false);
-        PageModel<SysDictData> list = sysDictDataService.selectPage(PageRequestUtil.fromRequest(request), sysDictData);
+        List<SysDictData> list = sysDictDataService.selectList(PageRequestUtil.fromRequest(request), sysDictData);
         return list;
     }
 
     @Log(title = "字典数据", businessType = BusinessType.EXPORT)
     @RequirePermission(PermissionConstants.Dict.EXPORT)
     @PostMapping("/export")
-    public String export(@RequestBody SysDictData sysDictData, HttpServletRequest request) {
+    public void export(@ApiObject(createIfNull = true) SysDictData sysDictData, HttpServletRequest request, HttpServletResponse response) {
         List<SysDictData> list = sysDictDataService.selectList(PageRequestUtil.fromRequestIgnorePageSize(request), sysDictData);
-        ExcelUtil<SysDictData> util = new ExcelUtil<SysDictData>(SysDictData.class);
-        return util.exportExcel(list, "字典数据");
+        ExcelUtil<SysDictData> util = new ExcelUtil<>(SysDictData.class);
+        util.exportExcel(response, list, "字典数据");
     }
 
     @Log(title = "字典数据", businessType = BusinessType.ADD)
     @RequirePermission(PermissionConstants.Dict.ADD)
     @PostMapping("/add")
-    public SysDictData addSave(@Validated @RequestBody SysDictData dict) {
+    public SysDictData add(@ApiObject(validate = true) SysDictData dict) {
         dict.setCreateBy(UserInfoContextHelper.getCurrentLoginName());
         dict.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
-
         return sysDictDataService.insert(dict);
     }
 
     @Log(title = "字典数据", businessType = BusinessType.EDIT)
     @RequirePermission(PermissionConstants.Dict.EDIT)
     @PostMapping("/edit")
-    public SysDictData editSave(@Validated @RequestBody SysDictData dict) {
+    public SysDictData edit(@ApiObject(validate = true) SysDictData dict) {
         dict.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
         return sysDictDataService.update(dict);
     }
 
     @Log(title = "字典数据", businessType = BusinessType.DELETE)
     @RequirePermission(PermissionConstants.Dict.REMOVE)
-    @PostMapping("/remove")
-    public long remove(@RequestBody Long[] ids) {
-        return sysDictDataService.deleteByPIds(ids);
+    @PostMapping("/delete")
+    public long remove(@ApiParam Long[] dictCodes) {
+        return sysDictDataService.deleteByPIds(dictCodes);
     }
 }

@@ -273,7 +273,7 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
             }
         }
         Query query = entityManager.createQuery(
-                "update " + ((Class) tClass).getName() + " set 'isDelete' = true WHERE  " + fieldName + " in (" + sb + ")");
+                "update " + ((Class) tClass).getName() + " set isDelete = true WHERE  " + fieldName + " in (" + sb + ")");
 
         if (Long.class.isAssignableFrom(filedType)) {
             for(int i = 0; i <ids.length; i ++) {
@@ -293,7 +293,7 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
     @Override
     public long deleteAll() {
         Query query = entityManager.createQuery(
-                "update " + ((Class) tClass).getName() + " set 'isDelete' = true");
+                "update " + ((Class) tClass).getName() + " set isDelete = true");
         int deletedCount = query.executeUpdate();
         return deletedCount;
     }
