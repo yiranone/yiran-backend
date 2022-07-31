@@ -47,16 +47,9 @@ public class SysConfigServiceImpl extends CrudBaseServiceImpl<Long, SysConfig> i
 
     }
 
-    /**
-     * 校验参数键名是否唯一
-     *
-     * @param sysConfig 参数配置信息
-     * @return 结果
-     */
     @Override
-    public boolean checkConfigKeyUnique(SysConfig sysConfig) {
-        Long configId = sysConfig.getConfigId() == null ? -1L : sysConfig.getConfigId();
-        SysConfig info = configDao.findByConfigKey(sysConfig.getConfigKey());
+    public boolean checkConfigKeyUnique(String configKey, Long configId) {
+        SysConfig info = configDao.findByConfigKey(configKey);
         if (info != null && info.getConfigId().longValue() != configId.longValue()) {
             return false;
         }

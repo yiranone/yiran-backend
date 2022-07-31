@@ -12,12 +12,7 @@ public interface SysConfigService extends CrudBaseService<Long, SysConfig> {
      */
     String selectNormalConfigByKey(String key);
 
-    /**
-     * 查询包含删除的config
-     * @param configKey
-     * @return
-     */
     String selectConfigByKey(String configKey);
 
-    boolean checkConfigKeyUnique(SysConfig sysConfig);
+    boolean checkConfigKeyUnique(String configKey,Long configId);
 }

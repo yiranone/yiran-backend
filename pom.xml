@@ -129,21 +129,6 @@
         </dependencies>
     </dependencyManagement>
 
-<!--    <repositories>
-        <repository>
-            <id>public</id>
-            <name>aliyun nexus</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
-        <repository>
-            <id>michaelklishin</id>
-            <url>https://dl.bintray.com/michaelklishin/maven/</url>
-        </repository>
-    </repositories>-->
-
     <repositories>
         <repository>
             <id>rdc-releases</id>
