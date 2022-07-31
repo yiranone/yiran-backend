@@ -1,4 +1,4 @@
-package one.yiran.dashboard.web.controller.monitor;
+package one.yiran.dashboard.web.controller.admin;
 
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
 import one.yiran.dashboard.common.annotation.ApiParam;
@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @AjaxWrapper
 @Controller
-@RequestMapping("/monitor/online")
+@RequestMapping("/system/online")
 public class UserOnlineController {
 
     @Autowired

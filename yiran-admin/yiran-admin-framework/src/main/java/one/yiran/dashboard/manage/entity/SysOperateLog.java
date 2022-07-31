@@ -15,10 +15,10 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @EqualsAndHashCode(callSuper = false)
-@Table(name = "sys_op_log")
+@Table(name = "sys_operate_log")
 @Entity
 @Data
-public class SysOperLog extends TimedBasedEntity {
+public class SysOperateLog extends TimedBasedEntity {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -28,7 +28,7 @@ public class SysOperLog extends TimedBasedEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private Long operId;
+    private Long operateId;
 
     /**
      * 操作模块
@@ -66,25 +66,16 @@ public class SysOperLog extends TimedBasedEntity {
     @Column
     private String requestMethod;
 
-    /**
-     * 操作人类别
-     */
-    @Excel(name = "操作类别", readConverterExp = "0=其它,1=后台用户,2=手机端用户")
+    @Excel(name = "操作人类别", readConverterExp = "0=其它,1=后台用户,2=手机端用户")
     @Search
     @Column
     private Integer operatorType;
 
-    /**
-     * 操作人员
-     */
     @Excel(name = "操作人员")
     @Search
     @Column
-    private String operName;
+    private String operateName;
 
-    /**
-     * 部门名称
-     */
     @Excel(name = "部门名称")
     @Search
     @Column
@@ -95,28 +86,25 @@ public class SysOperLog extends TimedBasedEntity {
      */
     @Excel(name = "请求地址")
     @Column(length = 256)
-    private String operUrl;
+    private String operateUrl;
 
-    /**
-     * 操作地址
-     */
     @Excel(name = "操作地址")
     @Column(length = 32)
-    private String operIp;
+    private String operateIp;
 
     /**
      * 操作地点
      */
     @Excel(name = "操作地点")
     @Column(length = 64)
-    private String operLocation;
+    private String operateLocation;
 
     /**
      * 请求参数
      */
     @Excel(name = "请求参数")
     @Column(length = 256)
-    private String operParam;
+    private String operateParam;
 
     /** 返回参数 */
     @Excel(name = "返回参数")
@@ -144,7 +132,7 @@ public class SysOperLog extends TimedBasedEntity {
     @Excel(name = "操作时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     @CreateTimeAdvise
     @Column
-    private Date operTime;
+    private Date operateTime;
 
     @Option(value = {"ADMIN","MEMBER"}, message = "sessionType只能是ADMIN，MEMBER")
     @Column(length = 8)
@@ -153,21 +141,21 @@ public class SysOperLog extends TimedBasedEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("operId", getOperId())
+                .append("operateId", this.getOperateId())
                 .append("title", getTitle())
                 .append("businessType", getBusinessType())
                 .append("businessTypes", getBusinessTypes())
                 .append("method", getMethod())
                 .append("operatorType", getOperatorType())
-                .append("operName", getOperName())
+                .append("operateName", this.getOperateName())
                 .append("deptName", getDeptName())
-                .append("operUrl", getOperUrl())
-                .append("operIp", getOperIp())
-                .append("operLocation", getOperLocation())
-                .append("operParam", getOperParam())
+                .append("operateUrl", this.getOperateUrl())
+                .append("operateIp", this.getOperateIp())
+                .append("operateLocation", this.getOperateLocation())
+                .append("operateParam", this.getOperateParam())
                 .append("status", getStatus())
                 .append("errorMsg", getErrorMsg())
-                .append("operTime", getOperTime())
+                .append("operateTime", this.getOperateTime())
                 .append("sessionType", getSessionType())
                 .toString();
     }

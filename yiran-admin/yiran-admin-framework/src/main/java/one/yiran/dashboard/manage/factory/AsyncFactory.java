@@ -3,8 +3,7 @@ package one.yiran.dashboard.manage.factory;
 import eu.bitwalker.useragentutils.UserAgent;
 import one.yiran.dashboard.common.constants.SystemConstants;
 import one.yiran.dashboard.manage.entity.SysLoginInfo;
-import one.yiran.dashboard.manage.entity.SysOperLog;
-import one.yiran.dashboard.manage.security.UserInfoContextHelper;
+import one.yiran.dashboard.manage.entity.SysOperateLog;
 import one.yiran.dashboard.manage.service.SysLoginInfoService;
 import one.yiran.dashboard.manage.service.SysOperLogService;
 import one.yiran.dashboard.common.util.IpUtil;
@@ -22,14 +21,14 @@ import java.util.TimerTask;
 public class AsyncFactory {
     private static final Logger sys_user_logger = LoggerFactory.getLogger("sys-user");
 
-    public static TimerTask recordOperateInfo(final SysOperLog sysOperLog) {
+    public static TimerTask recordOperateInfo(final SysOperateLog sysOperateLog) {
         return new TimerTask() {
             @Override
             public void run() {
-                sysOperLog.setJsonResult(StringUtils.substring(sysOperLog.getJsonResult(),0,2048));
-                sysOperLog.setOperLocation(IpUtil.getRealAddressByIP(sysOperLog.getOperIp()));
-                sysOperLog.setCreateTime(new Date());
-                SpringUtil.getBean(SysOperLogService.class).insert(sysOperLog);
+                sysOperateLog.setJsonResult(StringUtils.substring(sysOperateLog.getJsonResult(),0,2048));
+                sysOperateLog.setOperateLocation(IpUtil.getRealAddressByIP(sysOperateLog.getOperateIp()));
+                sysOperateLog.setCreateTime(new Date());
+                SpringUtil.getBean(SysOperLogService.class).insert(sysOperateLog);
             }
         };
     }

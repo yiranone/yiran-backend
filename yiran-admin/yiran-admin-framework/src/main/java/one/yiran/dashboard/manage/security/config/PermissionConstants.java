@@ -95,24 +95,24 @@ public class PermissionConstants {
         public static final String EXPORT = PREFIX + "export";
     }
 
-    public static class OperLog {
-        public static final String PREFIX = MONITOR_PREFIX + ":operLog:";
+    public static class OperateLog {
+        public static final String PREFIX = SYSTEM_PREFIX + ":operate:log:";
         public static final String VIEW = PREFIX + "view";
         public static final String REMOVE = PREFIX + "remove";
         public static final String EXPORT = PREFIX + "export";
     }
 
     public static class LoginInfo {
-        public static final String PREFIX = MONITOR_PREFIX + ":loginInfo:";
+        public static final String PREFIX = SYSTEM_PREFIX + ":login:info:";
         public static final String VIEW = PREFIX + "view";
         public static final String REMOVE = PREFIX + "remove";
         public static final String EXPORT = PREFIX + "export";
     }
 
     public static class UserOnline {
-        public static final String PREFIX = MONITOR_PREFIX + ":onlineUser:";
+        public static final String PREFIX = SYSTEM_PREFIX + ":online:user:";
         public static final String VIEW = PREFIX + "view";
-        public static final String FORCE_LOGOUT = PREFIX + "forceLogout";
+        public static final String FORCE_LOGOUT = PREFIX + "force:logout";
     }
 
     public static class Member {

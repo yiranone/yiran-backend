@@ -1,6 +1,8 @@
 package one.yiran.dashboard.web.controller.admin;
 
 import one.yiran.dashboard.common.annotation.*;
+import one.yiran.dashboard.manage.entity.SysDictType;
+import one.yiran.dashboard.manage.service.SysDictTypeService;
 import one.yiran.db.common.util.PageRequestUtil;
 import one.yiran.dashboard.common.constants.BusinessType;
 import one.yiran.dashboard.manage.entity.SysDictData;
@@ -24,6 +26,9 @@ public class DictDataController {
     @Autowired
     private SysDictDataService sysDictDataService;
 
+    @Autowired
+    private SysDictTypeService sysDictTypeService;
+
     @PostMapping("/detail")
     @RequirePermission(PermissionConstants.Dict.VIEW)
     public SysDictData detail(@ApiParam(required = true) Long dictCode) {
@@ -32,8 +37,14 @@ public class DictDataController {
 
     @PostMapping("/list")
     @RequirePermission(PermissionConstants.Dict.VIEW)
-    public List<SysDictData> list(@ApiObject(createIfNull = true) SysDictData sysDictData, HttpServletRequest request) {
+    public List<SysDictData> list(@ApiParam Long dictId, @ApiObject(createIfNull = true) SysDictData sysDictData, HttpServletRequest request) {
         sysDictData.setIsDelete(false);
+        if(dictId != null) {
+            SysDictType type = sysDictTypeService.selectByPId(dictId);
+            if(type != null) {
+                sysDictData.setDictType(type.getDictType());
+            }
+        }
         List<SysDictData> list = sysDictDataService.selectList(PageRequestUtil.fromRequest(request), sysDictData);
         return list;
     }
