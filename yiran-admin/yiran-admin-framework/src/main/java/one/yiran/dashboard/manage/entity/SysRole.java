@@ -65,6 +65,9 @@ public class SysRole extends TimedBasedEntity {
     @Column(length = 8,nullable = false)
     private String status;
 
+    //父子联动
+    @Column
+    private Boolean menuCheckStrictly;
     /**
      * 用户是否存在此角色标识 默认不存在
      */
@@ -77,8 +80,8 @@ public class SysRole extends TimedBasedEntity {
     @Transient
     private List<Long> permIds;
 
-    @Transient
-    private List<SysPerm> permList;
+//    @Transient
+//    private List<SysPerm> permList;
 
     public boolean isAdmin()
     {

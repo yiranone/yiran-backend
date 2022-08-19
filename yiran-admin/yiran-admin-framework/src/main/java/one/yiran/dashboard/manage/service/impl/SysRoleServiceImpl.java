@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -266,15 +267,10 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
     @Override
     public SysRole findDetailById(Long roleId) {
         SysRole role = super.selectByPId(roleId);
-        List<SysPerm> permList = permDao.findAllByOrderByPermSortAscPermIdAsc();
+//        List<SysPerm> permList = permDao.findAllByOrderByPermSortAscPermIdAsc();
         List<SysRolePerm> rolePermList = rolePermDao.findAllByRoleId(roleId);
-        permList.stream().forEach(p -> {
-            long count = rolePermList.stream().filter(rp -> p.getPermId().equals(rp.getPermId())).count();
-            if (count > 0) {
-                p.setFlag(true);
-            }
-        });
-        role.setPermList(permList);
+        List<Long> permIds = rolePermList.stream().map(SysRolePerm::getPermId).collect(Collectors.toList());
+        role.setPermIds(permIds);
         return role;
     }
 

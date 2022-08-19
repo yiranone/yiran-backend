@@ -3,6 +3,7 @@ package one.yiran.dashboard.manage.service.impl;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import one.yiran.dashboard.common.constants.UserConstants;
 import one.yiran.common.domain.PageModel;
@@ -564,20 +565,25 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
 
         QSysUser qSysUser = QSysUser.sysUser;
         QSysUserRole qSysUserRole = QSysUserRole.sysUserRole;
-        JPAQuery<SysUser> jpa = queryFactory.selectFrom(qSysUser)
-                .innerJoin(qSysUserRole)
-                .on(qSysUser.userId.eq(qSysUserRole.userId));
+        JPAQuery<SysUser> jpa = queryFactory.selectFrom(qSysUser);
 //                .innerJoin(qSysDept)
 //                .on(qSysUser.deptId.eq(qSysDept.deptId));
 
         if (inRoles) {
-            jpa.where(qSysUserRole.roleId.eq(roleId));
+            jpa.where(qSysUser.userId.in(
+                    JPAExpressions.select(qSysUserRole.userId).from(qSysUserRole).where(qSysUserRole.roleId.eq(roleId))
+            ));
         } else {
-            jpa.where(qSysUserRole.roleId.ne(roleId));
+            jpa.where(qSysUser.userId.notIn(
+                    JPAExpressions.select(qSysUserRole.userId).from(qSysUserRole).where(qSysUserRole.roleId.eq(roleId))
+            ));
         }
         if (user != null) {
             if (StringUtils.isNotBlank(user.getLoginName())) {
                 jpa.where(qSysUser.loginName.like("%" + user.getLoginName().trim() + "%"));
+            }
+            if (StringUtils.isNotBlank(user.getUserName())) {
+                jpa.where(qSysUser.userName.like("%" + user.getUserName().trim() + "%"));
             }
             if (StringUtils.isNotBlank(user.getPhoneNumber())) {
                 jpa.where(qSysUser.phoneNumber.eq(user.getPhoneNumber().trim()));

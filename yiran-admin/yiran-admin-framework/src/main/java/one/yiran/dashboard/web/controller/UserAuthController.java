@@ -1,10 +1,7 @@
 package one.yiran.dashboard.web.controller;
 
 import one.yiran.common.domain.PageModel;
-import one.yiran.dashboard.common.annotation.AjaxWrapper;
-import one.yiran.dashboard.common.annotation.ApiParam;
-import one.yiran.dashboard.common.annotation.Log;
-import one.yiran.dashboard.common.annotation.RequirePermission;
+import one.yiran.dashboard.common.annotation.*;
 import one.yiran.dashboard.common.constants.BusinessType;
 import one.yiran.dashboard.manage.entity.SysRole;
 import one.yiran.dashboard.manage.entity.SysUser;
@@ -86,7 +83,7 @@ public class UserAuthController {
     @RequirePermission(PermissionConstants.Role.VIEW)
     @PostMapping("/roleUser/allocatedList")
     public PageModel<UserPageVO> allocatedList(@ApiParam(required = true) Long roleId,
-                                            @ApiParam SysUser search,
+                                            @ApiObject SysUser search,
                                             HttpServletRequest request) {
         return sysUserService.selectAllocatedList(PageRequestUtil.fromRequest(request), roleId, search, null);
     }
@@ -97,7 +94,7 @@ public class UserAuthController {
     @RequirePermission(PermissionConstants.Role.VIEW)
     @PostMapping("/roleUser/unallocatedList")
     public PageModel<UserPageVO> unallocatedList(@ApiParam(required = true) Long roleId,
-                                                 @ApiParam SysUser search,
+                                                 @ApiObject SysUser search,
                                                  HttpServletRequest request) {
         return sysUserService.selectUnallocatedList(PageRequestUtil.fromRequest(request), roleId, search, null);
     }

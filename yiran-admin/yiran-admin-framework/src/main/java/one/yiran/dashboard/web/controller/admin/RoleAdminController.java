@@ -3,14 +3,11 @@ package one.yiran.dashboard.web.controller.admin;
 import one.yiran.common.domain.PageRequest;
 import one.yiran.dashboard.common.annotation.*;
 import one.yiran.dashboard.manage.dao.RolePermDao;
-import one.yiran.dashboard.manage.entity.SysRolePerm;
-import one.yiran.dashboard.manage.entity.SysRole;
-import one.yiran.dashboard.manage.entity.SysUserRole;
+import one.yiran.dashboard.manage.entity.*;
 import one.yiran.db.common.util.PageRequestUtil;
 import one.yiran.common.domain.PageModel;
 import lombok.extern.slf4j.Slf4j;
 import one.yiran.dashboard.common.constants.BusinessType;
-import one.yiran.dashboard.manage.entity.SysUser;
 import one.yiran.dashboard.manage.security.UserInfoContextHelper;
 import one.yiran.dashboard.manage.service.SysRoleService;
 import one.yiran.dashboard.manage.service.SysUserService;
@@ -38,6 +35,16 @@ public class RoleAdminController {
     @Autowired
     private RolePermDao rolePermDao;
 
+//    @PostMapping("/detail")
+//    @RequirePermission(PermissionConstants.Role.VIEW)
+//    public SysRole detail(@ApiParam(required = true) Long roleId) {
+//        return sysRoleService.selectByPId(roleId);
+//    }
+    @RequirePermission(PermissionConstants.Role.VIEW)
+    @PostMapping("/detail")
+    public SysRole detail(@ApiParam(required = true) Long roleId) throws BusinessException {
+        return sysRoleService.findDetailById(roleId);
+    }
     @RequirePermission(PermissionConstants.Role.VIEW)
     @PostMapping("/list")
     public PageModel<SysRole> list(@ApiObject(createIfNull = true) SysRole sysRole, HttpServletRequest request) {
@@ -46,11 +53,11 @@ public class RoleAdminController {
 //        if(!UserInfoContextHelper.getLoginUser().isHasAllDeptPerm())
 //            pageRequest.setDepts(UserInfoContextHelper.getLoginUser().getScopeData(PermissionConstants.Role.VIEW));
         PageModel<SysRole> list = sysRoleService.selectPage(pageRequest, sysRole);
-        list.getRows().stream().forEach(t -> {
-            List<SysRolePerm> rolePermList = rolePermDao.findAllByRoleId(t.getRoleId());
-            List<Long> permIds = rolePermList.stream().map(p -> p.getPermId()).collect(Collectors.toList());
-            t.setPermIds(permIds);
-        });
+//        list.getRows().stream().forEach(t -> {
+//            List<SysRolePerm> rolePermList = rolePermDao.findAllByRoleId(t.getRoleId());
+//            List<Long> permIds = rolePermList.stream().map(p -> p.getPermId()).collect(Collectors.toList());
+//            t.setPermIds(permIds);
+//        });
         return list;
     }
 
@@ -86,6 +93,7 @@ public class RoleAdminController {
         if (StringUtils.isNotBlank(sysRole.getStatus())) {
             dbSysRole.setStatus(sysRole.getStatus());
         }
+        dbSysRole.setMenuCheckStrictly(sysRole.getMenuCheckStrictly());
         dbSysRole.setRoleName(sysRole.getRoleName());
         dbSysRole.setRoleKey(sysRole.getRoleKey());
         dbSysRole.setRoleSort(sysRole.getRoleSort());
@@ -100,12 +108,6 @@ public class RoleAdminController {
     @PostMapping("/remove")
     public long remove(@ApiParam(required = true) Long[] roleIds) {
         return sysRoleService.removeRoleInfo(roleIds);
-    }
-
-    @RequirePermission(PermissionConstants.Role.VIEW)
-    @PostMapping("/detail")
-    public SysRole detail(@ApiParam(required = true) Long roleId) throws BusinessException {
-        return sysRoleService.findDetailById(roleId);
     }
 
     @Log(title = "角色管理", businessType = BusinessType.EDIT)

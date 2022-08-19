@@ -11,7 +11,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 @EqualsAndHashCode(callSuper = false)
@@ -103,11 +105,13 @@ public class SysOperateLog extends TimedBasedEntity {
      * 请求参数
      */
     @Excel(name = "请求参数")
-    @Column(length = 256)
+    @Size(max = 2048)
+    @Column(length = 2048)
     private String operateParam;
 
     /** 返回参数 */
     @Excel(name = "返回参数")
+    @Size(max = 2048)
     @Column(length = 2048)
     private String jsonResult;
 
