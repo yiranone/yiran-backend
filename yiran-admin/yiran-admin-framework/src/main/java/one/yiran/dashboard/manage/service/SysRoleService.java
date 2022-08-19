@@ -96,4 +96,6 @@ public interface SysRoleService extends CrudBaseService<Long, SysRole> {
     void checkRoleAllowed(SysRole sysRole);
 
     SysRole findDetailById(Long roleId);
+
+    List<String> findUserPermsByUserId(Long userId);
 }

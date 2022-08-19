@@ -5,11 +5,13 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import one.yiran.common.domain.Ztree;
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
 import one.yiran.dashboard.common.annotation.ApiParam;
+import one.yiran.dashboard.common.expection.user.UserNotLoginException;
+import one.yiran.dashboard.common.model.UserSession;
 import one.yiran.dashboard.manage.entity.*;
-import one.yiran.dashboard.manage.service.SysChannelService;
-import one.yiran.dashboard.manage.service.SysDeptService;
-import one.yiran.dashboard.manage.service.SysDictDataService;
-import one.yiran.dashboard.manage.service.SysPostService;
+import one.yiran.dashboard.manage.security.UserInfoContextHelper;
+import one.yiran.dashboard.manage.service.*;
+import one.yiran.dashboard.web.model.WebMenuTree;
+import one.yiran.dashboard.web.util.PermUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +35,22 @@ public class MetadataController {
     private SysDeptService sysDeptService;
     @Autowired
     private SysDictDataService sysDictDataService;
+    @Autowired
+    private SysMenuService sysMenuService;
+
+    @RequestMapping("/perm/tree")
+    public List<WebMenuTree> perms() {
+        UserSession user = UserInfoContextHelper.getLoginUser();
+        if(user == null)
+            throw new UserNotLoginException();
+        List<SysMenu> menusList;
+        if (user.isAdmin()) {
+            menusList = sysMenuService.selectVisibleTreeMenus(false);
+        } else {
+            menusList = sysMenuService.selectVisibleTreeMenusByUser(user.getUserId(),false);
+        }
+        return PermUtil.toWebMenuTree(menusList);
+    }
 
     @PostMapping("/dict/list")
     public List dictList(@ApiParam String dictType) {

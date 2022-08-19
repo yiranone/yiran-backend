@@ -99,6 +99,7 @@ public class RoleAdminController {
         dbSysRole.setRoleSort(sysRole.getRoleSort());
         dbSysRole.setRemark(sysRole.getRemark());
         dbSysRole.setPermIds(sysRole.getPermIds());
+        dbSysRole.setMenuIds(sysRole.getMenuIds());
         dbSysRole.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
         return sysRoleService.updateRole(dbSysRole);
     }

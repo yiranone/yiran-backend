@@ -80,6 +80,11 @@ public class SysRole extends TimedBasedEntity {
     @Transient
     private List<Long> permIds;
 
+    /**
+     * 菜单权限
+     */
+    @Transient
+    private List<Long> menuIds;
 //    @Transient
 //    private List<SysPerm> permList;
 

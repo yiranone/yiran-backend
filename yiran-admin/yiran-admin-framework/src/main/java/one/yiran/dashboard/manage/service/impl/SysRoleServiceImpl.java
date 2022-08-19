@@ -10,6 +10,8 @@ import one.yiran.db.common.service.CrudBaseServiceImpl;
 import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.manage.service.SysRoleService;
 import one.yiran.common.util.Convert;
+import one.yiran.db.common.util.PredicateBuilder;
+import one.yiran.db.common.util.PredicateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +35,9 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
 
     @Autowired
     private RolePermDao rolePermDao;
+
+    @Autowired
+    private RoleMenuDao roleMenuDao;
 
     @Autowired
     private PermDao permDao;
@@ -128,7 +133,7 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
     @Transactional
     public int insertRole(SysRole sysRole) {
         super.insert(sysRole);
-        return insertRolePerm(sysRole.getRoleId(), sysRole.getPermIds());
+        return insertRolePerm(sysRole.getRoleId(), sysRole.getMenuIds());
     }
 
     @Override
@@ -136,10 +141,10 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
     public int updateRole(SysRole sysRole) {
         Assert.notNull(sysRole.getRoleId(), "roleId cant be null");
         roleDao.save(sysRole);
-        long deletedRolePermSize = rolePermDao.deleteAllByRoleId(sysRole.getRoleId());
+        long deletedRolePermSize = roleMenuDao.deleteAllByRoleId(sysRole.getRoleId());
         entityManager.flush(); //保证上面的delete先执行
         log.info("清理原有角色数量{} 新增数量{}",deletedRolePermSize,sysRole.getPermIds().size());
-        return insertRolePerm(sysRole.getRoleId(), sysRole.getPermIds());
+        return insertRolePerm(sysRole.getRoleId(), sysRole.getMenuIds());
     }
 
     @Override
@@ -267,21 +272,44 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
     @Override
     public SysRole findDetailById(Long roleId) {
         SysRole role = super.selectByPId(roleId);
-//        List<SysPerm> permList = permDao.findAllByOrderByPermSortAscPermIdAsc();
+
         List<SysRolePerm> rolePermList = rolePermDao.findAllByRoleId(roleId);
         List<Long> permIds = rolePermList.stream().map(SysRolePerm::getPermId).collect(Collectors.toList());
         role.setPermIds(permIds);
+
+        List<SysRoleMenu> roleMenuList = roleMenuDao.findAllByRoleId(roleId);
+        List<Long> menuIds = roleMenuList.stream().map(SysRoleMenu::getMenuId).collect(Collectors.toList());
+        role.setMenuIds(menuIds);
         return role;
     }
 
-    private int insertRolePerm(Long roleId, List<Long> permIds) {
-        for (Long permId : permIds) {
-            SysRolePerm rm = new SysRolePerm();
+    /** 查询用户已经有的菜单权限 */
+    @Override
+    public List<String> findUserPermsByUserId(Long userId) {
+        Assert.notNull(userId,"用户ID不能为空");
+        QSysMenu qSysMenu = QSysMenu.sysMenu;
+        QSysRoleMenu qSysRoleMenu = QSysRoleMenu.sysRoleMenu;
+        QSysUserRole qSysUserRole = QSysUserRole.sysUserRole;
+        QSysRole qSysRole = QSysRole.sysRole;
+        JPAQuery<String> jpa = queryFactory.select(qSysMenu.perms).from(qSysMenu)
+                .innerJoin(qSysRoleMenu)
+                .on(qSysMenu.menuId.eq(qSysRoleMenu.menuId))
+                .innerJoin(qSysUserRole)
+                .on(qSysRoleMenu.roleId.eq(qSysUserRole.roleId)
+                        .and(qSysUserRole.userId.eq(userId)))
+                .innerJoin(qSysRole).on(qSysUserRole.roleId.eq(qSysRole.roleId))
+                .where(PredicateUtil.buildNotDeletePredicate(qSysRole));
+        return jpa.fetch();
+    }
+
+    private int insertRolePerm(Long roleId, List<Long> menuIds) {
+        for (Long menuId : menuIds) {
+            SysRoleMenu rm = new SysRoleMenu();
             rm.setRoleId(roleId);
-            rm.setPermId(permId);
+            rm.setMenuId(menuId);
             entityManager.persist(rm);
         }
-        return permIds.size();
+        return menuIds.size();
     }
 
     /**

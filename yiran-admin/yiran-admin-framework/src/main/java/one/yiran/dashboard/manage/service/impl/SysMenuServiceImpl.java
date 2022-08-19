@@ -1,7 +1,6 @@
 package one.yiran.dashboard.manage.service.impl;
 
 import one.yiran.common.domain.PageRequest;
-import one.yiran.dashboard.manage.entity.*;
 import one.yiran.dashboard.manage.service.SysMenuService;
 import one.yiran.dashboard.manage.service.SysPermService;
 import one.yiran.dashboard.manage.dao.MenuDao;

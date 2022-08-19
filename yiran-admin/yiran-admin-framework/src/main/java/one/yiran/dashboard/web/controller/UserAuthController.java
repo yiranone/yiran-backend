@@ -3,6 +3,9 @@ package one.yiran.dashboard.web.controller;
 import one.yiran.common.domain.PageModel;
 import one.yiran.dashboard.common.annotation.*;
 import one.yiran.dashboard.common.constants.BusinessType;
+import one.yiran.dashboard.common.expection.user.UserNotLoginException;
+import one.yiran.dashboard.common.model.UserSession;
+import one.yiran.dashboard.manage.entity.SysMenu;
 import one.yiran.dashboard.manage.entity.SysRole;
 import one.yiran.dashboard.manage.entity.SysUser;
 import one.yiran.dashboard.manage.security.UserInfoContextHelper;
@@ -12,7 +15,10 @@ import one.yiran.dashboard.manage.service.SysPermService;
 import one.yiran.dashboard.manage.service.SysRoleService;
 import one.yiran.dashboard.manage.service.SysUserService;
 import one.yiran.dashboard.vo.UserPageVO;
+import one.yiran.dashboard.web.model.WebMenuTree;
+import one.yiran.dashboard.web.model.WebPerm;
 import one.yiran.dashboard.web.util.ChannelCheckUtils;
+import one.yiran.dashboard.web.util.PermUtil;
 import one.yiran.db.common.util.PageRequestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -39,6 +45,17 @@ public class UserAuthController {
     private SysRoleService sysRoleService;
     @Autowired
     private SysUserService sysUserService;
+
+    /**
+     * 当前登陆用户的权限
+     * @return
+     */
+    @RequireUserLogin
+    @PostMapping("/current/perms")
+    public List<String> myPermission() {
+        Long userId = UserInfoContextHelper.getCurrentUserId();
+        return sysRoleService.findUserPermsByUserId(userId);
+    }
 
     /**
      * 批量选择用户授权一个角色，只新增

@@ -49,9 +49,6 @@ public class UserAdminController {
     private SysUserService sysUserService;
 
     @Autowired
-    private SysRoleService sysRoleService;
-
-    @Autowired
     private SysDeptService sysDeptService;
 
     @Autowired
