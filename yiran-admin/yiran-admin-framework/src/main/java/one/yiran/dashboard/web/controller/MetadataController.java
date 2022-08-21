@@ -12,15 +12,15 @@ import one.yiran.dashboard.manage.security.UserInfoContextHelper;
 import one.yiran.dashboard.manage.service.*;
 import one.yiran.dashboard.web.model.WebMenuTree;
 import one.yiran.dashboard.web.util.PermUtil;
+import one.yiran.db.common.util.PredicateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @AjaxWrapper
 @Controller
@@ -63,6 +63,23 @@ public class MetadataController {
             list.add(map);
         }
         return list;
+    }
+
+    @PostMapping("/dict/all")
+    public Map dictAll() {
+        List<SysDictData> dictDatas = sysDictDataService.selectList(PredicateUtil.buildNotDeletePredicate(QSysDictData.sysDictData));
+        Map<String, List<HashMap<String, String>>> rts = dictDatas.stream().collect(
+                Collectors.groupingBy(SysDictData::getDictType)).entrySet().stream().collect(
+                Collectors.toMap(
+                        entry -> entry.getKey(),
+                        entry -> entry.getValue().stream().map(x -> new HashMap<String, String>() {{
+                            put("label", x.getDictLabel());
+                            put("value", x.getDictValue());
+                            put("cssClass", x.getCssClass());
+                            put("isDefault", x.getIsDefault());
+                        }}).collect(Collectors.toList()))
+        );
+        return rts;
     }
 
     @PostMapping("/dept/all")

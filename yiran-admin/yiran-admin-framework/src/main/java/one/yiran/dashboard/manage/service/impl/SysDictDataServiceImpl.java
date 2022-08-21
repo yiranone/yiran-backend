@@ -10,6 +10,7 @@ import one.yiran.dashboard.manage.entity.SysDictData;
 import one.yiran.dashboard.manage.service.SysDictDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class SysDictDataServiceImpl extends CrudBaseServiceImpl<Long,SysDictData
 
     @Override
     public List<SysDictData> selectDictDataByType(String dictType) {
+        Assert.notNull(dictType,"dictType不能为空");
         return selectList(QSysDictData.sysDictData.dictType.eq(dictType),QSysDictData.sysDictData.orderNum, Order.ASC);
     }
 
