@@ -1,16 +1,13 @@
 package one.yiran.dashboard.web.controller.admin;
 
 import lombok.extern.slf4j.Slf4j;
-import one.yiran.dashboard.common.annotation.AjaxWrapper;
-import one.yiran.dashboard.common.annotation.ApiObject;
-import one.yiran.dashboard.common.annotation.Log;
+import one.yiran.dashboard.common.annotation.*;
 import one.yiran.dashboard.common.constants.BusinessType;
 import one.yiran.dashboard.manage.entity.SysMenu;
 import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.manage.security.config.PermissionConstants;
 import one.yiran.dashboard.manage.service.SysMenuService;
 import one.yiran.common.domain.Ztree;
-import one.yiran.dashboard.common.annotation.RequirePermission;
 import one.yiran.db.common.util.PageRequestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -39,20 +36,8 @@ public class MenuAdminController {
     @Log(title = "菜单管理", businessType = BusinessType.DELETE)
     @RequirePermission(PermissionConstants.Menu.REMOVE)
     @RequestMapping("/remove")
-    public long remove(@RequestBody Map<String, List<Long>> params) {
-        List<Long> ids = params.get("ids");
-        Long[] menuIds = ids.toArray(new Long[ids.size()]);
+    public long remove(@ApiParam Long[] menuIds) {
         return sysMenuService.deleteByPIds(menuIds);
-    }
-
-    /**
-     * 删除菜单
-     */
-    @Log(title = "菜单管理", businessType = BusinessType.DELETE)
-    @RequirePermission(PermissionConstants.Menu.REMOVE)
-    @RequestMapping("/remove/{menuId}")
-    public long remove(@PathVariable("menuId") Long menuId) {
-        return sysMenuService.remove(menuId);
     }
 
     /**
