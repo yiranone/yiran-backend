@@ -36,15 +36,8 @@ public class DeptAdminController {
     @Log(title = "部门管理", businessType = BusinessType.DELETE)
     @RequirePermission(PermissionConstants.Dept.REMOVE)
     @RequestMapping("/remove")
-    public long remove(@ApiParam(required = true) Long[] menuIds) {
-        return sysDeptService.deleteByPIds(menuIds);
-    }
-
-    @Log(title = "部门管理", businessType = BusinessType.DELETE)
-    @RequirePermission(PermissionConstants.Dept.REMOVE)
-    @RequestMapping("/remove/{menuId}")
-    public long remove(@PathVariable("menuId") Long menuId) {
-        return sysDeptService.remove(menuId);
+    public long remove(@ApiParam(required = true) Long[] deptIds) {
+        return sysDeptService.deleteByPIds(deptIds);
     }
 
     @Log(title = "部门管理", businessType = BusinessType.ADD)
