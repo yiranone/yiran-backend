@@ -59,6 +59,12 @@ public class SysMenu extends TimedBasedEntity {
     @Column(length = 32)
     private String router;
 
+    //组件 /page/system/menu
+    @Search
+    @Size(min = 0, max = 200, message = "组件地址不能超过200个字符")
+    @Column
+    private String component;
+
     /**
      * 类型:M目录,C菜单,F按钮
      */

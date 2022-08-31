@@ -14,6 +14,7 @@ public class WebMenu {
     private Authority authority = new Authority();
     private String redirect;
     private String icon;
+    private String component;
 //    private Boolean renderMenu;
     private Boolean invisible;
 

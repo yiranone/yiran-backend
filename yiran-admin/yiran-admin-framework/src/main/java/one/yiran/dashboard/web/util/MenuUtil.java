@@ -31,6 +31,15 @@ public class MenuUtil {
         } else {
             webMenu.setChildren(null);
         }
+        if(StringUtils.isNotBlank(sysMenu.getComponent())) {
+            webMenu.setComponent(sysMenu.getComponent());
+        }
+
+        if(StringUtils.equals("会员列表",webMenu.getName())){
+//            webMenu.setInvisible(true);
+//            webMenu.setComponent("/pages/system/member");
+        }
+
         return webMenu;
     }
 

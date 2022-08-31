@@ -196,6 +196,9 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long, SysMenu> imple
             if (StringUtils.equals(m.getMenuType(), "C") && StringUtils.isBlank(m.getRouter())) {
                 throw BusinessException.build("菜单router不能为空");
             }
+            if (StringUtils.equals(m.getMenuType(), "C") && StringUtils.isBlank(m.getComponent())) {
+                throw BusinessException.build("菜单组件不能为空");
+            }
 //            if (StringUtils.equals(m.getMenuType(), "C") && StringUtils.isBlank(m.getTarget())) {
 //                throw BusinessException.build("打开方式不能为空");
 //            }
