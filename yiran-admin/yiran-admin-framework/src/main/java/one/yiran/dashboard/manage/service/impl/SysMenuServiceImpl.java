@@ -1,6 +1,9 @@
 package one.yiran.dashboard.manage.service.impl;
 
+import com.google.common.collect.Lists;
+import com.querydsl.core.types.Order;
 import one.yiran.common.domain.PageRequest;
+import one.yiran.dashboard.manage.entity.QSysMenu;
 import one.yiran.dashboard.manage.service.SysMenuService;
 import one.yiran.dashboard.manage.service.SysPermService;
 import one.yiran.dashboard.manage.dao.MenuDao;
@@ -9,6 +12,7 @@ import one.yiran.dashboard.manage.entity.SysPerm;
 import one.yiran.db.common.service.CrudBaseServiceImpl;
 import one.yiran.common.exception.BusinessException;
 import one.yiran.common.domain.Ztree;
+import one.yiran.db.common.util.PredicateUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,7 +67,7 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long, SysMenu> imple
 
     @Override
     public List<SysMenu> selectMenuList(PageRequest request, SysMenu sysMenu) {
-        List<SysMenu> results = selectList(request, sysMenu);
+        List<SysMenu> results = selectList(request, sysMenu, QSysMenu.sysMenu.orderNum, Order.ASC);
         sortMenus(results);
         return results;
     }
@@ -327,17 +331,16 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long, SysMenu> imple
         if (sysMenus == null || sysMenus.size() == 0)
             return;
         Collections.sort(sysMenus, (o1, o2) -> {
-            if (o1.getParentId() == null) {
+            if (o1.getParentId() == null && o2.getParentId() == null) {
+                return o1.getOrderNum() - o2.getOrderNum();
+            } else if (o1.getParentId() == null) {
                 return -1;
             } else if (o2.getParentId() == null) {
                 return 1;
-            }
-            if (o1.getParentId() == o2.getParentId()) {
+            } else if (o1.getParentId().longValue() == o2.getParentId().longValue()) {
                 return o1.getOrderNum() - o2.getOrderNum();
-            } else if (o1.getParentId() > o2.getParentId()) {
-                return 1;
             } else {
-                return -1;
+                return o1.getParentId().intValue() - o2.getParentId().intValue();
             }
         });
     }

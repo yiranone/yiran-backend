@@ -150,6 +150,11 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
     }
 
     @Override
+    public List<T> selectList(PageRequest request, T target, Path orderColumn, Order orderDir) {
+        return doSelectList(request,target,null,orderColumn,orderDir);
+    }
+
+    @Override
     public List<T> selectList(T target) {
         return selectList(null,target);
     }

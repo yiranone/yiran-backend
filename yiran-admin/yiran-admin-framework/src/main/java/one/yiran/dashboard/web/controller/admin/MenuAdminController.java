@@ -1,8 +1,10 @@
 package one.yiran.dashboard.web.controller.admin;
 
 import lombok.extern.slf4j.Slf4j;
+import one.yiran.common.domain.PageRequest;
 import one.yiran.dashboard.common.annotation.*;
 import one.yiran.dashboard.common.constants.BusinessType;
+import one.yiran.dashboard.manage.entity.QSysMenu;
 import one.yiran.dashboard.manage.entity.SysMenu;
 import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.manage.security.config.PermissionConstants;
@@ -29,7 +31,8 @@ public class MenuAdminController {
     @RequirePermission(PermissionConstants.Menu.VIEW)
     @PostMapping("/list")
     public List<SysMenu> list(@RequestBody SysMenu sysMenu, HttpServletRequest request) {
-        List<SysMenu> sysMenuList = sysMenuService.selectMenuList(PageRequestUtil.fromRequest(request), sysMenu);
+        PageRequest rq = PageRequestUtil.fromRequest(request);
+        List<SysMenu> sysMenuList = sysMenuService.selectMenuList(rq, sysMenu);
         return sysMenuList;
     }
 
@@ -74,13 +77,13 @@ public class MenuAdminController {
         return sysMenuService.checkMenuNameUnique(sysMenu);
     }
 
-    /**
-     * 加载所有菜单列表树，菜单编辑页面，选择父菜单
-     */
-    @GetMapping("/menuTreeData")
-    public List<Ztree> menuTreeData() {
-        List<Ztree> ztrees = sysMenuService.menuTreeData();
-        return ztrees;
-    }
+//    /**
+//     * 加载所有菜单列表树，菜单编辑页面，选择父菜单
+//     */
+//    @GetMapping("/menuTreeData")
+//    public List<Ztree> menuTreeData() {
+//        List<Ztree> ztrees = sysMenuService.menuTreeData();
+//        return ztrees;
+//    }
 
 }

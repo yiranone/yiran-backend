@@ -114,7 +114,7 @@ public class PageRequestUtil {
             Path orderPath = QClassUtil.getFieldPathByEntityName(simpleName, request.getOrderByColumn());
             orderPath = detectType(request.getOrderByColumn(),orderPath,alternativePaths);
             if(orderPath == null){
-                throw BusinessException.build("参数请求异常，排序字段不支持");
+                throw BusinessException.build("参数请求异常，排序字段"+request.getOrderByColumn()+"不支持");
             }
             if(StringUtils.isNotBlank(request.getOrderDirection())){
                 if (request.getOrderDirection().equals("DESC")) {
