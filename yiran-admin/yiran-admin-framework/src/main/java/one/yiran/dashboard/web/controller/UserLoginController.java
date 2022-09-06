@@ -1,4 +1,4 @@
-package one.yiran.dashboard.web.controller.admin;
+package one.yiran.dashboard.web.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
@@ -10,7 +10,9 @@ import one.yiran.dashboard.common.constants.ShiroConstants;
 import one.yiran.dashboard.common.constants.SystemConstants;
 import one.yiran.dashboard.common.constants.UserConstants;
 import one.yiran.dashboard.common.expection.CaptchaException;
+import one.yiran.dashboard.common.util.*;
 import one.yiran.dashboard.manage.entity.SysUser;
+import one.yiran.dashboard.manage.entity.SysUserOnline;
 import one.yiran.dashboard.manage.factory.AsyncFactory;
 import one.yiran.dashboard.manage.factory.AsyncManager;
 import one.yiran.dashboard.manage.security.UserInfoContextHelper;
@@ -19,12 +21,9 @@ import one.yiran.dashboard.common.expection.user.UserBlockedException;
 import one.yiran.dashboard.common.expection.user.UserDeleteException;
 import one.yiran.dashboard.common.expection.user.UserNotFoundException;
 import one.yiran.dashboard.common.expection.user.UserPasswordNotMatchException;
-import one.yiran.dashboard.common.util.MessageUtil;
-import one.yiran.dashboard.common.util.ServletUtil;
-import one.yiran.dashboard.common.util.UserCacheUtil;
-import one.yiran.dashboard.common.util.UserConvertUtil;
 import one.yiran.dashboard.manage.service.SysMenuService;
 import one.yiran.dashboard.manage.service.SysRoleService;
+import one.yiran.dashboard.manage.service.SysUserOnlineService;
 import one.yiran.dashboard.manage.service.SysUserService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,13 +38,13 @@ import java.util.Calendar;
  */
 @Controller
 @Slf4j
-public class LoginAdminController {
+public class UserLoginController {
 
     @Autowired
     private SysMenuService sysMenuService;
 
     @Autowired
-    private SysRoleService sysRoleService;
+    private SysUserOnlineService onlineService;
 
     @Autowired
     private PasswordService passwordService;
@@ -127,18 +126,23 @@ public class LoginAdminController {
         passwordService.validate(user, password);
 
         AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, SystemConstants.LOGIN_SUCCESS, MessageUtil.message("user.login.success")));
-        user = sysUserService.recordLoginIp(user.getUserId(), UserInfoContextHelper.getIp());
+        String ip = IpUtil.getIpAddr(ServletUtil.getRequest());
+        user = sysUserService.recordLoginIp(user.getUserId(), ip);
+
         String randomKey = RandomStringUtils.randomAlphanumeric(38);
         UserSession ui = UserConvertUtil.convert(user);
 
         //设置用户的来源系统
         ui.setChannelId(user.getChannelId());
-
-        UserCacheUtil.setSessionInfo(randomKey,ui);
         ui.setToken(randomKey);
         Calendar c = Calendar.getInstance();
         c.add(Calendar.SECOND,UserCacheUtil.getSessionTimeout());
         ui.setTokenExpires(c.getTimeInMillis());
+        UserCacheUtil.setSessionInfo(randomKey,ui);
+
+        //在线用户
+        AsyncManager.me().execute(AsyncFactory.recordOnlineInfo(ui));
+
         return ui;
     }
 

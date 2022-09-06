@@ -22,7 +22,7 @@ public class SysUserOnline implements Serializable {
      * 用户会话id
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(length = 64)
     private String sessionId;
 
@@ -33,6 +33,9 @@ public class SysUserOnline implements Serializable {
     @Column(length = 64)
     private String deptName;
 
+    @Search
+    @Column(length = 64)
+    private String channelName;
     /**
      * 登录名称
      */
@@ -90,13 +93,7 @@ public class SysUserOnline implements Serializable {
     @Column
     private OnlineStatus status = OnlineStatus.on_line;
 
-    @Transient
-    @Column
-    private byte[] session;
-    /**
-     * 备份的当前用户会话
-     */
-    //private OnlineSession2 session;
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)

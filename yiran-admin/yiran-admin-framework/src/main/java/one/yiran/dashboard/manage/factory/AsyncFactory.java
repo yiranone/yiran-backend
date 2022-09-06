@@ -2,10 +2,9 @@ package one.yiran.dashboard.manage.factory;
 
 import eu.bitwalker.useragentutils.UserAgent;
 import one.yiran.dashboard.common.constants.SystemConstants;
-import one.yiran.dashboard.manage.entity.SysLoginInfo;
-import one.yiran.dashboard.manage.entity.SysOperateLog;
-import one.yiran.dashboard.manage.service.SysLoginInfoService;
-import one.yiran.dashboard.manage.service.SysOperLogService;
+import one.yiran.dashboard.common.model.UserSession;
+import one.yiran.dashboard.manage.entity.*;
+import one.yiran.dashboard.manage.service.*;
 import one.yiran.dashboard.common.util.IpUtil;
 import one.yiran.dashboard.common.util.LogUtil;
 import one.yiran.dashboard.common.util.ServletUtil;
@@ -71,7 +70,46 @@ public class AsyncFactory {
                 }
                 // 插入数据
                 SpringUtil.getBean(SysLoginInfoService.class).insert(logininfor);
+            }
+        };
+    }
 
+    public static TimerTask recordOnlineInfo(UserSession session) {
+        final UserAgent userAgent = UserAgent.parseUserAgentString(ServletUtil.getRequest().getHeader("User-Agent"));
+        final String ip = IpUtil.getIpAddr(ServletUtil.getRequest());
+        return new TimerTask() {
+            @Override
+            public void run() {
+                String ipString = IpUtil.getRealAddressByIP(ip);
+                // 获取客户端操作系统
+                String os = userAgent.getOperatingSystem().getName();
+                // 获取客户端浏览器
+                String browser = userAgent.getBrowser().getName();
+                String deptName = "";
+                String channelName = "";
+                if (session.getDeptId() != null) {
+                    SysDept dept = SpringUtil.getBean(SysDeptService.class).selectByPId(session.getDeptId());
+                    deptName = dept.getDeptName();
+                }
+                if (session.getChannelId() != null) {
+                    SysChannel channel = SpringUtil.getBean(SysChannelService.class).selectByPId(session.getChannelId());
+                    if(channel != null)
+                        channelName = channel.getChannelName();
+                }
+                // 封装对象
+                SysUserOnline sysUserOnline = new SysUserOnline();
+                sysUserOnline.setBrowser(browser);
+                sysUserOnline.setOs(os);
+                sysUserOnline.setIpAddr(ip);
+                sysUserOnline.setLoginLocation(ipString);
+                sysUserOnline.setLoginName(session.getUserName());
+                sysUserOnline.setSessionId(session.getToken());
+                sysUserOnline.setExpireTime(session.getTokenExpires());
+                sysUserOnline.setStartTimestamp(new Date());
+                sysUserOnline.setDeptName(deptName);
+                sysUserOnline.setChannelName(channelName);
+                // 插入数据
+                SpringUtil.getBean(SysUserOnlineService.class).saveOnline(sysUserOnline);
             }
         };
     }

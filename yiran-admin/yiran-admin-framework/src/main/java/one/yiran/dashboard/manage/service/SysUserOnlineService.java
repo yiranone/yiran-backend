@@ -9,13 +9,15 @@ import java.util.List;
 
 public interface SysUserOnlineService {
 
-    public void batchDeleteOnline(List<String> sessionIds);
+    void batchDeleteOnline(List<String> sessionIds);
 
-    public void saveOnline(SysUserOnline online);
+    void saveOnline(SysUserOnline online);
 
-    public void forceLogout(String sessionId);
+    void forceLogout(String sessionId);
 
-    public List<SysUserOnline> selectOnlineByLastAccessTime(Date lastAccessTime);
+    void refreshUserLastAccessTime(String sessionId,Date accessTime);
+
+    List<SysUserOnline> selectOnlineByLastAccessTime(Date lastAccessTime);
 
     SysUserOnline selectByPId(String sessionId);
 

@@ -8,6 +8,10 @@ import one.yiran.dashboard.common.annotation.RequireUserLogin;
 import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.common.expection.user.UserNotLoginException;
 import one.yiran.dashboard.common.util.UserCacheUtil;
+import one.yiran.dashboard.manage.factory.AsyncManager;
+import one.yiran.dashboard.manage.service.SysUserOnlineService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.http.HttpMethod;
@@ -16,10 +20,15 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
+import java.util.TimerTask;
 
 @Component
 @Slf4j
 public class AuthInterceptor extends HandlerInterceptorAdapter {
+
+    @Autowired
+    private SysUserOnlineService sysUserOnlineService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -36,19 +45,36 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
 
+        String token = getTok(request);
+        UserSession session = UserCacheUtil.getSessionInfo(token);
+        if (session != null) {
+            //用户登陆了，修改下在线用户列表
+            String sessionId = session.getToken();
+            Long lastSync = session.getLastSyncToDbTime();
+            Long now = new Date().getTime();
+
+            if (sessionId != null && (lastSync == null || lastSync + 10 * 1000 < now)) {
+                session.setLastSyncToDbTime(now);
+                UserCacheUtil.setSessionInfo(sessionId, session);
+                AsyncManager.me().execute(new TimerTask() {
+                    @Override
+                    public void run() {
+                        sysUserOnlineService.refreshUserLastAccessTime(sessionId,new Date());
+                    }
+                });
+            }
+        }
+
         // 忽略没有被注解的请求, 不做后续token认证校验
         if (requireUserLogin == null && requirePermission == null) {
             return true;
         }
 
-        String token = getTok(request);
-
         if(token == null) {
             throw new UserNotLoginException();
         }
 
-        UserSession session = null;
-        if((session = UserCacheUtil.getSessionInfo(token)) == null) {
+        if(session == null) {
             throw new UserNotLoginException("用户未登录,或者登录已经过期");
         } else if (session.getIsLocked() == Boolean.TRUE) {
             throw BusinessException.build("您的账户被冻结,请联系客服");

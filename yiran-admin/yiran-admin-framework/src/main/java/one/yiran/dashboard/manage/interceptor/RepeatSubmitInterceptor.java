@@ -14,39 +14,31 @@ import java.lang.reflect.Method;
 
 /**
  * 防止重复提交拦截器
- * 
  */
 @Component
-public abstract class RepeatSubmitInterceptor extends HandlerInterceptorAdapter
-{
+public abstract class RepeatSubmitInterceptor extends HandlerInterceptorAdapter {
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception
-    {
-        if (handler instanceof HandlerMethod)
-        {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
             Method method = handlerMethod.getMethod();
             RepeatSubmit annotation = method.getAnnotation(RepeatSubmit.class);
-            if (annotation != null)
-            {
-                if (this.isRepeatSubmit(request))
-                {
+            if (annotation != null) {
+                if (this.isRepeatSubmit(request)) {
                     ResponseContainer ajaxResult = ResponseContainer.failContainer("不允许重复提交，请稍后再试");
                     ServletUtil.renderString(response, JSON.toJSONString(ajaxResult));
                     return false;
                 }
             }
             return true;
-        }
-        else
-        {
+        } else {
             return super.preHandle(request, response, handler);
         }
     }
 
     /**
      * 验证是否重复提交由子类实现具体的防重复提交的规则
-     * 
+     *
      * @return
      * @throws Exception
      */

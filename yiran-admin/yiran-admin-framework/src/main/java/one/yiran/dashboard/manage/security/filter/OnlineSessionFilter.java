@@ -18,15 +18,6 @@
 //
 //@Slf4j
 //public class OnlineSessionFilter extends AccessControlFilter {
-//    /**
-//     * 强制退出后重定向的地址
-//     */
-//    @Value("${shiro.user.loginUrl}")
-//    private String loginUrl;
-//
-//
-//    @Autowired
-//    private MongoRuntimeConfigService mongoRuntimeConfigService;
 //
 //    /**
 //     * 表示是否允许访问；mappedValue就是[urls]配置中拦截器参数部分，如果允许访问返回true，否则false；

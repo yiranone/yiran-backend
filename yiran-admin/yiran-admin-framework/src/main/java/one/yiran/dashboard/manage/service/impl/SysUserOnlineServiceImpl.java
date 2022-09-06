@@ -2,6 +2,7 @@ package one.yiran.dashboard.manage.service.impl;
 
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import one.yiran.common.domain.PageModel;
 import one.yiran.common.domain.PageRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import one.yiran.db.common.service.CrudBaseServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.Date;
@@ -49,6 +51,16 @@ public class SysUserOnlineServiceImpl extends CrudBaseServiceImpl<String, SysUse
     @Override
     public void forceLogout(String sessionId) {
         userOnlineDao.deleteById(sessionId);
+    }
+
+    @Transactional
+    @Override
+    public void refreshUserLastAccessTime(String sessionId,Date accessTime) {
+        Assert.notNull(sessionId,"");
+        Assert.notNull(accessTime,"");
+        QSysUserOnline online = QSysUserOnline.sysUserOnline;
+        queryFactory.update(online).set(online.lastAccessTime,accessTime).
+        where(online.sessionId.eq(sessionId)).execute();
     }
 
     @Override

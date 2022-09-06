@@ -32,6 +32,7 @@ public class UserSession implements Serializable {
     private String token;
     private Long tokenExpires; //token过期时间 毫秒
     private Long channelId;
+    private Long lastSyncToDbTime;
 
     private String createBy;
     private String updateBy;

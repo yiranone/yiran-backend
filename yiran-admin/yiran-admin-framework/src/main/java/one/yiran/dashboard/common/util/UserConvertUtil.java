@@ -18,6 +18,7 @@ public class UserConvertUtil {
             u.setDeptId(sysUser.getDeptId());
             u.setCreateTime(sysUser.getCreateTime());
             u.setUpdateTime(sysUser.getUpdateTime());
+            u.setChannelId(sysUser.getChannelId());
             //u.setDeptName(sysUser.getDeptName());
             u.setStatus(sysUser.getStatus());
             u.setCreateBy(sysUser.getCreateBy());
