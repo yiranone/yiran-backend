@@ -1,6 +1,7 @@
 package one.yiran.dashboard.web.controller.admin;
 
 import lombok.extern.slf4j.Slf4j;
+import one.yiran.common.domain.PageRequest;
 import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.common.annotation.*;
 import one.yiran.dashboard.common.constants.BusinessType;
@@ -29,7 +30,8 @@ public class DeptAdminController {
     @RequirePermission(PermissionConstants.Dept.VIEW)
     @PostMapping("/list")
     public List<SysDept> list(@ApiObject(createIfNull = true) SysDept sysDept, HttpServletRequest request) {
-        List<SysDept> depts = sysDeptService.selectList(PageRequestUtil.fromRequest(request), sysDept);
+        PageRequest pq = PageRequestUtil.fromRequest(request);
+        List<SysDept> depts = sysDeptService.selectAllDept( sysDept);
         return depts;
     }
 

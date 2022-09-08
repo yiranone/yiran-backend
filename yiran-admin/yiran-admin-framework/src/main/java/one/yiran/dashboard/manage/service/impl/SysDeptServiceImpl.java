@@ -1,6 +1,9 @@
 package one.yiran.dashboard.manage.service.impl;
 
 import com.querydsl.core.types.Order;
+import com.querydsl.core.types.Path;
+import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import one.yiran.common.domain.Ztree;
 import one.yiran.dashboard.manage.dao.DeptDao;
 import one.yiran.dashboard.manage.entity.QSysDept;
@@ -8,6 +11,7 @@ import one.yiran.dashboard.manage.entity.SysDept;
 import one.yiran.dashboard.manage.entity.SysDept;
 import one.yiran.dashboard.manage.service.SysDeptService;
 import one.yiran.db.common.service.CrudBaseServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +27,6 @@ public class SysDeptServiceImpl extends CrudBaseServiceImpl<Long, SysDept> imple
 
     @Autowired
     private DeptDao deptDao;
-
 
     /**
      * 得到子节点列表
@@ -78,6 +81,16 @@ public class SysDeptServiceImpl extends CrudBaseServiceImpl<Long, SysDept> imple
         return ztrees;
     }
 
+    @Override
+    public List<SysDept> selectAllDept(SysDept dept) {
+        BooleanExpression predicate = QSysDept.sysDept.isDelete.eq(Boolean.FALSE).or(QSysDept.sysDept.isDelete.isNull());
+        if(StringUtils.isNotBlank(dept.getDeptName())) {
+            predicate = predicate.and(QSysDept.sysDept.deptName.eq(dept.getDeptName()));
+        }
+        List<SysDept> sysDeptList = selectList(predicate,QSysDept.sysDept.orderNum, Order.ASC);
+        return sysDeptList;
+    }
+
     private void sortDepts(List<SysDept> sysDepts) {
         if (sysDepts == null || sysDepts.size() == 0)
             return;
@@ -96,24 +109,4 @@ public class SysDeptServiceImpl extends CrudBaseServiceImpl<Long, SysDept> imple
             }
         });
     }
-
-//    public List<Ztree> initZtree(List<SysDept> sysDepts) {
-//        return initZtree(sysDepts, null, false);
-//    }
-//
-//    public List<Ztree> initZtree(List<SysDept> sysMenuList, List<Long> roleMenuList, boolean permsFlag) {
-//        List<Ztree> ztrees = new ArrayList<>();
-//        for (SysDept sysDept : sysMenuList) {
-//            Ztree ztree = new Ztree();
-//            ztree.setId(sysDept.getDeptId());
-//            ztree.setPId(sysDept.getParentId());
-//            ztree.setName(sysDept.getDeptName());
-//            if (roleMenuList != null) {
-//                ztree.setChecked(roleMenuList.contains(sysDept.getDeptId()));
-//            }
-//            ztrees.add(ztree);
-//        }
-//        return ztrees;
-//    }
-
 }
