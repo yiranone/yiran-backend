@@ -85,7 +85,9 @@ public class SysDeptServiceImpl extends CrudBaseServiceImpl<Long, SysDept> imple
     public List<SysDept> selectAllDept(SysDept dept) {
         BooleanExpression predicate = QSysDept.sysDept.isDelete.eq(Boolean.FALSE).or(QSysDept.sysDept.isDelete.isNull());
         if(StringUtils.isNotBlank(dept.getDeptName())) {
-            predicate = predicate.and(QSysDept.sysDept.deptName.eq(dept.getDeptName()));
+            predicate = predicate.and(
+                    QSysDept.sysDept.deptName.like("%" + dept.getDeptName().trim() + "%" )
+                    .or(QSysDept.sysDept.deptCode.like("%" + dept.getDeptName().trim() + "%" )));
         }
         List<SysDept> sysDeptList = selectList(predicate,QSysDept.sysDept.orderNum, Order.ASC);
         return sysDeptList;
