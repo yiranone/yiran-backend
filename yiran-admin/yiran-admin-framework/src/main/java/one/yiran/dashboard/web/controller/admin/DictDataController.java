@@ -45,7 +45,7 @@ public class DictDataController {
                 sysDictData.setDictType(type.getDictType());
             }
         }
-        List<SysDictData> list = sysDictDataService.selectList(PageRequestUtil.fromRequest(request), sysDictData);
+        List<SysDictData> list = sysDictDataService.selectList(sysDictData);
         return list;
     }
 
