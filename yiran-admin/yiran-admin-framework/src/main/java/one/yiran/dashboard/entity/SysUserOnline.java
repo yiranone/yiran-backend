@@ -82,7 +82,7 @@ public class SysUserOnline implements Serializable {
     private Date lastAccessTime;
 
     /**
-     * 超时时间，单位为分钟
+     * 超时时间，单位为毫秒
      */
     @Column
     private Long expireTime;

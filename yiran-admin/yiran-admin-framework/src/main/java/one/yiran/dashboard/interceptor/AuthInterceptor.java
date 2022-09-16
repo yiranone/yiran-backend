@@ -52,6 +52,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
             Long lastSync = session.getLastSyncToDbTime();
             Long now = new Date().getTime();
 
+            //每10s做一次持久化，异步在数据库写入用户在线
             if (sessionId != null && (lastSync == null || lastSync + 10 * 1000 < now)) {
                 session.setLastSyncToDbTime(now);
                 UserCacheUtil.setSessionInfo(sessionId, session);

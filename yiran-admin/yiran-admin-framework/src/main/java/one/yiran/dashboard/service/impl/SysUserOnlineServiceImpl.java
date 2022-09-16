@@ -37,7 +37,7 @@ public class SysUserOnlineServiceImpl extends CrudBaseServiceImpl<String, SysUse
         }
     }
 
-    //@Transactional
+    @Transactional
     @Override
     public void saveOnline(SysUserOnline online) {
         if (StringUtils.isBlank(online.getSessionId())) {
@@ -46,7 +46,7 @@ public class SysUserOnlineServiceImpl extends CrudBaseServiceImpl<String, SysUse
         userOnlineDao.save(online);
     }
 
-    //@Transactional
+    @Transactional
     @Override
     public void forceLogout(String sessionId) {
         userOnlineDao.deleteById(sessionId);
