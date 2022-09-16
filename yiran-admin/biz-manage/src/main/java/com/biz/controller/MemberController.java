@@ -30,7 +30,7 @@ import java.util.Map;
 
 @AjaxWrapper
 @Controller
-@RequestMapping("/system/member")
+@RequestMapping("/ext/member")
 public class MemberController {
 
     @Autowired

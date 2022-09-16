@@ -1,4 +1,4 @@
-package com.biz.extcontroller;
+package com.biz.controller;
 
 import com.biz.entity.Member;
 import com.biz.service.MemberService;
@@ -36,7 +36,7 @@ import java.util.Date;
 @AjaxWrapper
 @Controller
 @RequestMapping("/ext/member")
-public class MemberController {
+public class MemberLoginController {
 
     @Autowired
     private MemberService memberService;
