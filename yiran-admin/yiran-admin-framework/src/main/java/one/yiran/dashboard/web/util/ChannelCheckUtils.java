@@ -2,7 +2,7 @@ package one.yiran.dashboard.web.util;
 
 import lombok.extern.slf4j.Slf4j;
 import one.yiran.common.exception.BusinessException;
-import one.yiran.dashboard.manage.security.UserInfoContextHelper;
+import one.yiran.dashboard.security.UserInfoContextHelper;
 
 @Slf4j
 public class ChannelCheckUtils {

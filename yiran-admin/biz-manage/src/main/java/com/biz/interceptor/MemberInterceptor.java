@@ -1,7 +1,7 @@
 package com.biz.interceptor;
 
 import one.yiran.dashboard.common.model.MemberSession;
-import one.yiran.dashboard.common.util.MemberCacheUtil;
+import one.yiran.dashboard.util.MemberCacheUtil;
 import lombok.extern.slf4j.Slf4j;
 import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.common.annotation.RequireMemberLogin;

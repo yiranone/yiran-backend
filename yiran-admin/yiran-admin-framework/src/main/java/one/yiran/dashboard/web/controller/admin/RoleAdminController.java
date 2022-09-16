@@ -2,17 +2,16 @@ package one.yiran.dashboard.web.controller.admin;
 
 import one.yiran.common.domain.PageRequest;
 import one.yiran.dashboard.common.annotation.*;
-import one.yiran.dashboard.manage.dao.RolePermDao;
-import one.yiran.dashboard.manage.entity.*;
+import one.yiran.dashboard.dao.RolePermDao;
+import one.yiran.dashboard.entity.*;
 import one.yiran.db.common.util.PageRequestUtil;
 import one.yiran.common.domain.PageModel;
 import lombok.extern.slf4j.Slf4j;
 import one.yiran.dashboard.common.constants.BusinessType;
-import one.yiran.dashboard.manage.security.UserInfoContextHelper;
-import one.yiran.dashboard.manage.service.SysRoleService;
-import one.yiran.dashboard.manage.service.SysUserService;
+import one.yiran.dashboard.security.UserInfoContextHelper;
+import one.yiran.dashboard.service.SysRoleService;
 import one.yiran.common.exception.BusinessException;
-import one.yiran.dashboard.manage.security.config.PermissionConstants;
+import one.yiran.dashboard.security.config.PermissionConstants;
 import one.yiran.dashboard.common.util.ExcelUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Controller

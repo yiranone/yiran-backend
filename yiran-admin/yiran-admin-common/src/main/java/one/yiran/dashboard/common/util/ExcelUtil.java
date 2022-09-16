@@ -23,12 +23,12 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ExcelUtil<T>
@@ -1072,9 +1072,8 @@ public class ExcelUtil<T>
     /**
      * 编码文件名
      */
-    public String encodingFilename(String filename)
-    {
-        filename = UUID.randomUUID().toString() + "_" + filename + ".xlsx";
+    public String encodingFilename(String filename) {
+        filename = UUID.randomUUID().toString().replaceAll("-","") + "_" + filename + ".xlsx";
         return filename;
     }
 

@@ -1,6 +1,6 @@
 package one.yiran.dashboard.web.util;
 
-import one.yiran.dashboard.manage.entity.SysMenu;
+import one.yiran.dashboard.entity.SysMenu;
 import one.yiran.dashboard.web.model.WebMenuTree;
 import one.yiran.dashboard.web.model.WebPerm;
 

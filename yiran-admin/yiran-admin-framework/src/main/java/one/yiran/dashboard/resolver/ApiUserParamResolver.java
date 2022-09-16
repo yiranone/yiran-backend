@@ -3,7 +3,7 @@ package one.yiran.dashboard.resolver;
 import one.yiran.dashboard.common.annotation.ApiSessionAdmin;
 import one.yiran.dashboard.common.model.UserSession;
 import one.yiran.dashboard.common.constants.Global;
-import one.yiran.dashboard.common.util.UserCacheUtil;
+import one.yiran.dashboard.util.UserCacheUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;

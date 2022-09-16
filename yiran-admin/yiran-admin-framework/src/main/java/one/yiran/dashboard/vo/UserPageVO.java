@@ -3,8 +3,8 @@ package one.yiran.dashboard.vo;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import one.yiran.common.util.DateUtil;
-import one.yiran.dashboard.manage.entity.SysDept;
-import one.yiran.dashboard.manage.entity.SysUser;
+import one.yiran.dashboard.entity.SysDept;
+import one.yiran.dashboard.entity.SysUser;
 
 import java.util.List;
 

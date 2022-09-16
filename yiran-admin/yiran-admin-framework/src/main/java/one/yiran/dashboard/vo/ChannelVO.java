@@ -1,7 +1,7 @@
 package one.yiran.dashboard.vo;
 
 import lombok.Data;
-import one.yiran.dashboard.manage.entity.SysChannel;
+import one.yiran.dashboard.entity.SysChannel;
 
 import java.time.LocalDate;
 

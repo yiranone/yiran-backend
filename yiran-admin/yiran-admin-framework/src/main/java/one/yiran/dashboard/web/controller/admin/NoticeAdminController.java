@@ -1,14 +1,14 @@
 package one.yiran.dashboard.web.controller.admin;
 
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
-import one.yiran.dashboard.manage.entity.SysNotice;
+import one.yiran.dashboard.entity.SysNotice;
 import one.yiran.db.common.util.PageRequestUtil;
 import one.yiran.common.domain.PageModel;
 import one.yiran.dashboard.common.annotation.Log;
 import one.yiran.dashboard.common.constants.BusinessType;
-import one.yiran.dashboard.manage.security.UserInfoContextHelper;
-import one.yiran.dashboard.manage.security.config.PermissionConstants;
-import one.yiran.dashboard.manage.service.SysNoticeService;
+import one.yiran.dashboard.security.UserInfoContextHelper;
+import one.yiran.dashboard.security.config.PermissionConstants;
+import one.yiran.dashboard.service.SysNoticeService;
 import one.yiran.dashboard.common.annotation.RequirePermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

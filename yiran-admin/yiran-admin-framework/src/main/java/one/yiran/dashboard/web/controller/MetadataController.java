@@ -1,15 +1,14 @@
 package one.yiran.dashboard.web.controller;
 
 import com.querydsl.core.types.Order;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import one.yiran.common.domain.Ztree;
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
 import one.yiran.dashboard.common.annotation.ApiParam;
 import one.yiran.dashboard.common.expection.user.UserNotLoginException;
 import one.yiran.dashboard.common.model.UserSession;
-import one.yiran.dashboard.manage.entity.*;
-import one.yiran.dashboard.manage.security.UserInfoContextHelper;
-import one.yiran.dashboard.manage.service.*;
+import one.yiran.dashboard.entity.*;
+import one.yiran.dashboard.security.UserInfoContextHelper;
+import one.yiran.dashboard.service.*;
 import one.yiran.dashboard.web.model.WebMenuTree;
 import one.yiran.dashboard.web.util.PermUtil;
 import one.yiran.db.common.util.PredicateUtil;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @AjaxWrapper
 @Controller

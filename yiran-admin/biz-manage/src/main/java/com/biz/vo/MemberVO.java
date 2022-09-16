@@ -3,7 +3,7 @@ package com.biz.vo;
 import com.biz.entity.Member;
 import lombok.Data;
 import one.yiran.common.util.DateUtil;
-import one.yiran.dashboard.manage.entity.SysChannel;
+import one.yiran.dashboard.entity.SysChannel;
 import one.yiran.db.common.annotation.Search;
 import org.springframework.beans.BeanUtils;
 

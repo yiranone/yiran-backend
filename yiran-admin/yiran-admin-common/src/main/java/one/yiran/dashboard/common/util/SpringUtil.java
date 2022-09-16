@@ -12,12 +12,11 @@ public class SpringUtil implements ApplicationContextAware,BeanFactoryPostProces
 
     private static ApplicationContext context;
 
-    /** Spring应用上下文环境 */
+    /** Spring 应用上下文 */
     private static ConfigurableListableBeanFactory beanFactory;
 
     @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException
-    {
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         SpringUtil.beanFactory = beanFactory;
     }
 

@@ -3,7 +3,7 @@
 //import com.alibaba.fastjson.JSON;
 //import lombok.extern.slf4j.Slf4j;
 //import one.yiran.dashboard.common.model.UserInfo;
-//import one.yiran.dashboard.common.util.UserCacheUtil;
+//import one.yiran.dashboard.util.UserCacheUtil;
 //import org.apache.commons.lang3.StringUtils;
 //import org.springframework.stereotype.Component;
 //

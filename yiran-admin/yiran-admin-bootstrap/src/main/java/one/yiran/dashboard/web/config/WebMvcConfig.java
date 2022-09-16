@@ -7,7 +7,7 @@ import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.biz.interceptor.MemberInterceptor;
 import one.yiran.dashboard.common.constants.Global;
-import one.yiran.dashboard.manage.interceptor.AuthInterceptor;
+import one.yiran.dashboard.interceptor.AuthInterceptor;
 import one.yiran.dashboard.resolver.*;
 import one.yiran.dashboard.web.filter.AjaxMethodReturnValueHandler;
 import one.yiran.dashboard.web.filter.MyInterceptor;

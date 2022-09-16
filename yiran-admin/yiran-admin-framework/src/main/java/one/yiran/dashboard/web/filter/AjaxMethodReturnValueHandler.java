@@ -2,7 +2,7 @@ package one.yiran.dashboard.web.filter;
 
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
 import one.yiran.common.domain.ResponseContainer;
-import one.yiran.dashboard.manage.interceptor.HttpLogPrinter;
+import one.yiran.dashboard.interceptor.HttpLogPrinter;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.http.converter.HttpMessageConverter;

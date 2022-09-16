@@ -4,12 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import one.yiran.common.domain.PageRequest;
 import one.yiran.dashboard.common.annotation.*;
 import one.yiran.dashboard.common.constants.BusinessType;
-import one.yiran.dashboard.manage.entity.QSysMenu;
-import one.yiran.dashboard.manage.entity.SysMenu;
+import one.yiran.dashboard.entity.SysMenu;
 import one.yiran.common.exception.BusinessException;
-import one.yiran.dashboard.manage.security.config.PermissionConstants;
-import one.yiran.dashboard.manage.service.SysMenuService;
-import one.yiran.common.domain.Ztree;
+import one.yiran.dashboard.security.config.PermissionConstants;
+import one.yiran.dashboard.service.SysMenuService;
 import one.yiran.db.common.util.PageRequestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Controller

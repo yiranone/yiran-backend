@@ -6,7 +6,7 @@ import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.common.expection.user.UserException;
 import one.yiran.dashboard.common.expection.user.UserHasNotPermissionException;
 import one.yiran.common.domain.ResponseContainer;
-import one.yiran.dashboard.manage.interceptor.HttpLogPrinter;
+import one.yiran.dashboard.interceptor.HttpLogPrinter;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.core.annotation.Order;

@@ -5,13 +5,12 @@ import one.yiran.common.domain.PageRequest;
 import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.common.annotation.*;
 import one.yiran.dashboard.common.constants.BusinessType;
-import one.yiran.dashboard.manage.entity.SysDept;
-import one.yiran.dashboard.manage.security.config.PermissionConstants;
-import one.yiran.dashboard.manage.service.SysDeptService;
+import one.yiran.dashboard.entity.SysDept;
+import one.yiran.dashboard.security.config.PermissionConstants;
+import one.yiran.dashboard.service.SysDeptService;
 import one.yiran.db.common.util.PageRequestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 

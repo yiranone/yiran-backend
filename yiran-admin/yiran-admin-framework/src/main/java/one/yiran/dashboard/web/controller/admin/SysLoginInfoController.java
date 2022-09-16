@@ -1,13 +1,12 @@
 package one.yiran.dashboard.web.controller.admin;
 
 import one.yiran.dashboard.common.annotation.*;
-import one.yiran.dashboard.manage.security.service.PasswordService;
-import one.yiran.dashboard.manage.entity.SysLoginInfo;
+import one.yiran.dashboard.entity.SysLoginInfo;
 import one.yiran.db.common.util.PageRequestUtil;
 import one.yiran.common.domain.PageModel;
 import one.yiran.dashboard.common.constants.BusinessType;
-import one.yiran.dashboard.manage.security.config.PermissionConstants;
-import one.yiran.dashboard.manage.service.SysLoginInfoService;
+import one.yiran.dashboard.security.config.PermissionConstants;
+import one.yiran.dashboard.service.SysLoginInfoService;
 import one.yiran.dashboard.common.util.ExcelUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

@@ -1,10 +1,10 @@
 //package one.yiran.dashboard.manage;
 //
 //import lombok.extern.slf4j.Slf4j;
-//import one.yiran.dashboard.manage.entity.SysDept;
+//import one.yiran.dashboard.entity.SysDept;
 //import SysPost;
 //import SysRole;
-//import one.yiran.dashboard.manage.service.SysDeptService;
+//import one.yiran.dashboard.service.SysDeptService;
 //import SysPostService;
 //import SysRoleService;
 //import org.junit.Test;
