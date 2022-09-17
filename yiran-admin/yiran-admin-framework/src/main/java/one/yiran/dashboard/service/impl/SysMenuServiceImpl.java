@@ -3,6 +3,7 @@ package one.yiran.dashboard.service.impl;
 import com.querydsl.core.types.Order;
 import one.yiran.common.domain.PageRequest;
 import one.yiran.dashboard.entity.QSysMenu;
+import one.yiran.dashboard.security.SessionContextHelper;
 import one.yiran.dashboard.service.SysMenuService;
 import one.yiran.dashboard.service.SysPermService;
 import one.yiran.dashboard.dao.MenuDao;
@@ -155,6 +156,7 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long, SysMenu> imple
         if (sysMenu.getMenuId() != null) {
             throw BusinessException.build("新建菜单 menuId不能有值:" + sysMenu.getMenuId());
         }
+        sysMenu.setCreateBy(SessionContextHelper.getCurrentLoginName());
         super.insert(sysMenu);
         return 1;
     }
@@ -171,6 +173,8 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long, SysMenu> imple
             throw BusinessException.build("菜单未找到 menuId=" + sysMenu.getMenuId());
         }
         checkMenuValid(sysMenu);
+        sysMenu.setCreateBy(SessionContextHelper.getCurrentLoginName());
+        sysMenu.setUpdateBy(SessionContextHelper.getCurrentLoginName());
         update(sysMenu);
         return 1;
     }

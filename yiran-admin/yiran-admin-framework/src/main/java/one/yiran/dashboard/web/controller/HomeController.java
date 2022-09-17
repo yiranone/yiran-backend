@@ -4,7 +4,7 @@ import one.yiran.dashboard.common.annotation.AjaxWrapper;
 import one.yiran.dashboard.common.expection.user.UserNotLoginException;
 import one.yiran.dashboard.common.model.UserSession;
 import one.yiran.dashboard.entity.SysMenu;
-import one.yiran.dashboard.security.UserInfoContextHelper;
+import one.yiran.dashboard.security.SessionContextHelper;
 import one.yiran.dashboard.service.SysMenuService;
 import one.yiran.dashboard.service.SysPermService;
 import one.yiran.dashboard.web.model.WebMenu;
@@ -31,7 +31,7 @@ public class HomeController {
     @AjaxWrapper
     @RequestMapping("/menu")
     public List<WebMenu> menu(ModelMap model) {
-        UserSession user = UserInfoContextHelper.getLoginUser();
+        UserSession user = SessionContextHelper.getLoginUser();
         if(user == null)
             throw new UserNotLoginException();
         List<SysMenu> menusList;
@@ -47,7 +47,7 @@ public class HomeController {
     @AjaxWrapper
     @RequestMapping("/perms")
     public List<WebPerm> perms() {
-        UserSession user = UserInfoContextHelper.getLoginUser();
+        UserSession user = SessionContextHelper.getLoginUser();
         if(user == null)
             throw new UserNotLoginException();
         List<SysMenu> menusList;

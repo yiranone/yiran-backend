@@ -6,7 +6,7 @@ import one.yiran.db.common.util.PageRequestUtil;
 import one.yiran.common.domain.PageModel;
 import one.yiran.dashboard.common.annotation.Log;
 import one.yiran.dashboard.common.constants.BusinessType;
-import one.yiran.dashboard.security.UserInfoContextHelper;
+import one.yiran.dashboard.security.SessionContextHelper;
 import one.yiran.dashboard.security.config.PermissionConstants;
 import one.yiran.dashboard.service.SysNoticeService;
 import one.yiran.dashboard.common.annotation.RequirePermission;
@@ -37,8 +37,8 @@ public class NoticeAdminController {
     @Log(title = "通知公告", businessType = BusinessType.ADD)
     @PostMapping("/add")
     public SysNotice addSave(@Validated @RequestBody SysNotice sysNotice) {
-        sysNotice.setCreateBy(UserInfoContextHelper.getCurrentLoginName());
-        sysNotice.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
+        sysNotice.setCreateBy(SessionContextHelper.getCurrentLoginName());
+        sysNotice.setUpdateBy(SessionContextHelper.getCurrentLoginName());
         return sysNoticeService.insert(sysNotice);
     }
 
@@ -47,7 +47,7 @@ public class NoticeAdminController {
     @PostMapping("/edit")
     @AjaxWrapper
     public SysNotice editSave(@Validated @RequestBody SysNotice sysNotice) {
-        sysNotice.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
+        sysNotice.setUpdateBy(SessionContextHelper.getCurrentLoginName());
         return sysNoticeService.update(sysNotice);
     }
 

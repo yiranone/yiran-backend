@@ -7,7 +7,7 @@ import one.yiran.dashboard.dao.RoleDao;
 import one.yiran.dashboard.dao.RolePermDao;
 import one.yiran.dashboard.dao.UserPostDao;
 import one.yiran.dashboard.entity.*;
-import one.yiran.dashboard.security.UserInfoContextHelper;
+import one.yiran.dashboard.security.SessionContextHelper;
 import one.yiran.dashboard.service.SysPermService;
 import one.yiran.db.common.service.CrudBaseServiceImpl;
 import org.apache.commons.lang3.StringUtils;
@@ -109,8 +109,8 @@ public class SysPermServiceImpl extends CrudBaseServiceImpl<Long, SysPerm> imple
         if (sysPerm.getPermId() != null) {
             throw BusinessException.build("新建权限 permId不能有值:" + sysPerm.getPermId());
         }
-        sysPerm.setCreateBy(UserInfoContextHelper.getCurrentLoginName());
-        sysPerm.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
+        sysPerm.setCreateBy(SessionContextHelper.getCurrentLoginName());
+        sysPerm.setUpdateBy(SessionContextHelper.getCurrentLoginName());
         sysPerm.setStatus("0");
         super.insert(sysPerm);
         return 1;
@@ -128,7 +128,7 @@ public class SysPermServiceImpl extends CrudBaseServiceImpl<Long, SysPerm> imple
             throw BusinessException.build("权限未找到 permId=" + sysPerm.getPermId());
         }
         checkPermValid(sysPerm);
-        sysPerm.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
+        sysPerm.setUpdateBy(SessionContextHelper.getCurrentLoginName());
         sysPerm.setUpdateTime(new Date());
         permDao.save(sysPerm);
         return 1;

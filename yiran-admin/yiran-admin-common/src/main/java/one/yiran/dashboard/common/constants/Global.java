@@ -248,6 +248,10 @@ public class Global {
         return getConfig("dashboard.ip.filepath");
     }
 
+    public static Long getSessionTimeout() {
+        return Long.valueOf(getConfig("dashboard.session.timeout"));
+    }
+
     public static String getChannelKey() {
         return "CHANNEL";
     }

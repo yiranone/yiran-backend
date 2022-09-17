@@ -23,10 +23,9 @@ public class UserCacheUtil {
     private static final String SMS_PREFIX = ".sms.{";
     private static final String SMS_SUFFIX = "}.code";
 
-    private static final int SESSION_TIMEOUT = 604800; //session单位为s 604800=7天
-
+    // 返回s
     public static int getSessionTimeout(){
-        return SESSION_TIMEOUT;
+        return Global.getSessionTimeout().intValue() * 60;
     }
 
     public static String getUserToken(Long userId) {
@@ -43,7 +42,7 @@ public class UserCacheUtil {
 
         Jedis resource = getJedis();
         try {
-            resource.set(Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX, s, SetParams.setParams().ex(SESSION_TIMEOUT));
+            resource.set(Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX, s, SetParams.setParams().ex(getSessionTimeout()));
         } finally {
             if (resource != null)
                 resource.close();
@@ -78,7 +77,7 @@ public class UserCacheUtil {
             Object o = pool.get(Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX);
             if (o == null)
                 return null;
-            pool.expire(Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX, SESSION_TIMEOUT);
+            pool.expire(Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX, getSessionTimeout());
             return JSONObject.parseObject(o.toString(), UserSession.class);
         } finally {
             if (pool != null)

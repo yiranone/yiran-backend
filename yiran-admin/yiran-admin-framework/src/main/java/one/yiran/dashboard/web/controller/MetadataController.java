@@ -7,7 +7,7 @@ import one.yiran.dashboard.common.annotation.ApiParam;
 import one.yiran.dashboard.common.expection.user.UserNotLoginException;
 import one.yiran.dashboard.common.model.UserSession;
 import one.yiran.dashboard.entity.*;
-import one.yiran.dashboard.security.UserInfoContextHelper;
+import one.yiran.dashboard.security.SessionContextHelper;
 import one.yiran.dashboard.service.*;
 import one.yiran.dashboard.web.model.WebMenuTree;
 import one.yiran.dashboard.web.util.PermUtil;
@@ -38,7 +38,7 @@ public class MetadataController {
 
     @RequestMapping("/perm/tree")
     public List<WebMenuTree> perms() {
-        UserSession user = UserInfoContextHelper.getLoginUser();
+        UserSession user = SessionContextHelper.getLoginUser();
         if(user == null)
             throw new UserNotLoginException();
         List<SysMenu> menusList;

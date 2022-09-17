@@ -3,11 +3,12 @@ package one.yiran.dashboard.service;
 import one.yiran.common.domain.PageModel;
 import one.yiran.common.domain.PageRequest;
 import one.yiran.dashboard.entity.SysUserOnline;
+import one.yiran.db.common.service.CrudBaseService;
 
 import java.util.Date;
 import java.util.List;
 
-public interface SysUserOnlineService {
+public interface SysUserOnlineService extends CrudBaseService<String, SysUserOnline> {
 
     void batchDeleteOnline(List<String> sessionIds);
 
@@ -19,11 +20,7 @@ public interface SysUserOnlineService {
 
     List<SysUserOnline> selectOnlineByLastAccessTime(Date lastAccessTime);
 
-    SysUserOnline selectByPId(String sessionId);
-
     PageModel<SysUserOnline> selectPage(PageRequest fromRequest, SysUserOnline sysUserOnline);
 
-    void deleteById(String sessionId);
-
-    List<SysUserOnline> findAll();
+    void updateExpireUserOffline(Long sessionTimeout);
 }

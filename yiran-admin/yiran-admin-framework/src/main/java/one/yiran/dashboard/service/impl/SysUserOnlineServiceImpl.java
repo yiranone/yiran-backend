@@ -2,9 +2,11 @@ package one.yiran.dashboard.service.impl;
 
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import javafx.util.converter.LocalDateStringConverter;
 import one.yiran.common.domain.PageModel;
 import one.yiran.common.domain.PageRequest;
 import lombok.extern.slf4j.Slf4j;
+import one.yiran.common.util.DateUtil;
 import one.yiran.dashboard.dao.UserOnlineDao;
 import one.yiran.dashboard.entity.QSysUserOnline;
 import one.yiran.dashboard.entity.SysUserOnline;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -49,9 +52,13 @@ public class SysUserOnlineServiceImpl extends CrudBaseServiceImpl<String, SysUse
     @Transactional
     @Override
     public void forceLogout(String sessionId) {
-        userOnlineDao.deleteById(sessionId);
+        Assert.notNull(sessionId,"");
+        QSysUserOnline online = QSysUserOnline.sysUserOnline;
+        queryFactory.update(online).set(online.status, SysUserOnline.OnlineStatus.off_line).
+                where(online.sessionId.eq(sessionId)).execute();
     }
 
+    //用户访问的时候 刷新下lastAccessTime
     @Transactional
     @Override
     public void refreshUserLastAccessTime(String sessionId,Date accessTime) {
@@ -69,27 +76,24 @@ public class SysUserOnlineServiceImpl extends CrudBaseServiceImpl<String, SysUse
     }
 
     @Override
-    public SysUserOnline selectByPId(String sessionId) {
-        return userOnlineDao.findBySessionId(sessionId);
-    }
-
-    @Override
     public PageModel<SysUserOnline> selectPage(PageRequest fromRequest, SysUserOnline sysUserOnline) {
         BooleanExpression pre = QSysUserOnline.sysUserOnline.loginName.isNotEmpty();
         return super.selectPage(fromRequest,sysUserOnline,pre);
     }
 
+    // 根据lastAccessTime 判断用户是不是离线了
     @Override
-    public void deleteById(String sessionId) {
-        userOnlineDao.deleteById(sessionId);
+    public void updateExpireUserOffline(Long sessionTimeout) {
+        Assert.notNull(sessionTimeout,"");
+        LocalDateTime dateTime = LocalDateTime.now().minusMinutes(sessionTimeout);
+        Date x = DateUtil.toDate(dateTime);
+        QSysUserOnline online = QSysUserOnline.sysUserOnline;
+        queryFactory.update(online).set(online.status, SysUserOnline.OnlineStatus.off_line).
+                where(online.lastAccessTime.loe(x)).execute();
+
+        dateTime = LocalDateTime.now().minusMinutes(sessionTimeout).minusDays(1);
+        x = DateUtil.toDate(dateTime);
+        queryFactory.delete(online).where(online.lastAccessTime.loe(x)).execute();
     }
 
-    @Override
-    public List<SysUserOnline> findAll() {
-        return userOnlineDao.findAll();
-    }
-
-    public List<SysUserOnline> selectList(Predicate predicate, PageRequest request, SysUserOnline target) {
-        return super.selectList(request,target,predicate);
-    }
 }

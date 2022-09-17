@@ -8,7 +8,7 @@ import one.yiran.db.common.util.PageRequestUtil;
 import one.yiran.common.domain.PageModel;
 import lombok.extern.slf4j.Slf4j;
 import one.yiran.dashboard.common.constants.BusinessType;
-import one.yiran.dashboard.security.UserInfoContextHelper;
+import one.yiran.dashboard.security.SessionContextHelper;
 import one.yiran.dashboard.service.SysRoleService;
 import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.security.config.PermissionConstants;
@@ -72,8 +72,8 @@ public class RoleAdminController {
         if (StringUtils.isBlank(sysRole.getStatus())) {
             sysRole.setStatus("0");
         }
-        sysRole.setCreateBy(UserInfoContextHelper.getCurrentLoginName());
-        sysRole.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
+        sysRole.setCreateBy(SessionContextHelper.getCurrentLoginName());
+        sysRole.setUpdateBy(SessionContextHelper.getCurrentLoginName());
         return sysRoleService.insertRole(sysRole);
     }
 
@@ -98,7 +98,7 @@ public class RoleAdminController {
         dbSysRole.setRemark(sysRole.getRemark());
         dbSysRole.setPermIds(sysRole.getPermIds());
         dbSysRole.setMenuIds(sysRole.getMenuIds());
-        dbSysRole.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
+        dbSysRole.setUpdateBy(SessionContextHelper.getCurrentLoginName());
         return sysRoleService.updateRole(dbSysRole);
     }
 

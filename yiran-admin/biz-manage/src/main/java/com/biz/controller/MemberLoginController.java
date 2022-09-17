@@ -3,6 +3,7 @@ package com.biz.controller;
 import com.biz.entity.Member;
 import com.biz.service.MemberService;
 import com.biz.service.util.MemberPasswordService;
+import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.common.model.MemberSession;
 import one.yiran.dashboard.util.MemberCacheUtil;
 import com.biz.vo.MemberVO;
@@ -20,7 +21,7 @@ import one.yiran.dashboard.util.UserCacheUtil;
 import one.yiran.dashboard.entity.SysChannel;
 import one.yiran.dashboard.factory.AsyncFactory;
 import one.yiran.dashboard.factory.AsyncManager;
-import one.yiran.dashboard.security.UserInfoContextHelper;
+import one.yiran.dashboard.security.SessionContextHelper;
 import one.yiran.dashboard.service.SysChannelService;
 import one.yiran.dashboard.vo.ChannelVO;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -77,7 +78,7 @@ public class MemberLoginController {
         memberPasswordService.validate(m, password);
 
         AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, SystemConstants.LOGIN_SUCCESS, MessageUtil.message("user.login.success")));
-        m.setLoginIp(UserInfoContextHelper.getIp());
+        m.setLoginIp(SessionContextHelper.getIp());
         m.setLoginDate(new Date());
 
         String randomKey = RandomStringUtils.randomAlphanumeric(38);
@@ -92,7 +93,7 @@ public class MemberLoginController {
         MemberCacheUtil.setSessionInfo(randomKey,memberSession);
         memberSession.setToken(randomKey);
         Calendar c = Calendar.getInstance();
-        c.add(Calendar.SECOND,UserCacheUtil.getSessionTimeout());
+        c.add(Calendar.MINUTE, Global.getSessionTimeout().intValue());
         memberSession.setTokenExpires(c.getTimeInMillis());
 
         return memberSession;

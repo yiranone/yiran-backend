@@ -15,7 +15,7 @@ import one.yiran.dashboard.dao.UserRoleDao;
 import one.yiran.dashboard.entity.SysDept;
 import one.yiran.dashboard.entity.SysUser;
 import one.yiran.dashboard.entity.SysUserRole;
-import one.yiran.dashboard.security.UserInfoContextHelper;
+import one.yiran.dashboard.security.SessionContextHelper;
 import one.yiran.dashboard.security.config.PermissionConstants;
 import one.yiran.dashboard.security.service.PasswordService;
 import one.yiran.dashboard.service.SysChannelService;
@@ -105,8 +105,8 @@ public class UserAdminController {
         sysChannelService.selectByChannelIdWithCheck(user.getChannelId());
         dbUser.setChannelId(user.getChannelId());
 
-        dbUser.setCreateBy(UserInfoContextHelper.getCurrentLoginName());
-        dbUser.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
+        dbUser.setCreateBy(SessionContextHelper.getCurrentLoginName());
+        dbUser.setUpdateBy(SessionContextHelper.getCurrentLoginName());
 
         return UserConvertUtil.convert(sysUserService.saveUserAndPerms(dbUser));
     }
@@ -149,7 +149,7 @@ public class UserAdminController {
 //        }
 
         dbUser.setRemark(user.getRemark());
-        dbUser.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
+        dbUser.setUpdateBy(SessionContextHelper.getCurrentLoginName());
 
         return UserConvertUtil.convert(sysUserService.saveUserAndPerms(dbUser));
     }
@@ -191,7 +191,7 @@ public class UserAdminController {
     public String importData(MultipartFile file, boolean updateSupport) throws Exception {
         ExcelUtil<SysUser> util = new ExcelUtil<>(SysUser.class);
         List<SysUser> userList = util.importExcel(file.getInputStream());
-        String operName = UserInfoContextHelper.getCurrentLoginName();
+        String operName = SessionContextHelper.getCurrentLoginName();
         String message = sysUserService.importUser(userList, updateSupport, operName);
         return message;
     }
@@ -212,14 +212,14 @@ public class UserAdminController {
         SysUser dbUser = sysUserService.findUser(userId);
         if (dbUser == null)
             throw new UserNotFoundException();
-        UserInfoContextHelper.checkScopePermission(PermissionConstants.User.RESET_PWD, dbUser.getDeptId());
+        SessionContextHelper.checkScopePermission(PermissionConstants.User.RESET_PWD, dbUser.getDeptId());
         //设置新密码
         dbUser.setSalt(Global.getSalt());
         dbUser.setPassword(passwordService.encryptPassword(newPassword, dbUser.getSalt()));
         //解锁账户
         sysUserService.resetLoginFail(dbUser.getUserId());
 
-        dbUser.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
+        dbUser.setUpdateBy(SessionContextHelper.getCurrentLoginName());
         sysUserService.checkAdminModifyAllowed(dbUser, "重置");
         sysUserService.resetUserPwd(dbUser.getUserId(), dbUser.getPassword(), dbUser.getSalt());
     }
@@ -233,7 +233,7 @@ public class UserAdminController {
     public void changeStatus(@ApiObject SysUser user) {
         sysUserService.checkAdminModifyAllowed(user, "修改状态");
         SysUser u = sysUserService.findUser(user.getUserId());
-        UserInfoContextHelper.checkScopePermission(PermissionConstants.User.EDIT, u.getDeptId());
+        SessionContextHelper.checkScopePermission(PermissionConstants.User.EDIT, u.getDeptId());
         u.setStatus(user.getStatus());
         sysUserService.saveUser(u);
     }

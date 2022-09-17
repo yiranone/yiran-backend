@@ -2,16 +2,22 @@ package one.yiran.dashboard.web.controller.admin;
 
 import lombok.extern.slf4j.Slf4j;
 import one.yiran.common.domain.PageRequest;
-import one.yiran.dashboard.common.annotation.*;
+import one.yiran.common.exception.BusinessException;
+import one.yiran.dashboard.common.annotation.AjaxWrapper;
+import one.yiran.dashboard.common.annotation.ApiObject;
+import one.yiran.dashboard.common.annotation.ApiParam;
+import one.yiran.dashboard.common.annotation.Log;
+import one.yiran.dashboard.common.annotation.RequirePermission;
 import one.yiran.dashboard.common.constants.BusinessType;
 import one.yiran.dashboard.entity.SysMenu;
-import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.security.config.PermissionConstants;
 import one.yiran.dashboard.service.SysMenuService;
 import one.yiran.db.common.util.PageRequestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -73,14 +79,5 @@ public class MenuAdminController {
     public boolean checkMenuNameUnique(SysMenu sysMenu) {
         return sysMenuService.checkMenuNameUnique(sysMenu);
     }
-
-//    /**
-//     * 加载所有菜单列表树，菜单编辑页面，选择父菜单
-//     */
-//    @GetMapping("/menuTreeData")
-//    public List<Ztree> menuTreeData() {
-//        List<Ztree> ztrees = sysMenuService.menuTreeData();
-//        return ztrees;
-//    }
 
 }

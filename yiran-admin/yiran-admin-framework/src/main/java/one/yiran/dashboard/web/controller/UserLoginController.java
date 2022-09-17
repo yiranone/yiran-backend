@@ -137,7 +137,7 @@ public class UserLoginController {
         ui.setChannelId(user.getChannelId());
         ui.setToken(randomKey);
         Calendar c = Calendar.getInstance();
-        c.add(Calendar.SECOND,UserCacheUtil.getSessionTimeout());
+        c.add(Calendar.MINUTE, Global.getSessionTimeout().intValue());
         ui.setTokenExpires(c.getTimeInMillis());
         UserCacheUtil.setSessionInfo(randomKey,ui);
 
@@ -168,6 +168,8 @@ public class UserLoginController {
             String loginName = user.getLoginName();
             // 记录用户退出日志
             AsyncManager.me().execute(AsyncFactory.recordLoginInfo(loginName, SystemConstants.LOGOUT, MessageUtil.message("user.logout.success")));
+            //设置数据库里面的用户状态为离线
+            onlineService.forceLogout(user.getToken());
             // 清理缓存
             UserCacheUtil.removeSessionInfo(user.getToken());
         }

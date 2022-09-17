@@ -8,7 +8,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class UserInfoContextHelper {
+public class SessionContextHelper {
 
     public static boolean isLogin() {
         return getLoginUser() != null;

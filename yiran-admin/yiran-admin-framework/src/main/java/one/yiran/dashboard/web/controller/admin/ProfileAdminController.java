@@ -12,7 +12,7 @@ import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.common.util.FileUploadUtil;
 import one.yiran.dashboard.util.UserCacheUtil;
 import one.yiran.dashboard.entity.SysUser;
-import one.yiran.dashboard.security.UserInfoContextHelper;
+import one.yiran.dashboard.security.SessionContextHelper;
 import one.yiran.dashboard.security.service.PasswordService;
 import one.yiran.dashboard.service.SysUserService;
 import org.apache.commons.lang3.StringUtils;
@@ -39,7 +39,7 @@ public class ProfileAdminController {
     @RequireUserLogin
     @GetMapping("/checkPassword")
     public boolean checkPassword(String password) {
-        UserSession user = UserInfoContextHelper.getLoginUser();
+        UserSession user = SessionContextHelper.getLoginUser();
         SysUser dbUser = sysUserService.findUser(user.getUserId());
 
         if (passwordService.matches(dbUser, password)) {
@@ -52,7 +52,7 @@ public class ProfileAdminController {
     @PostMapping("/modifyPwd")
     @RequireUserLogin
     public void modifyPwd(@ApiParam(required = true) String oldPassword,@ApiParam(required = true) String newPassword) {
-        UserSession loginUser = UserInfoContextHelper.getLoginUser();
+        UserSession loginUser = SessionContextHelper.getLoginUser();
         SysUser user = sysUserService.findUser(loginUser.getUserId());
         if (StringUtils.isEmpty(newPassword)) {
             throw BusinessException.build("修改密码失败，新密码不能为空");
@@ -72,7 +72,7 @@ public class ProfileAdminController {
     public void resetAssertPwd(@ApiParam(required = true) String token,
                                @ApiParam(required = true) String code,
                                @ApiParam(required = true) String password) {
-        UserSession loginUser = UserInfoContextHelper.getLoginUser();
+        UserSession loginUser = SessionContextHelper.getLoginUser();
         SysUser user = sysUserService.findUser(loginUser.getUserId());
         if (StringUtils.isEmpty(password)) {
             throw BusinessException.build("修改密码失败，新支付密码不能为空");
@@ -115,7 +115,7 @@ public class ProfileAdminController {
     @Log(title = "个人信息", businessType = BusinessType.EDIT)
     @PostMapping("/update")
     public void update(String userName, String phoneNumber, String email, String sex) {
-        UserSession loginUser = UserInfoContextHelper.getLoginUser();
+        UserSession loginUser = SessionContextHelper.getLoginUser();
         sysUserService.updateMyInfos(loginUser.getUserId(),userName,email,phoneNumber,sex);
     }
 
@@ -126,7 +126,7 @@ public class ProfileAdminController {
     @Log(title = "个人头像", businessType = BusinessType.EDIT)
     @PostMapping("/updateAvatar")
     public void updateAvatar(@RequestParam("avatarfile") MultipartFile file) {
-        UserSession loginUser = UserInfoContextHelper.getLoginUser();
+        UserSession loginUser = SessionContextHelper.getLoginUser();
         try {
             if (!file.isEmpty()) {
                 String avatar = FileUploadUtil.upload(Global.getAvatarPath(), file);

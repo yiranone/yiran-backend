@@ -12,7 +12,7 @@ import one.yiran.dashboard.factory.AsyncManager;
 import one.yiran.dashboard.factory.AsyncFactory;
 import one.yiran.dashboard.common.util.IpUtil;
 import one.yiran.dashboard.common.util.ServletUtil;
-import one.yiran.dashboard.security.UserInfoContextHelper;
+import one.yiran.dashboard.security.SessionContextHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
@@ -54,7 +54,7 @@ public class LogAspect {
             }
 
             // 获取当前的用户
-            UserSession currentUser = UserInfoContextHelper.getLoginUser();
+            UserSession currentUser = SessionContextHelper.getLoginUser();
 
             HttpServletRequest request = ServletUtil.getRequest();
             MemberSession memberSession = MemberCacheUtil.getSessionInfo(request);

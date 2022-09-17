@@ -12,7 +12,7 @@ import one.yiran.dashboard.common.constants.BusinessType;
 import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.common.expection.user.UserNotFoundException;
 import one.yiran.dashboard.entity.SysChannel;
-import one.yiran.dashboard.security.UserInfoContextHelper;
+import one.yiran.dashboard.security.SessionContextHelper;
 import one.yiran.dashboard.security.config.PermissionConstants;
 import one.yiran.dashboard.service.SysChannelService;
 import one.yiran.dashboard.common.util.WrapUtil;
@@ -47,7 +47,7 @@ public class MemberController {
     public PageModel<MemberVO> list(@ApiObject(createIfNull = true) MemberVO memberVO,
                                     @ApiParam String deptName, HttpServletRequest request) {
         PageRequest pageRequest = PageRequestUtil.fromRequest(request);
-        Long channelId = UserInfoContextHelper.getChannelId();
+        Long channelId = SessionContextHelper.getChannelId();
         memberVO.setIsDelete(false);
         PageModel pe = memberService.selectPageDetail(pageRequest, memberVO, channelId);
         return pe;
@@ -58,7 +58,7 @@ public class MemberController {
     @PostMapping("/add")
     public MemberVO addMember(@ApiObject(validate = true) MemberVO member,
                               @ApiParam String password) {
-        Long channelId = UserInfoContextHelper.getChannelIdWithCheck();
+        Long channelId = SessionContextHelper.getChannelIdWithCheck();
         Member db = new Member();
         if (StringUtils.isBlank(password)) {
             throw BusinessException.build("密码不能为空");
@@ -73,8 +73,8 @@ public class MemberController {
         db.setPhone(member.getPhone());
         db.setName(member.getName());
 
-        db.setCreateBy(UserInfoContextHelper.getCurrentLoginName());
-        db.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
+        db.setCreateBy(SessionContextHelper.getCurrentLoginName());
+        db.setUpdateBy(SessionContextHelper.getCurrentLoginName());
 
         SysChannel channel = channelService.selectByPId(channelId);
         db.setChannelId(channelId);
@@ -107,7 +107,7 @@ public class MemberController {
         db.setPhone(member.getPhone());
         db.setName(member.getName());
 
-        db.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
+        db.setUpdateBy(SessionContextHelper.getCurrentLoginName());
 
         Member check = memberService.selectByPhone(db.getChannelId(),db.getPhone());
         if(check != null && !check.getMemberId().equals(db.getMemberId()))
@@ -150,7 +150,7 @@ public class MemberController {
         db.setPassword(passwordService.encryptPassword(password, Global.getSalt()));
         db.setPasswordUpdateTime(new Date());
 
-        db.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
+        db.setUpdateBy(SessionContextHelper.getCurrentLoginName());
         db = memberService.update(db);
         SysChannel channel = channelService.selectByPId(db.getChannelId());
 

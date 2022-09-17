@@ -6,7 +6,7 @@ import one.yiran.dashboard.service.SysDictTypeService;
 import one.yiran.db.common.util.PageRequestUtil;
 import one.yiran.dashboard.common.constants.BusinessType;
 import one.yiran.dashboard.entity.SysDictData;
-import one.yiran.dashboard.security.UserInfoContextHelper;
+import one.yiran.dashboard.security.SessionContextHelper;
 import one.yiran.dashboard.security.config.PermissionConstants;
 import one.yiran.dashboard.service.SysDictDataService;
 import one.yiran.dashboard.common.util.ExcelUtil;
@@ -62,8 +62,8 @@ public class DictDataController {
     @RequirePermission(PermissionConstants.Dict.ADD)
     @PostMapping("/add")
     public SysDictData add(@ApiObject(validate = true) SysDictData dict) {
-        dict.setCreateBy(UserInfoContextHelper.getCurrentLoginName());
-        dict.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
+        dict.setCreateBy(SessionContextHelper.getCurrentLoginName());
+        dict.setUpdateBy(SessionContextHelper.getCurrentLoginName());
         return sysDictDataService.insert(dict);
     }
 
@@ -71,7 +71,7 @@ public class DictDataController {
     @RequirePermission(PermissionConstants.Dict.EDIT)
     @PostMapping("/edit")
     public SysDictData edit(@ApiObject(validate = true) SysDictData dict) {
-        dict.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
+        dict.setUpdateBy(SessionContextHelper.getCurrentLoginName());
         return sysDictDataService.update(dict);
     }
 

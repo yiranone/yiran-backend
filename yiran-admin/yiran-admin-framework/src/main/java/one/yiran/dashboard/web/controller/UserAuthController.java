@@ -5,7 +5,7 @@ import one.yiran.dashboard.common.annotation.*;
 import one.yiran.dashboard.common.constants.BusinessType;
 import one.yiran.dashboard.entity.SysRole;
 import one.yiran.dashboard.entity.SysUser;
-import one.yiran.dashboard.security.UserInfoContextHelper;
+import one.yiran.dashboard.security.SessionContextHelper;
 import one.yiran.dashboard.security.config.PermissionConstants;
 import one.yiran.dashboard.service.SysMenuService;
 import one.yiran.dashboard.service.SysPermService;
@@ -47,7 +47,7 @@ public class UserAuthController {
     @RequireUserLogin
     @PostMapping("/current/perms")
     public List<String> myPermission() {
-        Long userId = UserInfoContextHelper.getCurrentUserId();
+        Long userId = SessionContextHelper.getCurrentUserId();
         return sysRoleService.findUserPermsByUserId(userId);
     }
 
@@ -122,7 +122,7 @@ public class UserAuthController {
         //这个用户以前就有的权限
         List<Long> dbRoles = sysRoleService.selectRolesByUserId(userId).stream().map(e -> e.getRoleId()).collect(Collectors.toList());
         //给客户端操作的角色
-        List<SysRole> toPageRoles = sysRoleService.selectAllVisibleRolesByUserId(UserInfoContextHelper.getCurrentUserId(), userId);
+        List<SysRole> toPageRoles = sysRoleService.selectAllVisibleRolesByUserId(SessionContextHelper.getCurrentUserId(), userId);
 
         //除去给客户端展示的，剩下保持不变
         dbRoles.removeAll(toPageRoles.stream().map(e -> e.getRoleId()).collect(Collectors.toList()));

@@ -11,7 +11,7 @@ import one.yiran.dashboard.common.constants.BusinessType;
 import one.yiran.dashboard.common.util.ExcelUtil;
 import one.yiran.dashboard.entity.QSysChannel;
 import one.yiran.dashboard.entity.SysChannel;
-import one.yiran.dashboard.security.UserInfoContextHelper;
+import one.yiran.dashboard.security.SessionContextHelper;
 import one.yiran.dashboard.security.config.PermissionConstants;
 import one.yiran.dashboard.service.SysChannelService;
 import one.yiran.db.common.util.PageRequestUtil;
@@ -71,7 +71,7 @@ public class ChannelAdminController {
         if (!sysChannelService.checkChannelKeyUnique(channel)) {
             throw BusinessException.build("新增渠道'" + channel.getChannelName() + "'失败，渠道代码已存在");
         }
-        String loginName = UserInfoContextHelper.getCurrentLoginName();
+        String loginName = SessionContextHelper.getCurrentLoginName();
         channel.setCreateBy(loginName);
         channel.setUpdateBy(loginName);
         return sysChannelService.insert(channel);
@@ -91,7 +91,7 @@ public class ChannelAdminController {
         dbChannel.setChannelSort(channel.getChannelSort());
         dbChannel.setStatus(channel.getStatus());
         dbChannel.setExpireDate(channel.getExpireDate());
-        String loginName = UserInfoContextHelper.getCurrentLoginName();
+        String loginName = SessionContextHelper.getCurrentLoginName();
         dbChannel.setUpdateBy(loginName);
         return sysChannelService.update(dbChannel);
     }

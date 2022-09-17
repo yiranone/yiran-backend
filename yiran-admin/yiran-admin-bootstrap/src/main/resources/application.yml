@@ -116,6 +116,10 @@ dashboard:
     addressEnabled: true
     userLocalDatabase: true
     filepath: classpath:data/qqwry.dat
+  session:
+    timeout: 10 #用户登陆多久没有操作就过期，单位分钟
+  job:
+    enable: true
 
 ---
 spring:

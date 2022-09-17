@@ -8,7 +8,7 @@ import one.yiran.dashboard.common.annotation.*;
 import one.yiran.dashboard.common.constants.BusinessType;
 import one.yiran.dashboard.common.util.ExcelUtil;
 import one.yiran.dashboard.entity.SysDictType;
-import one.yiran.dashboard.security.UserInfoContextHelper;
+import one.yiran.dashboard.security.SessionContextHelper;
 import one.yiran.dashboard.security.config.PermissionConstants;
 import one.yiran.dashboard.service.SysDictTypeService;
 import one.yiran.db.common.util.PageRequestUtil;
@@ -64,8 +64,8 @@ public class DictTypeController {
         dict.setDictName(bean.getDictName());
         dict.setStatus(bean.getStatus());
         dict.setRemark(bean.getRemark());
-        dict.setCreateBy(UserInfoContextHelper.getCurrentLoginName());
-        dict.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
+        dict.setCreateBy(SessionContextHelper.getCurrentLoginName());
+        dict.setUpdateBy(SessionContextHelper.getCurrentLoginName());
 
         if (!sysDictTypeService.checkDictTypeUnique(dict)) {
             throw BusinessException.build("新增字典'" + dict.getDictName() + "'失败，字典类型已存在");
@@ -87,7 +87,7 @@ public class DictTypeController {
         dict.setDictName(bean.getDictName());
         dict.setStatus(bean.getStatus());
         dict.setRemark(bean.getRemark());
-        dict.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
+        dict.setUpdateBy(SessionContextHelper.getCurrentLoginName());
 
         if (!sysDictTypeService.checkDictTypeUnique(dict)) {
             throw BusinessException.build("修改字典'" + dict.getDictName() + "'失败，字典类型已存在");
