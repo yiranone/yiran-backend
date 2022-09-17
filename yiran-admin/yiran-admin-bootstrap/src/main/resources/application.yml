@@ -117,7 +117,7 @@ dashboard:
     userLocalDatabase: true
     filepath: classpath:data/qqwry.dat
   session:
-    timeout: 10 #用户登陆多久没有操作就过期，单位分钟
+    timeout: 600 #用户登陆多久没有操作就过期，单位分钟 600=10小时
   job:
     enable: true
 
