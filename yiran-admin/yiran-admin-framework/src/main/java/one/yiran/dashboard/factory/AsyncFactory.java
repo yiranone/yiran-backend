@@ -102,7 +102,7 @@ public class AsyncFactory {
                 sysUserOnline.setOs(os);
                 sysUserOnline.setIpAddr(ip);
                 sysUserOnline.setLoginLocation(ipString);
-                sysUserOnline.setLoginName(session.getUserName());
+                sysUserOnline.setLoginName(session.getLoginName());
                 sysUserOnline.setSessionId(session.getToken());
                 sysUserOnline.setExpireTime(session.getTokenExpires());
                 sysUserOnline.setStartTimestamp(new Date());
