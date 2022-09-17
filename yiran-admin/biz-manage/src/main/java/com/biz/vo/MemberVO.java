@@ -21,6 +21,8 @@ public class MemberVO {
     private String status;
     private Boolean isLocked;
     private String createTime;
+    private String loginDate;
+    private String loginIp;
     private String updateTime;
     private String createBy;
     private String updateBy;
@@ -42,6 +44,8 @@ public class MemberVO {
         memberVO.setUpdateBy(member.getUpdateBy());
         memberVO.setChannelCode(sysChannel.getChannelCode());
         memberVO.setChannelName(sysChannel.getChannelName());
+        memberVO.setLoginDate(DateUtil.dateTime(member.getLoginDate()));
+        memberVO.setLoginIp(member.getLoginIp());
         return memberVO;
     }
 

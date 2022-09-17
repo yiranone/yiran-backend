@@ -3,6 +3,7 @@ package com.biz.controller;
 import com.biz.entity.Member;
 import com.biz.service.MemberService;
 import com.biz.service.util.MemberPasswordService;
+import lombok.extern.slf4j.Slf4j;
 import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.common.model.MemberSession;
 import one.yiran.dashboard.util.MemberCacheUtil;
@@ -17,7 +18,6 @@ import one.yiran.dashboard.common.constants.UserConstants;
 import one.yiran.dashboard.common.expection.user.UserBlockedException;
 import one.yiran.dashboard.common.expection.user.UserDeleteException;
 import one.yiran.dashboard.common.util.MessageUtil;
-import one.yiran.dashboard.util.UserCacheUtil;
 import one.yiran.dashboard.entity.SysChannel;
 import one.yiran.dashboard.factory.AsyncFactory;
 import one.yiran.dashboard.factory.AsyncManager;
@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
 import java.util.Date;
 
+@Slf4j
 @AjaxWrapper
 @Controller
 @RequestMapping("/ext/member")
@@ -80,6 +81,7 @@ public class MemberLoginController {
         AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, SystemConstants.LOGIN_SUCCESS, MessageUtil.message("user.login.success")));
         m.setLoginIp(SessionContextHelper.getIp());
         m.setLoginDate(new Date());
+        memberService.update(m);
 
         String randomKey = RandomStringUtils.randomAlphanumeric(38);
 
@@ -97,5 +99,21 @@ public class MemberLoginController {
         memberSession.setTokenExpires(c.getTimeInMillis());
 
         return memberSession;
+    }
+
+    @RequestMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        MemberSession memberSession = MemberCacheUtil.getSessionInfo(request);
+        if (memberSession != null) {
+            String phone = memberSession.getPhone();
+            // 记录用户退出日志
+            AsyncManager.me().execute(AsyncFactory.recordLoginInfo(phone, SystemConstants.LOGOUT, MessageUtil.message("user.logout.success")));
+            //设置数据库里面的用户状态为离线
+            log.info("设置用户{}为离线状态 token={}",phone, memberSession.getToken());
+            // 清理缓存
+            MemberCacheUtil.removeSessionInfo(memberSession.getToken());
+            return "会员退出登陆成功";
+        }
+        return "会员退出登陆异常";
     }
 }
