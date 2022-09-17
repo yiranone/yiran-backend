@@ -88,10 +88,12 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
            if(perms != null && perms.length > 0) {
                //校验用户权限
                for(String perm : perms) {
-                   log.info("校验用户{}权限{}", session.getLoginName(), perm);
                    boolean has = sysRoleService.checkUserHasPermission(session.getUserId(),perm);
                    if(!has) {
+                       log.info("校验用户{}权限{}未通过", session.getLoginName(), perm);
                        throw BusinessException.build("用户缺少权限:" + perm);
+                   } else {
+                       log.info("校验用户{}权限{}通过", session.getLoginName(), perm);
                    }
                }
            }

@@ -16,19 +16,12 @@ public interface SysMenuService extends CrudBaseService<Long, SysMenu> {
     List<SysMenu> selectMenuList(PageRequest request, SysMenu sysMenu);
 
     /**
-     * 查询所有菜单信息
-     *
-     * @return 菜单列表
-     */
-    List<Ztree> menuTreeData();
-
-    /**
      * 查询菜单数量
      *
      * @param parentId 菜单父ID
      * @return 结果
      */
-    int selectCountMenuByParentId(Long parentId);
+    int countMenuByParentId(Long parentId);
 
     /**
      * 新增保存菜单信息

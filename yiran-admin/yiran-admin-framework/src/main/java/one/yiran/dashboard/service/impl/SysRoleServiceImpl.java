@@ -300,6 +300,7 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
         return jpa.fetch();
     }
 
+    //校验用户是否有某个权限
     @Override
     public boolean checkUserHasPermission(Long userId, String perm) {
         Assert.notNull(userId,"用户ID不能为空");
