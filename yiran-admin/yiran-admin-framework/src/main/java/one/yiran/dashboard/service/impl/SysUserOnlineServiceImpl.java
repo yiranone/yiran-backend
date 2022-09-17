@@ -82,18 +82,21 @@ public class SysUserOnlineServiceImpl extends CrudBaseServiceImpl<String, SysUse
     }
 
     // 根据lastAccessTime 判断用户是不是离线了
+    @Transactional
     @Override
     public void updateExpireUserOffline(Long sessionTimeout) {
         Assert.notNull(sessionTimeout,"");
         LocalDateTime dateTime = LocalDateTime.now().minusMinutes(sessionTimeout);
         Date x = DateUtil.toDate(dateTime);
         QSysUserOnline online = QSysUserOnline.sysUserOnline;
-        queryFactory.update(online).set(online.status, SysUserOnline.OnlineStatus.off_line).
+        long aff = queryFactory.update(online).set(online.status, SysUserOnline.OnlineStatus.off_line).
                 where(online.lastAccessTime.loe(x)).execute();
-
+        log.info("设置在线->离线人数{}",aff);
         dateTime = LocalDateTime.now().minusMinutes(sessionTimeout).minusDays(1);
         x = DateUtil.toDate(dateTime);
-        queryFactory.delete(online).where(online.lastAccessTime.loe(x)).execute();
+        aff = queryFactory.delete(online).where(online.lastAccessTime.loe(x)).execute();
+        log.info("离线->删除人数{}",aff);
+
     }
 
 }

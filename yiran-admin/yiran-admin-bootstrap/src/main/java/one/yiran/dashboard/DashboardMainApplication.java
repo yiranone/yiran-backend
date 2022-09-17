@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 
 import javax.annotation.PostConstruct;
@@ -16,6 +17,7 @@ import javax.annotation.PostConstruct;
 @ServletComponentScan
 @SpringBootApplication(exclude = {JacksonAutoConfiguration.class })
 //@EnableCaching
+@EnableScheduling
 @ComponentScan(value = {"one.yiran","com.biz"})
 @EntityScan({"one.yiran","com.biz"})
 @EnableJpaRepositories(value = {"one.yiran","com.biz"})
