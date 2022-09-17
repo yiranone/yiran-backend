@@ -37,6 +37,7 @@ import java.util.Calendar;
 /**
  * 登录验证
  */
+@AjaxWrapper
 @Controller
 @Slf4j
 public class UserLoginController {
@@ -54,7 +55,6 @@ public class UserLoginController {
     private SysUserService sysUserService;
 
     @PostMapping("/login")
-    @AjaxWrapper
     public UserSession ajaxLogin(@ApiParam String username, @ApiParam String password) {
         if(Global.isDebugMode()) {
             String debugUserName = Global.getDebugLoginName();
@@ -161,17 +161,20 @@ public class UserLoginController {
         return true;
     }
 
-    @GetMapping("/logout")
-    public void logout(HttpServletRequest request) {
+    @RequestMapping("/logout")
+    public String logout(HttpServletRequest request) {
         UserSession user = UserCacheUtil.getSessionInfo(request);
         if (user != null) {
             String loginName = user.getLoginName();
             // 记录用户退出日志
             AsyncManager.me().execute(AsyncFactory.recordLoginInfo(loginName, SystemConstants.LOGOUT, MessageUtil.message("user.logout.success")));
             //设置数据库里面的用户状态为离线
+            log.info("设置用户{}为离线状态 token={}",loginName, user.getToken());
             onlineService.forceLogout(user.getToken());
             // 清理缓存
             UserCacheUtil.removeSessionInfo(user.getToken());
+            return "退出登陆成功";
         }
+        return "退出登陆异常";
     }
 }
