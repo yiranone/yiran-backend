@@ -3,6 +3,7 @@ package one.yiran.dashboard.web.controller.admin;
 import lombok.extern.slf4j.Slf4j;
 import one.yiran.common.domain.PageModel;
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
+import one.yiran.dashboard.common.annotation.ApiObject;
 import one.yiran.dashboard.common.annotation.ApiParam;
 import one.yiran.dashboard.common.annotation.Log;
 import one.yiran.dashboard.common.annotation.RequirePermission;
@@ -32,7 +33,7 @@ public class UserOnlineController {
 
     @RequirePermission(PermissionConstants.UserOnline.VIEW)
     @PostMapping("/list")
-    public PageModel<SysUserOnline> list(HttpServletRequest request, SysUserOnline sysUserOnline) {
+    public PageModel<SysUserOnline> list(HttpServletRequest request, @ApiObject SysUserOnline sysUserOnline) {
         return sysUserOnlineService.selectPage(PageRequestUtil.fromRequest(request), sysUserOnline);
     }
 
