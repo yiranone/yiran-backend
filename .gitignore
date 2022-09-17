@@ -1,4 +1,6 @@
 logs
+yiran-admin/yiran-admin-bootstrap/src/main/resources/application.yml
+yiran-admin/yiran-admin-bootstrap/src/main/resources/application2.yml
 *.iml
 .idea
 target
