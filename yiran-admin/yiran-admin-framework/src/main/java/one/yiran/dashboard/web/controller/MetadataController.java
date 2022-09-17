@@ -42,11 +42,11 @@ public class MetadataController {
         if(user == null)
             throw new UserNotLoginException();
         List<SysMenu> menusList;
-        if (user.isAdmin()) {
+//        if (user.isAdmin()) {
             menusList = sysMenuService.selectVisibleTreeMenus(false);
-        } else {
-            menusList = sysMenuService.selectVisibleTreeMenusByUser(user.getUserId(),false);
-        }
+//        } else {
+//            menusList = sysMenuService.selectVisibleTreeMenusByUser(user.getUserId(),false);
+//        }
         return PermUtil.toWebMenuTree(menusList);
     }
 
