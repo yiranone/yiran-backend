@@ -76,7 +76,7 @@ public class DictDataController {
     }
 
     @Log(title = "字典数据", businessType = BusinessType.DELETE)
-    @RequirePermission(PermissionConstants.Dict.REMOVE)
+    @RequirePermission(PermissionConstants.Dict.DELETE)
     @PostMapping("/delete")
     public long remove(@ApiParam Long[] dictCodes) {
         return sysDictDataService.deleteByPIds(dictCodes);

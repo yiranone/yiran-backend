@@ -40,14 +40,14 @@ public class SysLoginInfoController {
         util.exportExcel(response, list, "登陆日志");
     }
 
-    @RequirePermission(PermissionConstants.LoginInfo.REMOVE)
+    @RequirePermission(PermissionConstants.LoginInfo.DELETE)
     @Log(title = "登陆日志", businessType = BusinessType.DELETE)
     @PostMapping("/delete")
     public long delete(@ApiParam Long[] loginInfoIds) {
         return sysLoginInfoService.deleteByPIds(loginInfoIds);
     }
 
-    @RequirePermission(PermissionConstants.LoginInfo.REMOVE)
+    @RequirePermission(PermissionConstants.LoginInfo.DELETE)
     @Log(title = "登陆日志", businessType = BusinessType.CLEAN)
     @PostMapping("/clean")
     public long clean() {

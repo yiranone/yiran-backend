@@ -51,7 +51,7 @@ public class NoticeAdminController {
         return sysNoticeService.update(sysNotice);
     }
 
-    @RequirePermission(PermissionConstants.Notice.REMOVE)
+    @RequirePermission(PermissionConstants.Notice.DELETE)
     @Log(title = "通知公告", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     @AjaxWrapper

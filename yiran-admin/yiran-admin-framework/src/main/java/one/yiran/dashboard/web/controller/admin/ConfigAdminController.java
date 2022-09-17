@@ -74,7 +74,7 @@ public class ConfigAdminController {
     }
 
 
-    @RequirePermission(PermissionConstants.Config.REMOVE)
+    @RequirePermission(PermissionConstants.Config.DELETE)
     @Log(title = "参数管理", businessType = BusinessType.DELETE)
     @PostMapping("/delete")
     public long remove(@ApiParam(required = true) Long[] configIds) {

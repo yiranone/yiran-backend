@@ -1,4 +1,4 @@
-package one.yiran.dashboard.security.filter;
+package one.yiran.dashboard.filter;
 
 import com.google.code.kaptcha.Constants;
 import one.yiran.dashboard.common.constants.ShiroConstants;

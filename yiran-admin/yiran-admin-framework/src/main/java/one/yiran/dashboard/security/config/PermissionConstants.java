@@ -3,13 +3,14 @@ package one.yiran.dashboard.security.config;
 public class PermissionConstants {
 
     public static final String SYSTEM_PREFIX = "system";
+    public static final String EXT_PREFIX = "ext";
     public static final String MONITOR_PREFIX = "monitor";
 
     public static class User {
         public static final String PREFIX = SYSTEM_PREFIX + ":user:";
         public static final String VIEW = PREFIX + "view";
         public static final String EDIT = PREFIX + "edit";
-        public static final String REMOVE = PREFIX + "remove";
+        public static final String DELETE = PREFIX + "delete";
         public static final String ADD = PREFIX + "add";
         public static final String EXPORT = PREFIX + "export";
         public static final String IMPORT = PREFIX + "import";
@@ -22,7 +23,7 @@ public class PermissionConstants {
         public static final String PREFIX = SYSTEM_PREFIX + ":dept:";
         public static final String VIEW = PREFIX + "view";
         public static final String EDIT = PREFIX + "edit";
-        public static final String REMOVE = PREFIX + "remove";
+        public static final String DELETE = PREFIX + "delete";
         public static final String ADD = PREFIX + "add";
     }
 
@@ -30,7 +31,7 @@ public class PermissionConstants {
         public static final String PREFIX = SYSTEM_PREFIX + ":config:";
         public static final String VIEW = PREFIX + "view";
         public static final String EDIT = PREFIX + "edit";
-        public static final String REMOVE = PREFIX + "remove";
+        public static final String DELETE = PREFIX + "delete";
         public static final String ADD = PREFIX + "add";
         public static final String EXPORT = PREFIX + "export";
     }
@@ -40,7 +41,7 @@ public class PermissionConstants {
         public static final String PREFIX = SYSTEM_PREFIX + ":channel:";
         public static final String VIEW = PREFIX + "view";
         public static final String EDIT = PREFIX + "edit";
-        public static final String REMOVE = PREFIX + "remove";
+        public static final String DELETE = PREFIX + "delete";
         public static final String ADD = PREFIX + "add";
         public static final String EXPORT = PREFIX + "export";
     }
@@ -49,7 +50,7 @@ public class PermissionConstants {
         public static final String PREFIX = SYSTEM_PREFIX + ":notice:";
         public static final String VIEW = PREFIX + "view";
         public static final String EDIT = PREFIX + "edit";
-        public static final String REMOVE = PREFIX + "remove";
+        public static final String DELETE = PREFIX + "delete";
         public static final String ADD = PREFIX + "add";
     }
 
@@ -57,7 +58,7 @@ public class PermissionConstants {
         public static final String PREFIX = SYSTEM_PREFIX + ":post:";
         public static final String VIEW = PREFIX + "view";
         public static final String EDIT = PREFIX + "edit";
-        public static final String REMOVE = PREFIX + "remove";
+        public static final String DELETE = PREFIX + "delete";
         public static final String ADD = PREFIX + "add";
     }
 
@@ -65,7 +66,7 @@ public class PermissionConstants {
         public static final String PREFIX = SYSTEM_PREFIX + ":perm:";
         public static final String VIEW = PREFIX + "view";
         public static final String EDIT = PREFIX + "edit";
-        public static final String REMOVE = PREFIX + "remove";
+        public static final String DELETE = PREFIX + "delete";
         public static final String ADD = PREFIX + "add";
     }
 
@@ -73,7 +74,7 @@ public class PermissionConstants {
         public static final String PREFIX = SYSTEM_PREFIX + ":role:";
         public static final String VIEW = PREFIX + "view";
         public static final String EDIT = PREFIX + "edit";
-        public static final String REMOVE = PREFIX + "remove";
+        public static final String DELETE = PREFIX + "delete";
         public static final String ADD = PREFIX + "add";
         public static final String EXPORT = PREFIX + "export";
     }
@@ -82,7 +83,7 @@ public class PermissionConstants {
         public static final String PREFIX = SYSTEM_PREFIX + ":menu:";
         public static final String VIEW = PREFIX + "view";
         public static final String EDIT = PREFIX + "edit";
-        public static final String REMOVE = PREFIX + "remove";
+        public static final String DELETE = PREFIX + "delete";
         public static final String ADD = PREFIX + "add";
     }
 
@@ -90,7 +91,7 @@ public class PermissionConstants {
         public static final String PREFIX = SYSTEM_PREFIX + ":dict:";
         public static final String VIEW = PREFIX + "view";
         public static final String EDIT = PREFIX + "edit";
-        public static final String REMOVE = PREFIX + "remove";
+        public static final String DELETE = PREFIX + "delete";
         public static final String ADD = PREFIX + "add";
         public static final String EXPORT = PREFIX + "export";
     }
@@ -98,29 +99,21 @@ public class PermissionConstants {
     public static class OperateLog {
         public static final String PREFIX = SYSTEM_PREFIX + ":operate:log:";
         public static final String VIEW = PREFIX + "view";
-        public static final String REMOVE = PREFIX + "remove";
+        public static final String DELETE = PREFIX + "delete";
         public static final String EXPORT = PREFIX + "export";
     }
 
     public static class LoginInfo {
         public static final String PREFIX = SYSTEM_PREFIX + ":login:info:";
         public static final String VIEW = PREFIX + "view";
-        public static final String REMOVE = PREFIX + "remove";
+        public static final String DELETE = PREFIX + "delete";
         public static final String EXPORT = PREFIX + "export";
     }
 
     public static class UserOnline {
-        public static final String PREFIX = SYSTEM_PREFIX + ":online:user:";
+        public static final String PREFIX = SYSTEM_PREFIX + ":online:";
         public static final String VIEW = PREFIX + "view";
-        public static final String FORCE_LOGOUT = PREFIX + "force:logout";
-    }
-
-    public static class Member {
-        public static final String PREFIX = SYSTEM_PREFIX + ":member:";
-        public static final String VIEW = PREFIX + "view";
-        public static final String EDIT = PREFIX + "edit";
-        public static final String REMOVE = PREFIX + "remove";
-        public static final String ADD = PREFIX + "add";
+        public static final String FORCE_LOGOUT = PREFIX + "forceLogout";
     }
 
 }

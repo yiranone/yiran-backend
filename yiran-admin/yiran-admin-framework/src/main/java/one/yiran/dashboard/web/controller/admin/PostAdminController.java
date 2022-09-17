@@ -48,7 +48,7 @@ public class PostAdminController {
         return util.exportExcel(list.getRows(), "岗位数据");
     }
 
-    @RequirePermission(PermissionConstants.Post.REMOVE)
+    @RequirePermission(PermissionConstants.Post.DELETE)
     @Log(title = "岗位管理", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     @AjaxWrapper

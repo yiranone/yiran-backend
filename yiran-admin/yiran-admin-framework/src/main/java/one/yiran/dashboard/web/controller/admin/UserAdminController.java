@@ -155,7 +155,7 @@ public class UserAdminController {
     }
 
     @Log(title = "用户管理", businessType = BusinessType.DELETE)
-    @RequirePermission(PermissionConstants.User.REMOVE)
+    @RequirePermission(PermissionConstants.User.DELETE)
     @PostMapping("/remove")
     public Map<String, Object> remove(@ApiParam(required = true) Long[] userIds) {
         return WrapUtil.wrap("deleteCount",sysUserService.deleteUserByIds(userIds));

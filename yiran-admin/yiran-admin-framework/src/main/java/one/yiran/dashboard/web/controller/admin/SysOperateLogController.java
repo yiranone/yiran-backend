@@ -39,14 +39,14 @@ public class SysOperateLogController {
         util.exportExcel(response, list, "操作日志");
     }
 
-    @RequirePermission(PermissionConstants.OperateLog.REMOVE)
+    @RequirePermission(PermissionConstants.OperateLog.DELETE)
     @PostMapping("/remove")
     public long delete(@ApiParam(required = true) Long[] operateIds) {
         return sysOperLogService.removeByPIds(operateIds);
     }
 
     @Log(title = "操作日志", businessType = BusinessType.CLEAN)
-    @RequirePermission(PermissionConstants.OperateLog.REMOVE)
+    @RequirePermission(PermissionConstants.OperateLog.DELETE)
     @PostMapping("/clean")
     public void clean() {
         sysOperLogService.removeAll();

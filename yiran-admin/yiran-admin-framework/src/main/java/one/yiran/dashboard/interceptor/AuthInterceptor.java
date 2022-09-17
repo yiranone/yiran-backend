@@ -7,6 +7,7 @@ import one.yiran.dashboard.common.model.UserSession;
 import one.yiran.dashboard.common.annotation.RequireUserLogin;
 import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.common.expection.user.UserNotLoginException;
+import one.yiran.dashboard.service.SysRoleService;
 import one.yiran.dashboard.util.UserCacheUtil;
 import one.yiran.dashboard.factory.AsyncManager;
 import one.yiran.dashboard.service.SysUserOnlineService;
@@ -28,6 +29,8 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
     private SysUserOnlineService sysUserOnlineService;
+    @Autowired
+    private SysRoleService sysRoleService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -84,6 +87,13 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
            String[] perms = requirePermission.value();
            if(perms != null && perms.length > 0) {
                //校验用户权限
+               for(String perm : perms) {
+                   log.info("校验用户{}权限{}", session.getLoginName(), perm);
+                   boolean has = sysRoleService.checkUserHasPermission(session.getUserId(),perm);
+                   if(!has) {
+                       throw BusinessException.build("用户缺少权限:" + perm);
+                   }
+               }
            }
         }
 

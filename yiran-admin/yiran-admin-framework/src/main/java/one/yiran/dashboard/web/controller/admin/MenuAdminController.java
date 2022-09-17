@@ -40,7 +40,7 @@ public class MenuAdminController {
     }
 
     @Log(title = "菜单管理", businessType = BusinessType.DELETE)
-    @RequirePermission(PermissionConstants.Menu.REMOVE)
+    @RequirePermission(PermissionConstants.Menu.DELETE)
     @RequestMapping("/remove")
     public long remove(@ApiParam Long[] menuIds) {
         return sysMenuService.deleteByPIds(menuIds);

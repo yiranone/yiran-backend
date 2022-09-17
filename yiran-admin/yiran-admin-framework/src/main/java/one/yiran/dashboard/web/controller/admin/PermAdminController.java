@@ -45,7 +45,7 @@ public class PermAdminController {
     }
 
     @Log(title = "权限管理", businessType = BusinessType.DELETE)
-    @RequirePermission(PermissionConstants.Perm.REMOVE)
+    @RequirePermission(PermissionConstants.Perm.DELETE)
     @RequestMapping("/remove")
     public long remove(@RequestBody Map<String, List<Long>> params) {
         List<Long> permIds = params.get("ids");

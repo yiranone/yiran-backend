@@ -103,7 +103,7 @@ public class RoleAdminController {
     }
 
     @Log(title = "角色管理", businessType = BusinessType.DELETE)
-    @RequirePermission(PermissionConstants.Role.REMOVE)
+    @RequirePermission(PermissionConstants.Role.DELETE)
     @PostMapping("/remove")
     public long remove(@ApiParam(required = true) Long[] roleIds) {
         return sysRoleService.removeRoleInfo(roleIds);

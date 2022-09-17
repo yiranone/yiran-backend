@@ -103,7 +103,7 @@ public class DictTypeController {
 //    }
 
     @Log(title = "字典类型", businessType = BusinessType.DELETE)
-    @RequirePermission(PermissionConstants.Dict.REMOVE)
+    @RequirePermission(PermissionConstants.Dict.DELETE)
     @PostMapping("/delete")
     public long delete(@ApiParam Long[] dictIds) throws BusinessException {
         return sysDictTypeService.deleteByPIds(dictIds);

@@ -300,6 +300,26 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
         return jpa.fetch();
     }
 
+    @Override
+    public boolean checkUserHasPermission(Long userId, String perm) {
+        Assert.notNull(userId,"用户ID不能为空");
+        Assert.notNull(perm,"perm不能为空");
+        QSysMenu qSysMenu = QSysMenu.sysMenu;
+        QSysRoleMenu qSysRoleMenu = QSysRoleMenu.sysRoleMenu;
+        QSysUserRole qSysUserRole = QSysUserRole.sysUserRole;
+        QSysRole qSysRole = QSysRole.sysRole;
+        JPAQuery<Long> jpa = queryFactory.select(qSysMenu.menuId).from(qSysMenu)
+                .innerJoin(qSysRoleMenu)
+                .on(qSysMenu.menuId.eq(qSysRoleMenu.menuId))
+                .innerJoin(qSysUserRole)
+                .on(qSysRoleMenu.roleId.eq(qSysUserRole.roleId)
+                        .and(qSysUserRole.userId.eq(userId)))
+                .innerJoin(qSysRole).on(qSysUserRole.roleId.eq(qSysRole.roleId))
+                .where(qSysMenu.perms.eq(perm))
+                .where(PredicateUtil.buildNotDeletePredicate(qSysRole));
+        return jpa.fetchCount() > 0;
+    }
+
     private int insertRolePerm(Long roleId, List<Long> menuIds) {
         for (Long menuId : menuIds) {
             SysRoleMenu rm = new SysRoleMenu();

@@ -1,5 +1,6 @@
 package com.biz.controller;
 
+import com.biz.constants.BizPermissionConstants;
 import com.biz.entity.Member;
 import com.biz.service.MemberService;
 import com.biz.service.util.MemberPasswordService;
@@ -13,7 +14,6 @@ import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.common.expection.user.UserNotFoundException;
 import one.yiran.dashboard.entity.SysChannel;
 import one.yiran.dashboard.security.SessionContextHelper;
-import one.yiran.dashboard.security.config.PermissionConstants;
 import one.yiran.dashboard.service.SysChannelService;
 import one.yiran.dashboard.common.util.WrapUtil;
 import one.yiran.db.common.util.PageRequestUtil;
@@ -42,7 +42,7 @@ public class MemberController {
     @Autowired
     private MemberPasswordService passwordService;
 
-    @RequirePermission(PermissionConstants.Member.VIEW)
+    @RequirePermission(BizPermissionConstants.Member.VIEW)
     @RequestMapping("/list")
     public PageModel<MemberVO> list(@ApiObject(createIfNull = true) MemberVO memberVO,
                                     @ApiParam String deptName, HttpServletRequest request) {
@@ -54,7 +54,7 @@ public class MemberController {
     }
 
     @Log(title = "会员管理", businessType = BusinessType.ADD)
-    @RequirePermission(PermissionConstants.User.ADD)
+    @RequirePermission(BizPermissionConstants.Member.ADD)
     @PostMapping("/add")
     public MemberVO addMember(@ApiObject(validate = true) MemberVO member,
                               @ApiParam String password) {
@@ -87,7 +87,7 @@ public class MemberController {
     }
 
     @Log(title = "会员管理", businessType = BusinessType.EDIT)
-    @RequirePermission(PermissionConstants.User.EDIT)
+    @RequirePermission(BizPermissionConstants.Member.EDIT)
     @PostMapping("edit")
     public MemberVO editUser(@ApiObject(validate = true) MemberVO member,
                              @ApiParam String password) {
@@ -120,13 +120,13 @@ public class MemberController {
     }
 
     @Log(title = "用户管理", businessType = BusinessType.DELETE)
-    @RequirePermission(PermissionConstants.User.REMOVE)
+    @RequirePermission(BizPermissionConstants.Member.DELETE)
     @PostMapping("/remove")
     public Map<String, Object> remove(@ApiParam(required = true) Long[] ids) {
         return WrapUtil.wrap("deleteCount",memberService.deleteByPIds(ids));
     }
 
-    @RequirePermission(PermissionConstants.Member.VIEW)
+    @RequirePermission(BizPermissionConstants.Member.VIEW)
     @PostMapping("/detail")
     public MemberVO detail(@ApiParam(required = true) Long memberId) {
         Member db =  memberService.selectByPId(memberId);
@@ -138,7 +138,7 @@ public class MemberController {
     }
 
     @Log(title = "会员管理", businessType = BusinessType.EDIT)
-    @RequirePermission(PermissionConstants.User.EDIT)
+    @RequirePermission(BizPermissionConstants.Member.EDIT)
     @PostMapping("resetPassword")
     public MemberVO resetPassword(@ApiParam(required = true) Long memberId,
                              @ApiParam(required = true) String password) {

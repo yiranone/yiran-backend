@@ -35,7 +35,7 @@ public class DeptAdminController {
     }
 
     @Log(title = "部门管理", businessType = BusinessType.DELETE)
-    @RequirePermission(PermissionConstants.Dept.REMOVE)
+    @RequirePermission(PermissionConstants.Dept.DELETE)
     @RequestMapping("/remove")
     public long remove(@ApiParam(required = true) Long[] deptIds) {
         return sysDeptService.deleteByPIds(deptIds);

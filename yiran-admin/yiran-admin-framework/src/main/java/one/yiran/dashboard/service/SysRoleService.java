@@ -80,7 +80,6 @@ public interface SysRoleService extends CrudBaseService<Long, SysRole> {
      */
     int changeStatus(SysRole sysRole);
 
-
     /**
      * 批量选择授权用户角色
      */
@@ -97,4 +96,6 @@ public interface SysRoleService extends CrudBaseService<Long, SysRole> {
     SysRole findDetailById(Long roleId);
 
     List<String> findUserPermsByUserId(Long userId);
+
+    boolean checkUserHasPermission(Long userId, String perm);
 }

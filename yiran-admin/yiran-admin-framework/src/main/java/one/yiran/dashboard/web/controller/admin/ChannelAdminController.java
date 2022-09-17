@@ -96,7 +96,7 @@ public class ChannelAdminController {
         return sysChannelService.update(dbChannel);
     }
 
-    @RequirePermission(PermissionConstants.Channel.REMOVE)
+    @RequirePermission(PermissionConstants.Channel.DELETE)
     @Log(title = PermissionConstants.Channel.NAME, businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     @AjaxWrapper
