@@ -1,5 +1,7 @@
 package one.yiran.dashboard.service.impl;
 
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQuery;
 import lombok.extern.slf4j.Slf4j;
 import one.yiran.dashboard.common.expection.user.UserNotFoundException;
@@ -289,7 +291,7 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
         QSysRoleMenu qSysRoleMenu = QSysRoleMenu.sysRoleMenu;
         QSysUserRole qSysUserRole = QSysUserRole.sysUserRole;
         QSysRole qSysRole = QSysRole.sysRole;
-        JPAQuery<String> jpa = queryFactory.select(qSysMenu.perms).from(qSysMenu)
+        JPAQuery<String> jpa = queryFactory.selectDistinct(qSysMenu.perms).from(qSysMenu)
                 .innerJoin(qSysRoleMenu)
                 .on(qSysMenu.menuId.eq(qSysRoleMenu.menuId))
                 .innerJoin(qSysUserRole)
@@ -297,7 +299,8 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
                         .and(qSysUserRole.userId.eq(userId)))
                 .innerJoin(qSysRole).on(qSysUserRole.roleId.eq(qSysRole.roleId))
                 .where(qSysMenu.perms.isNotEmpty())
-                .where(PredicateUtil.buildNotDeletePredicate(qSysRole));
+                .where(PredicateUtil.buildNotDeletePredicate(qSysRole))
+                .orderBy(new OrderSpecifier<>(Order.ASC,qSysMenu.perms));
         return jpa.fetch();
     }
 
