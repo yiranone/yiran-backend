@@ -156,46 +156,58 @@ public class PredicateBuilder {
                 boolean allowNull = b.isAllowNull();
                 if (value != null) {
                     if (ops == Ops.GOE) {
-                        if (path instanceof DateExpression && value instanceof LocalDate) {
-                            list.add(((DateExpression) path).goe((LocalDate) value));
-                        } else if (path instanceof NumberExpression && value instanceof Number) {
-                            list.add(((NumberExpression) path).goe((Number) value));
+                        if (path instanceof ComparableExpression) {
+                            if (value instanceof Comparable) {
+                                list.add(((ComparableExpression) path).goe((Comparable) value));
+                            } else {
+                                log.error("Predicate Comparable 构建异常 path={},ops={} value{}", path, ops, value);
+                                throw new RuntimeException("Predicate构建异常");
+                            }
                         } else {
-                            log.error("Predicate构建异常 path={},ops={} value{}", path, ops, value);
+                            log.error("类型不支持了，Predicate ComparableExpression 构建异常 path={},ops={} value{}", path, ops, value);
                             throw new RuntimeException("Predicate构建异常");
                         }
                     } else if (ops == Ops.LOE) {
-                        if (path instanceof DateExpression && value instanceof LocalDate) {
-                            list.add(((DateExpression) path).loe((LocalDate) value));
-                        } else if (path instanceof NumberExpression && value instanceof Number) {
-                            list.add(((NumberExpression) path).loe((Number) value));
+                        if (path instanceof ComparableExpression) {
+                            if (value instanceof Comparable) {
+                                list.add(((ComparableExpression) path).loe((Comparable) value));
+                            } else {
+                                log.error("Predicate Comparable 构建异常 path={},ops={} value{}", path, ops, value);
+                                throw new RuntimeException("Predicate构建异常");
+                            }
                         } else {
-                            log.error("Predicate构建异常 path={},ops={} value{}", path, ops, value);
+                            log.error("Predicate ComparableExpression 构建异常 path={},ops={} value{}", path, ops, value);
                             throw new RuntimeException("Predicate构建异常");
                         }
                     } else if (ops == Ops.GT) {
-                        if (path instanceof DateExpression && value instanceof LocalDate) {
-                            list.add(((DateExpression) path).gt((LocalDate) value));
-                        } else if (path instanceof NumberExpression && value instanceof Number) {
-                            list.add(((NumberExpression) path).gt((Number) value));
+                        if (path instanceof ComparableExpression) {
+                            if (value instanceof Comparable) {
+                                list.add(((ComparableExpression) path).gt((Comparable) value));
+                            } else {
+                                log.error("Predicate Comparable gt 构建异常 path={},ops={} value{}", path, ops, value);
+                                throw new RuntimeException("Predicate构建异常");
+                            }
                         } else {
-                            log.error("Predicate构建异常 path={},ops={} value{}", path, ops, value);
+                            log.error("类型不支持了，Predicate ComparableExpression gt构建异常 path={},ops={} value{}", path, ops, value);
                             throw new RuntimeException("Predicate构建异常");
                         }
                     } else if (ops == Ops.LT) {
-                        if (path instanceof DateExpression && value instanceof LocalDate) {
-                            list.add(((DateExpression) path).lt((LocalDate) value));
-                        } else if (path instanceof NumberExpression && value instanceof Number) {
-                            list.add(((NumberExpression) path).lt((Number) value));
+                        if (path instanceof ComparableExpression) {
+                            if (value instanceof Comparable) {
+                                list.add(((ComparableExpression) path).lt((Comparable) value));
+                            } else {
+                                log.error("Predicate Comparable lt 构建异常 path={},ops={} value{}", path, ops, value);
+                                throw new RuntimeException("Predicate构建异常");
+                            }
                         } else {
-                            log.error("Predicate构建异常 path={},ops={} value{}", path, ops, value);
+                            log.error("类型不支持了，Predicate ComparableExpression lt构建异常 path={},ops={} value{}", path, ops, value);
                             throw new RuntimeException("Predicate构建异常");
                         }
                     } else if (ops == Ops.EQ) {
                         if (path instanceof SimpleExpression && value instanceof String) {
                             list.add(((SimpleExpression) path).eq((String) value));
-                        } else if (path instanceof NumberExpression && value instanceof Number) {
-                            list.add(((NumberExpression) path).eq((Number) value));
+                        } else if (path instanceof ComparableExpression && value instanceof Comparable) {
+                            list.add(((ComparableExpression) path).eq((Comparable) value));
                         } else if (path instanceof BooleanExpression && value instanceof Boolean) {
                             list.add(((BooleanExpression) path).eq((Boolean) value));
                         } else {

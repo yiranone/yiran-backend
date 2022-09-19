@@ -12,6 +12,11 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 /**
  *
@@ -52,7 +57,7 @@ public class SimpleParamTypeParamResolver implements HandlerMethodArgumentResolv
 			if(isNull)
 				throw BusinessException.build("请求参数校验异常:" + parameterName + "不能为空");
 		}
-		if(v instanceof String) {
+		if (v instanceof String) {
 			return StringUtils.trim((String)v);
 		}
 		return v;

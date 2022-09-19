@@ -1,15 +1,19 @@
 package one.yiran.dashboard.web.controller.admin;
 
+import com.querydsl.core.types.Predicate;
 import one.yiran.common.domain.PageModel;
 import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.common.annotation.*;
 import one.yiran.dashboard.common.constants.BusinessType;
 import one.yiran.dashboard.common.util.ExcelUtil;
 import one.yiran.dashboard.common.util.WrapUtil;
+import one.yiran.dashboard.entity.QSysConfig;
 import one.yiran.dashboard.entity.SysConfig;
 import one.yiran.dashboard.security.config.PermissionConstants;
 import one.yiran.dashboard.service.SysConfigService;
 import one.yiran.db.common.util.PageRequestUtil;
+import one.yiran.db.common.util.PredicateBuilder;
+import one.yiran.db.common.util.PredicateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -36,9 +42,16 @@ public class ConfigAdminController {
 
     @RequirePermission(PermissionConstants.Config.VIEW)
     @PostMapping("/list")
-    public PageModel list(@ApiObject(createIfNull = true) SysConfig sysConfig, HttpServletRequest request) {
-        sysConfig.setIsDelete(false);
-        return sysConfigService.selectPage(PageRequestUtil.fromRequest(request), sysConfig);
+    public PageModel list(@ApiObject(createIfNull = true) SysConfig sysConfig,
+                          @ApiParam(format = "yyyy-MM-dd") Date createBeginTime,
+                          @ApiParam(format = "yyyy-MM-dd") Date createEndTime,
+                          HttpServletRequest request) {
+        QSysConfig config = QSysConfig.sysConfig;
+        List<Predicate> predicates = PredicateBuilder.builder()
+                .addGreaterOrEqualIfNotBlank(config.createTime, createBeginTime)
+                .addLittlerOrEqualIfNotBlank(config.createTime, createEndTime)
+                .addExpression(PredicateUtil.buildNotDeletePredicate(config)).toList();
+        return sysConfigService.selectPage(PageRequestUtil.fromRequest(request), sysConfig, predicates);
     }
 
     @Log(title = "参数管理", businessType = BusinessType.EXPORT)

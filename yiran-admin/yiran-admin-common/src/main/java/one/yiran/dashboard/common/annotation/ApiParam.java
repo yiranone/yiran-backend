@@ -11,4 +11,5 @@ import java.lang.annotation.Target;
 public @interface ApiParam {
     boolean required() default false;
     String name() default "";
+    String format() default "";
 }
