@@ -52,6 +52,7 @@ public class PermissionConstants {
         public static final String EDIT = PREFIX + "edit";
         public static final String DELETE = PREFIX + "delete";
         public static final String ADD = PREFIX + "add";
+        public static final String EXPORT = PREFIX + "export";
     }
 
     public static class Post {

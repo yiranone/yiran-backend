@@ -7,6 +7,7 @@ import one.yiran.dashboard.common.annotation.ApiParam;
 import one.yiran.dashboard.common.annotation.Log;
 import one.yiran.dashboard.common.annotation.RequirePermission;
 import one.yiran.dashboard.common.constants.BusinessType;
+import one.yiran.dashboard.common.util.ExcelUtil;
 import one.yiran.dashboard.entity.SysNotice;
 import one.yiran.dashboard.security.SessionContextHelper;
 import one.yiran.dashboard.security.config.PermissionConstants;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @AjaxWrapper
 @Controller
@@ -39,6 +41,15 @@ public class NoticeAdminController {
     public PageModel list(@ApiObject SysNotice sysNotice, HttpServletRequest request) {
         sysNotice.setIsDelete(false);
         return sysNoticeService.selectPage(PageRequestUtil.fromRequest(request), sysNotice);
+    }
+
+    @Log(title = "通知公告", businessType = BusinessType.EXPORT)
+    @RequirePermission(PermissionConstants.Notice.EXPORT)
+    @PostMapping("/export")
+    public void export(@ApiObject(createIfNull = true) SysNotice sysNotice, HttpServletRequest request, HttpServletResponse response) {
+        PageModel<SysNotice> list = sysNoticeService.selectPage(PageRequestUtil.fromRequestIgnorePageSize(request), sysNotice);
+        ExcelUtil<SysNotice> util = new ExcelUtil<>(SysNotice.class);
+        util.exportExcel(response, list.getRows(), "通知公告");
     }
 
     @RequirePermission(PermissionConstants.Notice.ADD)
