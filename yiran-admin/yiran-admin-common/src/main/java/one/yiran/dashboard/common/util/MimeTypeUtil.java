@@ -18,7 +18,7 @@ public class MimeTypeUtil {
 
     public static final String[] FLASH_EXTENSION = {"swf", "flv"};
 
-    public static final String[] MEDIA_EXTENSION = {"swf", "flv", "mp3", "wav", "wma", "wmv", "mid", "avi", "mpg",
+    public static final String[] MEDIA_EXTENSION = {"swf", "flv", "mp3", "mp4", "wav", "wma", "wmv", "mid", "avi", "mpg",
             "asf", "rm", "rmvb"};
 
     public static final String[] DEFAULT_ALLOWED_EXTENSION = {

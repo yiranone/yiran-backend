@@ -9,6 +9,9 @@ import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.common.util.FileDownloadUtil;
 import one.yiran.dashboard.common.util.FileUploadUtil;
 import one.yiran.dashboard.common.util.FileUtil;
+import one.yiran.dashboard.common.util.MimeTypeUtil;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,15 +72,19 @@ public class CommonController {
     @RequireUserLogin
     @PostMapping("/common/upload")
     @AjaxWrapper
-    public Map uploadFile(MultipartFile file) throws Exception {
+    public Map uploadFile(MultipartFile file, HttpServletRequest request) throws Exception {
         // 上传并返回新文件名称
-        String url = FileUploadUtil.upload(Global.getUploadPath(), file);
+        String[] image = MimeTypeUtil.IMAGE_EXTENSION;
+        String[] media = MimeTypeUtil.MEDIA_EXTENSION;
+        String[] both = ArrayUtils.addAll(image, media);
+        String url = FileUploadUtil.upload(Global.getUploadPath(), file,both);
         //String url = serverConfig.getRequestUrl() + fileName;
+        String contextPath = request.getContextPath();
         Map ajax = new HashMap();
         ajax.put("fileName", file.getOriginalFilename());
-        ajax.put("url", url);
+        ajax.put("url", contextPath + url);
+        ajax.put("url2", url);
         return ajax;
-
     }
 
 //    /**

@@ -24,6 +24,7 @@ public class CacheRequestFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) sRequest;
         boolean isAjax = ServletUtil.isAjaxRequest(request);
+        request.setAttribute("IS_AJAX",isAjax);
         if(isAjax) {
             ContentCachingRequestWrapper contentCachingRequestWrapper = new ContentCachingRequestWrapper(request);
             byte[] bytes = contentCachingRequestWrapper.getBody();

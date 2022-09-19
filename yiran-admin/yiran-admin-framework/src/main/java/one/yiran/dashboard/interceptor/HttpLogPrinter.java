@@ -16,6 +16,10 @@ public class HttpLogPrinter {
 
     public static void print(HttpServletRequest httpServletRequest, Object responseObject) {
         try {
+            boolean isAjax = httpServletRequest.getAttribute("IS_AJAX") == null ? false : Boolean.valueOf(httpServletRequest.getAttribute("IS_AJAX").toString()).booleanValue();
+            if(!isAjax)
+                return;
+
             String reqMessage = httpServletRequest.getAttribute("REQ_JSON") == null ? "" : httpServletRequest.getAttribute("REQ_JSON").toString();
 
             String respMessage = JSON.toJSONString(responseObject);

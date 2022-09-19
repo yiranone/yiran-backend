@@ -8,6 +8,7 @@ import one.yiran.dashboard.common.expection.user.UserHasNotPermissionException;
 import one.yiran.common.domain.ResponseContainer;
 import one.yiran.dashboard.interceptor.HttpLogPrinter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DuplicateKeyException;
@@ -85,7 +86,10 @@ public class ExceptionFilter implements HandlerExceptionResolver {
             log.error("主键冲突", e);
             msg = "系统异常，请联系管理员。主键冲突";
         } else {
-            log.error("请求异常", e);
+            if (StringUtils.containsIgnoreCase(ExceptionUtils.getRootCauseMessage(e), "Broken pipe")) {   //(2)
+                return null;
+            }
+            log.error("请求失败，未知异常", e);
             String message = e.getMessage();
             if (StringUtils.isNotBlank(message))
                 msg = message;
