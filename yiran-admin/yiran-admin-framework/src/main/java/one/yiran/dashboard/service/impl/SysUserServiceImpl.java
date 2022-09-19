@@ -592,7 +592,9 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
         jpa.where(qSysUser.isDelete.ne(Boolean.TRUE));
         long count = jpa.fetchCount();
 
-        jpa.offset((request.getPageNum() - 1) * request.getPageSize()).limit(request.getPageSize());
+        PageRequestUtil.injectQuery(request,jpa,qSysUser);
+
+//        jpa.offset((request.getPageNum() - 1) * request.getPageSize()).limit(request.getPageSize());
         List<SysUser> sysUserList = jpa.fetch();
 
         List<UserPageVO> userPageVOs = new ArrayList<>();
