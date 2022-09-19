@@ -43,7 +43,7 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long, SysMenu> imple
                 sysMenus = sysMenus.stream().filter(e -> !StringUtils.equals(e.getMenuType(),"F")).collect(Collectors.toList());
             }
             sysMenus = sysMenus.stream().filter(e -> permList.contains(e.getPerms()))
-                    .filter(e -> StringUtils.equals("0", e.getVisible()))
+                    .filter(e -> StringUtils.equals("1", e.getVisible()))
                     .filter(e -> e.getIsDelete() == null || !e.getIsDelete().booleanValue()).collect(toList());
         }
         sortMenus(sysMenus);
@@ -57,7 +57,7 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long, SysMenu> imple
             sysMenus = sysMenus.stream().filter(e -> !StringUtils.equals(e.getMenuType(),"F")).collect(Collectors.toList());
         }
         if(sysMenus != null && sysMenus.size() > 0) {
-            sysMenus = sysMenus.stream().filter(e -> StringUtils.equals("0", e.getVisible()))
+            sysMenus = sysMenus.stream().filter(e -> StringUtils.equals("1", e.getVisible()))
                     .filter(e -> e.getIsDelete() == null || !e.getIsDelete().booleanValue()).collect(toList());
         }
         sortMenus(sysMenus);
