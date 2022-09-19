@@ -32,6 +32,6 @@ public class OptionValidatorTest {
 class TestModel {
 
     @Length(max = 100)
-    @Option(value = {"0","1"},message = "状态只能是0，1。 0=正常,1=停用")
+    @Option(value = {"1","2"},message = "状态只能是1，2。 1=正常,2=停用")
     private String status;
 }

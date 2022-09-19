@@ -55,10 +55,7 @@ public class SysRole extends TimedBasedEntity {
     @Column(nullable = false)
     private Integer roleSort;
 
-    /**
-     * 角色状态（0正常 1停用）
-     */
-    @Option(value = {"0","1"}, message = "状态只能是0，1; 0=正常,1=停用")
+    @Option(value = {"1","2"},message = "状态只能是1，2。 1=正常,2=停用")
     @NotBlank(message = "状态不能为空")
     @Excel(name = "角色状态", readConverterExp = "0=正常,1=停用")
     @Search

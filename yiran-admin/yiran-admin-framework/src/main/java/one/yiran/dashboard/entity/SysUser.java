@@ -108,10 +108,7 @@ public class SysUser extends TimedBasedEntity {
     @Column(nullable = true,length = 32)
     private String assertSalt;
 
-    /**
-     * 帐号状态（0正常 1停用）
-     */
-    @Option(value = {"0","1"}, message = "状态只能是0，1; 0=正常,1=停用")
+    @Option(value = {"1","2"},message = "状态只能是1，2。 1=正常,2=停用")
     @Excel(name = "帐号状态", readConverterExp = "0=正常,1=停用")
     @Search
     @Column(length = 8,nullable = false)

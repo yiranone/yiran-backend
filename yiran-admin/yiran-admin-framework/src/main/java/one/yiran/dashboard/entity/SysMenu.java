@@ -78,7 +78,7 @@ public class SysMenu extends TimedBasedEntity {
      * 菜单状态:0显示,1隐藏
      */
     @Search
-    @Option(value = {"0","1"}, message = "菜单状态只能是0，1; 0=显示,1=隐藏")
+    @Option(value = {"1","2"}, message = "菜单状态只能是1，2; 1=显示,2=隐藏")
     @Column(length = 1,nullable = false)
     private String visible;
 
