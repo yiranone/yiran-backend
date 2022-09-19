@@ -71,7 +71,7 @@ public class MemberLoginController {
             throw new UserDeleteException();
         }
 
-        if (UserConstants.USER_DELETED.equals(m.getStatus())) {
+        if (m.getIsDelete() != null && m.getIsDelete().booleanValue()) {
             AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.blocked", m.getName())));
             throw new UserBlockedException();
         }

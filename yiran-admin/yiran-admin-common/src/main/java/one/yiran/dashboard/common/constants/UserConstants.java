@@ -6,43 +6,25 @@ public class UserConstants {
     public static final String SESSION_TYPE_MEMBER = "MEMBER";
 
     /**
-     * 正常状态
-     */
-    public static final String NORMAL = "0";
-
-    /**
-     * 异常状态
-     */
-    public static final String EXCEPTION = "1";
-
-    /**
      * 用户封禁状态
      */
-    public static final String USER_BLOCKED = "1";
-
-    public static final String USER_DELETED = "1";
+    public static final String USER_BLOCKED = "2";
 
     /**
      * 角色封禁状态
      */
-    public static final String ROLE_BLOCKED = "1";
+    public static final String ROLE_BLOCKED = "2";
 
     /**
      * 部门正常状态
      */
-    public static final String DEPT_NORMAL = "0";
+    public static final String DEPT_NORMAL = "1";
 
     /**
      * 用户名长度限制
      */
     public static final int USERNAME_MIN_LENGTH = 2;
     public static final int USERNAME_MAX_LENGTH = 20;
-
-    /**
-     * 登录名称是否唯一的返回结果码
-     */
-    public final static String USER_NAME_UNIQUE = "0";
-    public final static String USER_NAME_NOT_UNIQUE = "1";
 
     /**
      * 用户类型

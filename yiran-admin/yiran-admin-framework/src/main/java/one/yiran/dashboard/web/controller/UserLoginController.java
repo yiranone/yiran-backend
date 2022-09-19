@@ -119,7 +119,7 @@ public class UserLoginController {
             throw new UserDeleteException();
         }
 
-        if (UserConstants.USER_DELETED.equals(user.getStatus())) {
+        if (UserConstants.USER_BLOCKED.equals(user.getStatus())) {
             AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.blocked", user.getRemark())));
             throw new UserBlockedException();
         }
