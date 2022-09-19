@@ -52,8 +52,9 @@ public class UserAuthController {
     }
 
     /**
-     * 批量选择用户授权一个角色，只新增
+     * 批量选择用户授权一个角色，只新增, 在角色列表页面进入
      */
+    @RequirePermission(PermissionConstants.Role.AUTH)
     @Log(title = "角色管理", businessType = BusinessType.GRANT)
     @PostMapping("/roleUser/insert")
     public int insertRoleUsers(@ApiParam(required = true) Long roleId,
@@ -62,8 +63,9 @@ public class UserAuthController {
     }
 
     /**
-     * 批量取消授权，用户-角色
+     * 批量取消授权，用户-角色, 在角色列表页面进入
      */
+    @RequirePermission(PermissionConstants.Role.AUTH)
     @Log(title = "角色管理", businessType = BusinessType.GRANT)
     @PostMapping("/roleUser/cancel")
     public long cancelRoleUsers(@ApiParam(required = true) Long roleId,
@@ -74,7 +76,7 @@ public class UserAuthController {
     /**
      * 给用户授权角色，存量的角色会被清理，客户端一次性传所有角色
      */
-    @RequirePermission("system:user:role")
+    @RequirePermission(PermissionConstants.User.AUTH)
     @Log(title = "用户管理", businessType = BusinessType.GRANT)
     @PostMapping("/userRole/update")
     public void insertAuthRole(@ApiParam(required = true) Long userId,
@@ -91,7 +93,7 @@ public class UserAuthController {
     /**
      * 查询已分配用户角色列表
      */
-    @RequirePermission(PermissionConstants.Role.VIEW)
+    @RequirePermission(PermissionConstants.Role.AUTH)
     @PostMapping("/roleUser/allocatedList")
     public PageModel<UserPageVO> allocatedList(@ApiParam(required = true) Long roleId,
                                             @ApiObject SysUser search,
@@ -102,7 +104,7 @@ public class UserAuthController {
     /**
      * 查询未分配用户角色列表
      */
-    @RequirePermission(PermissionConstants.Role.VIEW)
+    @RequirePermission(PermissionConstants.Role.AUTH)
     @PostMapping("/roleUser/unallocatedList")
     public PageModel<UserPageVO> unallocatedList(@ApiParam(required = true) Long roleId,
                                                  @ApiObject SysUser search,

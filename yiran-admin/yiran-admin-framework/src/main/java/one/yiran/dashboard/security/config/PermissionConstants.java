@@ -3,8 +3,6 @@ package one.yiran.dashboard.security.config;
 public class PermissionConstants {
 
     public static final String SYSTEM_PREFIX = "system";
-    public static final String EXT_PREFIX = "ext";
-    public static final String MONITOR_PREFIX = "monitor";
 
     public static class User {
         public static final String PREFIX = SYSTEM_PREFIX + ":user:";
@@ -16,7 +14,7 @@ public class PermissionConstants {
         public static final String IMPORT = PREFIX + "import";
         public static final String RESET_PWD = PREFIX + "resetPwd";
         public static final String UNLOCK = PREFIX + "unlock";
-        public static final String ROLE = PREFIX + "role";
+        public static final String AUTH = PREFIX + "auth";
     }
 
     public static class Dept {
@@ -78,6 +76,7 @@ public class PermissionConstants {
         public static final String DELETE = PREFIX + "delete";
         public static final String ADD = PREFIX + "add";
         public static final String EXPORT = PREFIX + "export";
+        public static final String AUTH = PREFIX + "auth";
     }
 
     public static class Menu {
