@@ -296,6 +296,7 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
                 .on(qSysRoleMenu.roleId.eq(qSysUserRole.roleId)
                         .and(qSysUserRole.userId.eq(userId)))
                 .innerJoin(qSysRole).on(qSysUserRole.roleId.eq(qSysRole.roleId))
+                .where(qSysMenu.perms.isNotEmpty())
                 .where(PredicateUtil.buildNotDeletePredicate(qSysRole));
         return jpa.fetch();
     }
