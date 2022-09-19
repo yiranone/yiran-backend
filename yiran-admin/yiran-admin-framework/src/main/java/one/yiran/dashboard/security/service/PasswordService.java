@@ -51,7 +51,7 @@ public class PasswordService {
         }
     }
 
-    private boolean timeExpire(Date passwordErrorTime){
+    public static boolean timeExpire(Date passwordErrorTime){
         long passwordLimitTime = Global.getPasswordLimitTime();
         if(passwordErrorTime != null && System.currentTimeMillis() - passwordErrorTime.getTime() > passwordLimitTime * 3600 * 1000) {
             return true;

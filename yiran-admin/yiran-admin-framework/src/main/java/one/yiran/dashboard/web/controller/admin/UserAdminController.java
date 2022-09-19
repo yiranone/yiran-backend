@@ -64,7 +64,7 @@ public class UserAdminController {
     @RequestMapping("/list")
     public PageModel<UserPageVO> list(@RequestBody SysUser sysUser, @ApiParam String deptName, HttpServletRequest request) {
         PageRequest pageRequest = PageRequestUtil.fromRequest(request);
-        PageModel pe = sysUserService.getPageDetail(pageRequest, sysUser, deptName);
+        PageModel<UserPageVO> pe = sysUserService.getPageDetail(pageRequest, sysUser, deptName);
         return pe;
     }
 
@@ -241,7 +241,7 @@ public class UserAdminController {
     @RequirePermission(PermissionConstants.User.UNLOCK)
     @Log(title = "账户解锁", businessType = BusinessType.OTHER)
     @PostMapping("/unlock")
-    public void unlock(Long userId) {
+    public void unlock(@ApiParam(required = true) Long userId) {
         sysUserService.resetLoginFail(userId);
     }
 

@@ -3,8 +3,11 @@ package one.yiran.dashboard.vo;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import one.yiran.common.util.DateUtil;
+import one.yiran.dashboard.common.constants.Global;
+import one.yiran.dashboard.common.util.SpringUtil;
 import one.yiran.dashboard.entity.SysDept;
 import one.yiran.dashboard.entity.SysUser;
+import one.yiran.dashboard.security.service.PasswordService;
 
 import java.util.List;
 
@@ -27,6 +30,7 @@ public class UserPageVO {
     private Long deptId;
     private String deptName;
     private Long channelId;
+    private Boolean isLock;
 
     public static UserPageVO from(SysUser sysUser) {
         UserPageVO vo = new UserPageVO();
@@ -41,6 +45,13 @@ public class UserPageVO {
         vo.setUpdateTime(DateUtil.dateTime(sysUser.getUpdateTime()));
         vo.setCreateBy(sysUser.getCreateBy());
         vo.setUpdateBy(sysUser.getUpdateBy());
+
+        PasswordService ps = SpringUtil.getBean(PasswordService.class);
+        if (!ps.timeExpire(sysUser.getPasswordErrorTime()) && sysUser.getPasswordErrorCount() != null && sysUser.getPasswordErrorCount().longValue() >= Global.getPasswordLimitCount() ){
+            vo.setIsLock(true);
+        } else {
+            vo.setIsLock(false);
+        }
         return vo;
     }
 

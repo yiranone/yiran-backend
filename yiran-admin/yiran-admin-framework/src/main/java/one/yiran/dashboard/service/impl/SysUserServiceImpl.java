@@ -179,12 +179,14 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
         }
         return dbuser;
     }
+
     @Transactional
     @Override
     public SysUser resetLoginFail(Long userId) throws BusinessException {
         Assert.notNull(userId, "用户不能为空");
         SysUser dbuser = userDao.findByUserId(userId);
         if(dbuser != null && dbuser.getPasswordErrorTime() != null) {
+            log.info("解锁用户{},重置用户登陆错误次数为0",dbuser.getLoginName());
             dbuser.setPasswordErrorCount(0L);
             dbuser.setPasswordErrorTime(null);
             dbuser = userDao.save(dbuser);
