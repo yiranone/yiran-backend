@@ -204,30 +204,26 @@ public class PredicateBuilder {
                             throw new RuntimeException("Predicate构建异常");
                         }
                     } else if (ops == Ops.EQ) {
-                        if (path instanceof SimpleExpression && value instanceof String) {
-                            list.add(((SimpleExpression) path).eq((String) value));
-                        } else if (path instanceof ComparableExpression && value instanceof Comparable) {
-                            list.add(((ComparableExpression) path).eq((Comparable) value));
-                        } else if (path instanceof BooleanExpression && value instanceof Boolean) {
-                            list.add(((BooleanExpression) path).eq((Boolean) value));
+                        if (path instanceof SimpleExpression) {
+                            list.add(((SimpleExpression) path).eq(value));
                         } else {
                             log.error("Predicate构建异常 path={},ops={} value{}", path, ops, value);
                             throw new RuntimeException("Predicate构建异常");
                         }
                     } else if (ops == Ops.IN) {
-                        if (value instanceof Number[]) {
-                            Number[] numValue = (Number[]) value;
-                            if (numValue.length > 0)
-                                list.add(((SimpleExpression) path).in(numValue));
-                        } else if (value instanceof String[]) {
-                            String[] strValue = (String[]) value;
-                            if (strValue.length > 0)
-                                list.add(((SimpleExpression) path).in(strValue));
+                        if (path instanceof SimpleExpression && (value instanceof Number[] || value instanceof String[])) {
+                            list.add(((SimpleExpression) path).in(value));
+                        } else {
+                            log.error("Predicate in 构建异常 path={},ops={} value{}", path, ops, value);
+                            throw new RuntimeException("Predicate构建异常");
                         }
                     } else if (ops == Ops.LIKE) {
                         if (path instanceof StringExpression && value instanceof String) {
                             if (StringUtils.isNotBlank((String) value))
                                 list.add(((StringExpression) path).like((String) value));
+                        } else {
+                            log.error("Predicate like 构建异常 path={},ops={} value{}", path, ops, value);
+                            throw new RuntimeException("Predicate构建异常");
                         }
                     } else {
                         log.error("ops还不支持 path={},ops={} value{}", path, ops, value);
