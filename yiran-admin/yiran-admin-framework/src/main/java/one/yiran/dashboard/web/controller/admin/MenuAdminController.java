@@ -1,5 +1,7 @@
 package one.yiran.dashboard.web.controller.admin;
 
+import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.extern.slf4j.Slf4j;
 import one.yiran.common.domain.PageRequest;
 import one.yiran.common.exception.BusinessException;
@@ -9,10 +11,13 @@ import one.yiran.dashboard.common.annotation.ApiParam;
 import one.yiran.dashboard.common.annotation.Log;
 import one.yiran.dashboard.common.annotation.RequirePermission;
 import one.yiran.dashboard.common.constants.BusinessType;
+import one.yiran.dashboard.entity.QSysMenu;
 import one.yiran.dashboard.entity.SysMenu;
 import one.yiran.dashboard.security.config.PermissionConstants;
 import one.yiran.dashboard.service.SysMenuService;
 import one.yiran.db.common.util.PageRequestUtil;
+import one.yiran.db.common.util.PredicateBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -33,9 +39,23 @@ public class MenuAdminController {
 
     @RequirePermission(PermissionConstants.Menu.VIEW)
     @PostMapping("/list")
-    public List<SysMenu> list(@RequestBody SysMenu sysMenu, HttpServletRequest request) {
+    public List<SysMenu> list(@ApiParam String menuName,
+                              @ApiParam(format = "yyyy-MM-dd") Date createBeginTime,
+                              @ApiParam(format = "yyyy-MM-dd") Date createEndTime,
+                              HttpServletRequest request) {
         PageRequest rq = PageRequestUtil.fromRequest(request);
-        List<SysMenu> sysMenuList = sysMenuService.selectMenuList(rq, sysMenu);
+        QSysMenu sysMenu = QSysMenu.sysMenu;
+
+        List<Predicate> predicates = PredicateBuilder.builder()
+                .addGreaterOrEqualIfNotBlank(sysMenu.createTime, createBeginTime)
+                .addLittlerOrEqualIfNotBlank(sysMenu.createTime, createEndTime)
+                .addEqualOrNullExpression(sysMenu.isDelete,Boolean.FALSE)
+                .toList();
+        if(StringUtils.isNotBlank(menuName)) {
+            BooleanExpression x = sysMenu.menuName.like("%" + menuName + "%");
+            predicates.add(x);
+        }
+        List<SysMenu> sysMenuList = sysMenuService.selectMenuList(rq, predicates);
         return sysMenuList;
     }
 

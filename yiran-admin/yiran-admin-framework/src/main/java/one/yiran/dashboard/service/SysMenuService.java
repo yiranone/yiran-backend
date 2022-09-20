@@ -1,5 +1,6 @@
 package one.yiran.dashboard.service;
 
+import com.querydsl.core.types.Predicate;
 import one.yiran.common.domain.PageRequest;
 import one.yiran.dashboard.entity.SysMenu;
 import one.yiran.db.common.service.CrudBaseService;
@@ -13,7 +14,7 @@ public interface SysMenuService extends CrudBaseService<Long, SysMenu> {
 
     List<SysMenu> selectVisibleTreeMenusByUser(Long userId,boolean onlyMenu);
 
-    List<SysMenu> selectMenuList(PageRequest request, SysMenu sysMenu);
+    List<SysMenu> selectMenuList(PageRequest request, List<Predicate> predicates);
 
     /**
      * 查询菜单数量

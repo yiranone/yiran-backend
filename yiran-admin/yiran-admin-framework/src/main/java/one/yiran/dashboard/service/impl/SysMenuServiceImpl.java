@@ -1,6 +1,7 @@
 package one.yiran.dashboard.service.impl;
 
 import com.querydsl.core.types.Order;
+import com.querydsl.core.types.Predicate;
 import one.yiran.common.domain.PageRequest;
 import one.yiran.dashboard.entity.QSysMenu;
 import one.yiran.dashboard.security.SessionContextHelper;
@@ -65,8 +66,8 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long, SysMenu> imple
     }
 
     @Override
-    public List<SysMenu> selectMenuList(PageRequest request, SysMenu sysMenu) {
-        List<SysMenu> results = selectList(request, sysMenu, QSysMenu.sysMenu.orderNum, Order.ASC);
+    public List<SysMenu> selectMenuList(PageRequest request, List<Predicate> predicates) {
+        List<SysMenu> results = selectList(request, predicates, QSysMenu.sysMenu.orderNum, Order.ASC);
         sortMenus(results);
         return results;
     }

@@ -133,7 +133,8 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
 
         if(request != null)
             PageRequestUtil.injectQuery(request,q);
-        injectObject(target,q);
+        if(target != null)
+            injectObject(target,q);
         if(orderColumn != null) {
             if(orderDir == Order.DESC) {
                 q.orderBy(new OrderSpecifier(Order.DESC,orderColumn));
@@ -152,6 +153,16 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
     @Override
     public List<T> selectList(PageRequest request, T target, Path orderColumn, Order orderDir) {
         return doSelectList(request,target,null,orderColumn,orderDir);
+    }
+
+    @Override
+    public List<T> selectList(PageRequest request, List<Predicate> pres) {
+        return doSelectList(request,null,pres,null,null);
+    }
+
+    @Override
+    public List<T> selectList(PageRequest request, List<Predicate> pres, Path orderColumn, Order orderDir) {
+        return doSelectList(request,null,pres,orderColumn,orderDir);
     }
 
     @Override

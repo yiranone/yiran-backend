@@ -23,6 +23,8 @@ public interface CrudBaseService<K,T> {
      List<T> selectList(PageRequest request, T target, List<Predicate> pres);
      List<T> selectList(PageRequest request, T target);
      List<T> selectList(PageRequest request, T target, Path orderColumn, Order orderDir);
+     List<T> selectList(PageRequest request, List<Predicate> pres);
+     List<T> selectList(PageRequest request, List<Predicate> pres, Path orderColumn, Order orderDir);
      List<T> selectList(T target);
      List<T> selectList(Predicate predicate);
      List<T> selectList(Predicate predicate, Path orderColumn, Order orderDir);
