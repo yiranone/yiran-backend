@@ -6,7 +6,7 @@ public class UserBlockedException extends UserException {
     public static final int KEY = 400;
 
     public UserBlockedException() {
-        super(KEY, "用户已禁用");
+        super(KEY, "用户已冻结，请联系管理员");
     }
 
     public UserBlockedException(String message) {
