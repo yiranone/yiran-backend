@@ -1,5 +1,6 @@
 package one.yiran.dashboard.web.controller.admin;
 
+import com.querydsl.core.types.Predicate;
 import one.yiran.common.domain.PageModel;
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
 import one.yiran.dashboard.common.annotation.ApiObject;
@@ -8,11 +9,13 @@ import one.yiran.dashboard.common.annotation.Log;
 import one.yiran.dashboard.common.annotation.RequirePermission;
 import one.yiran.dashboard.common.constants.BusinessType;
 import one.yiran.dashboard.common.util.ExcelUtil;
+import one.yiran.dashboard.entity.QSysNotice;
 import one.yiran.dashboard.entity.SysNotice;
 import one.yiran.dashboard.security.SessionContextHelper;
 import one.yiran.dashboard.security.config.PermissionConstants;
 import one.yiran.dashboard.service.SysNoticeService;
 import one.yiran.db.common.util.PageRequestUtil;
+import one.yiran.db.common.util.PredicateBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
+import java.util.List;
 
 @AjaxWrapper
 @Controller
@@ -38,9 +43,17 @@ public class NoticeAdminController {
 
     @RequirePermission(PermissionConstants.Notice.VIEW)
     @PostMapping("/list")
-    public PageModel list(@ApiObject SysNotice sysNotice, HttpServletRequest request) {
-        sysNotice.setIsDelete(false);
-        return sysNoticeService.selectPage(PageRequestUtil.fromRequest(request), sysNotice);
+    public PageModel list(@ApiObject SysNotice sysNotice,
+                          @ApiParam(format = "yyyy-MM-dd") Date createBeginTime,
+                          @ApiParam(format = "yyyy-MM-dd") Date createEndTime,
+                          HttpServletRequest request) {
+        QSysNotice notice = QSysNotice.sysNotice;
+        List<Predicate> predicates = PredicateBuilder.builder()
+                .addGreaterOrEqualIfNotBlank(notice.createTime, createBeginTime)
+                .addLittlerOrEqualIfNotBlank(notice.createTime, createEndTime)
+                .addEqualOrNullExpression(notice.isDelete,Boolean.FALSE)
+                .toList();
+        return sysNoticeService.selectPage(PageRequestUtil.fromRequest(request), sysNotice, predicates);
     }
 
     @Log(title = "通知公告", businessType = BusinessType.EXPORT)

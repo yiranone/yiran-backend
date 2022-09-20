@@ -129,7 +129,7 @@ public class PredicateBuilder {
                                 boxes.add(new PredicateBox(pathValue, Ops.EQ, value, false));
                             }
                         } else if (op.equals(Search.Op.REGEX)) {
-                            boxes.add(new PredicateBox(pathValue, Ops.LIKE, value, false));
+                            boxes.add(new PredicateBox(pathValue, Ops.LIKE, "%" + value + "%", false));
                         } else if (op.equals(Search.Op.IN)) {
                             boxes.add(new PredicateBox(pathValue, Ops.IN, value, false));
                         } else if (op.equals(Search.Op.GT)) {
