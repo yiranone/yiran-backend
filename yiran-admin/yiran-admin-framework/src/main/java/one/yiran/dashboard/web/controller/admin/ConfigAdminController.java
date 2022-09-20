@@ -50,7 +50,8 @@ public class ConfigAdminController {
         List<Predicate> predicates = PredicateBuilder.builder()
                 .addGreaterOrEqualIfNotBlank(config.createTime, createBeginTime)
                 .addLittlerOrEqualIfNotBlank(config.createTime, createEndTime)
-                .addExpression(PredicateUtil.buildNotDeletePredicate(config)).toList();
+                .addEqualOrNullExpression(config.isDelete,Boolean.FALSE)
+                .toList();
         return sysConfigService.selectPage(PageRequestUtil.fromRequest(request), sysConfig, predicates);
     }
 

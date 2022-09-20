@@ -1,5 +1,6 @@
 package one.yiran.dashboard.web.controller.admin;
 
+import com.querydsl.core.types.Predicate;
 import one.yiran.common.domain.PageModel;
 import one.yiran.common.domain.PageRequest;
 import one.yiran.common.domain.Ztree;
@@ -7,11 +8,14 @@ import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.common.annotation.*;
 import one.yiran.dashboard.common.constants.BusinessType;
 import one.yiran.dashboard.common.util.ExcelUtil;
+import one.yiran.dashboard.entity.QSysDictType;
 import one.yiran.dashboard.entity.SysDictType;
 import one.yiran.dashboard.security.SessionContextHelper;
 import one.yiran.dashboard.security.config.PermissionConstants;
 import one.yiran.dashboard.service.SysDictTypeService;
 import one.yiran.db.common.util.PageRequestUtil;
+import one.yiran.db.common.util.PredicateBuilder;
+import one.yiran.db.common.util.PredicateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 @AjaxWrapper
@@ -39,9 +44,17 @@ public class DictTypeController {
 
     @RequirePermission(PermissionConstants.Dict.VIEW)
     @PostMapping("/list")
-    public PageModel list(@ApiObject(createIfNull = true) SysDictType sysDictType, @ApiParam String dictId, PageRequest pageRequest) {
-        sysDictType.setIsDelete(false);
-        PageModel<SysDictType> list = sysDictTypeService.selectPage(pageRequest, sysDictType);
+    public PageModel list(@ApiObject(createIfNull = true) SysDictType sysDictType,
+                          @ApiParam(format = "yyyy-MM-dd") Date createBeginTime,
+                          @ApiParam(format = "yyyy-MM-dd") Date createEndTime,
+                          @ApiParam String dictId, PageRequest pageRequest) {
+        QSysDictType dictType = QSysDictType.sysDictType;
+        List<Predicate> predicates = PredicateBuilder.builder()
+                .addGreaterOrEqualIfNotBlank(dictType.createTime, createBeginTime)
+                .addLittlerOrEqualIfNotBlank(dictType.createTime, createEndTime)
+                .addEqualOrNullExpression(dictType.isDelete,Boolean.FALSE)
+                .toList();
+        PageModel<SysDictType> list = sysDictTypeService.selectPage(pageRequest, sysDictType,predicates);
         return list;
     }
 

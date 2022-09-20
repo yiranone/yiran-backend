@@ -71,6 +71,14 @@ public class PredicateBuilder {
             return this;
         }
 
+        public Builder addEqualOrNullExpression(Path path, Object value){
+            BooleanOperation bpre1 = Expressions.predicate(Ops.EQ, path, Expressions.constant(value));
+            BooleanOperation bpre2 = Expressions.predicate(Ops.IS_NULL, path);
+            BooleanExpression e = bpre1.or(bpre2);
+            predicates.add(e);
+            return this;
+        }
+
         public Builder addEntityByAnnotation(Object target, EntityPath path) {
             if (target != null) {
                 List<Field> fields = FieldUtils.getAllFieldsList(target.getClass());
