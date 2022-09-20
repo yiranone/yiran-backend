@@ -3,6 +3,7 @@ package one.yiran.dashboard.service.impl;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.Predicate;
 import one.yiran.common.domain.PageRequest;
+import one.yiran.dashboard.common.constants.SystemConstants;
 import one.yiran.dashboard.entity.QSysMenu;
 import one.yiran.dashboard.security.SessionContextHelper;
 import one.yiran.dashboard.service.SysMenuService;
@@ -33,19 +34,17 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long, SysMenu> imple
 
     //查询某个用户已经有的权限 onlyMenu=true只返回菜单属性的内容
     @Override
-    public List<SysMenu> selectVisibleTreeMenusByUser(Long userId,boolean onlyMenu) {
+    public List<SysMenu> selectVisibleTreeMenusByUser(Long userId, boolean onlyMenu) {
         Assert.notNull(userId, "用户ID不能为空");
         List<String> permList = sysRoleService.findUserPermsByUserId(userId);
-        if(permList == null || permList.size() == 0)
-            return null;
-        List<SysMenu> sysMenus = menuDao.findAll();
-        if (sysMenus != null && sysMenus.size() > 0) {
-            if(onlyMenu) {
-                sysMenus = sysMenus.stream().filter(e -> !StringUtils.equals(e.getMenuType(),"F")).collect(Collectors.toList());
-            }
-            sysMenus = sysMenus.stream().filter(e -> permList.contains(e.getPerms()))
-                    .filter(e -> StringUtils.equals("1", e.getVisible()))
-                    .filter(e -> e.getIsDelete() == null || !e.getIsDelete().booleanValue()).collect(toList());
+        if(permList == null)
+            permList = new ArrayList<>();
+        List<SysMenu> sysMenus = filterHomePageMenu(onlyMenu);
+        if(onlyMenu) {
+            List<String> finalPermList = permList;
+            sysMenus = sysMenus.stream().filter(e ->
+                    StringUtils.isBlank(e.getPerms()) || finalPermList.contains(e.getPerms())
+            ).collect(toList());
         }
         sortMenus(sysMenus);
         return toTree(sysMenus, 0);
@@ -53,16 +52,19 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long, SysMenu> imple
 
     @Override
     public List<SysMenu> selectVisibleTreeMenus(boolean onlyMenu) {
+        List<SysMenu> sysMenus = filterHomePageMenu(onlyMenu);
+        sortMenus(sysMenus);
+        return toTree(sysMenus, 0);
+    }
+
+    private List<SysMenu> filterHomePageMenu(boolean onlyMenu) {
         List<SysMenu> sysMenus = menuDao.findAll();
         if(onlyMenu) {
             sysMenus = sysMenus.stream().filter(e -> !StringUtils.equals(e.getMenuType(),"F")).collect(Collectors.toList());
         }
-        if(sysMenus != null && sysMenus.size() > 0) {
-            sysMenus = sysMenus.stream().filter(e -> StringUtils.equals("1", e.getVisible()))
+        sysMenus = sysMenus.stream().filter(e -> StringUtils.equals(SystemConstants.MENU_VISIBLE, e.getVisible()))
                     .filter(e -> e.getIsDelete() == null || !e.getIsDelete().booleanValue()).collect(toList());
-        }
-        sortMenus(sysMenus);
-        return toTree(sysMenus, 0);
+        return sysMenus;
     }
 
     @Override

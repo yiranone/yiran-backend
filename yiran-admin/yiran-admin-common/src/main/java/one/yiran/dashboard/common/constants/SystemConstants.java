@@ -16,12 +16,10 @@ public class SystemConstants {
 
 
     public static final String ERROR = "ERROR";
+    public static final String MENU_VISIBLE = "1";
+    public static final String MENU_INVISIBLE = "2";
 
     public static final String STATUS_ENABLE = "0";
     public static final String STATUS_DISABLE = "1";
 
-    /**
-     * 资源映射路径 前缀
-     */
-    public static final String RESOURCE_PREFIX = "/profile";
 }

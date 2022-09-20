@@ -1,6 +1,7 @@
 package one.yiran.dashboard.entity;
 
 import one.yiran.dashboard.common.annotation.Option;
+import one.yiran.dashboard.common.constants.SystemConstants;
 import one.yiran.db.common.domain.TimedBasedEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -78,7 +79,7 @@ public class SysMenu extends TimedBasedEntity {
      * 菜单状态:0显示,1隐藏
      */
     @Search
-    @Option(value = {"1","2"}, message = "菜单状态只能是1，2; 1=显示,2=隐藏")
+    @Option(value = {SystemConstants.MENU_VISIBLE,SystemConstants.MENU_INVISIBLE}, message = "菜单状态只能是1，2; 1=显示,2=隐藏")
     @Column(length = 1,nullable = false)
     private String visible;
 
