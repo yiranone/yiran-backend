@@ -516,7 +516,9 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
             // 新增用户与角色管理
             for (Long roleId : roleIds) {
                 if(sysRoleService.selectByPId(roleId) == null){
-                    throw BusinessException.build("角色异常，角色["+roleId+"]不存在");
+                    log.info("角色异常，角色[{}]不存在，忽略",roleId);
+                    continue;
+                    //throw BusinessException.build("角色异常，角色["+roleId+"]不存在");
                 }
                 SysUserRole ur = new SysUserRole();
                 ur.setUserId(userId);
