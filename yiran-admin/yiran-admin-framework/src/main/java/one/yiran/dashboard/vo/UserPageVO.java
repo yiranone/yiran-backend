@@ -18,7 +18,14 @@ public class UserPageVO {
     private String loginName;
     private String userName;
     private String phoneNumber;
+    private String email;
+    private String sex;
+    private String avatar;
     private String status;
+
+    private String token;
+    private Long tokenExpires; //token过期时间 毫秒
+
     private String createTime;
     private String updateTime;
     private String createBy;
@@ -40,6 +47,9 @@ public class UserPageVO {
         vo.setPhoneNumber(sysUser.getPhoneNumber());
         vo.setDeptId(sysUser.getDeptId());
         vo.setChannelId(sysUser.getChannelId());
+        vo.setEmail(sysUser.getEmail());
+        vo.setSex(sysUser.getSex());
+        vo.setAvatar(sysUser.getAvatar());
         vo.setStatus(sysUser.getStatus());
         vo.setCreateTime(DateUtil.dateTime(sysUser.getCreateTime()));
         vo.setUpdateTime(DateUtil.dateTime(sysUser.getUpdateTime()));

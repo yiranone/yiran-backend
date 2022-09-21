@@ -58,7 +58,7 @@ public class FileUploadUtil {
      */
     public static final String upload(String baseDir, MultipartFile file, String[] allowedExtension)
             throws Exception {
-        log.info("上传文件，保存路径:{},文件名称:{},原始文件名称:{}",baseDir,file.getName(),file.getOriginalFilename());
+        log.info("上传文件，服务器目录:{},文件名称:{},原始文件名称:{}",baseDir,file.getName(),file.getOriginalFilename());
         if(!baseDir.endsWith("/")){
             baseDir += "/";
         }
@@ -74,11 +74,11 @@ public class FileUploadUtil {
         if(Global.isUploadOssEnable()) {
             String url = AliOssUploadUtil.putOssObj(Global.getAliOssAccessKey(),Global.getAliOssAccessSecret(),Global.getAliOssBucket(),Global.getAliOssEndpoint(),
                     baseDir + fileName ,file.getBytes(),file.getContentType());
-            log.info("oss上传文件http地址:{}",url);
+            log.info("保存在oss，上传文件http地址:{}",url);
             return url;
         } else {
             File desc = getAbsoluteFile(baseDir, fileName);
-            log.info("上传文件路径:{}", desc.getAbsolutePath());
+            log.info("保存在服务器，文件路径:{}", desc.getAbsolutePath());
             file.transferTo(desc);
             String requestMaping = Global.getUploadMapping();
             if(baseDir.startsWith(Global.getAvatarPath())){

@@ -46,8 +46,8 @@ public class WebMvcConfig implements WebMvcConfigurer, InitializingBean {
 //        registry.addResourceHandler("swagger-ui.html")
 //                .addResourceLocations("classpath:/META-INF/resources/");
 //
-//        registry.addResourceHandler("/profile/avatar/**")
-//                .addResourceLocations("file:" + Global.getAvatarPath());
+        registry.addResourceHandler("/profile/avatar/**")
+                .addResourceLocations("file:" + Global.getAvatarPath());
         registry.addResourceHandler("/profile/upload/**")
                 .addResourceLocations("file:" + Global.getUploadPath());
     }

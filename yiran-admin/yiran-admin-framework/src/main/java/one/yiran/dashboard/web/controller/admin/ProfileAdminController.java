@@ -10,11 +10,15 @@ import one.yiran.dashboard.common.annotation.RequireUserLogin;
 import one.yiran.dashboard.common.constants.BusinessType;
 import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.common.util.FileUploadUtil;
+import one.yiran.dashboard.entity.SysDept;
+import one.yiran.dashboard.entity.SysDictData;
+import one.yiran.dashboard.service.SysDeptService;
 import one.yiran.dashboard.util.UserCacheUtil;
 import one.yiran.dashboard.entity.SysUser;
 import one.yiran.dashboard.security.SessionContextHelper;
 import one.yiran.dashboard.security.service.PasswordService;
 import one.yiran.dashboard.service.SysUserService;
+import one.yiran.dashboard.vo.UserPageVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,6 +27,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -34,10 +42,30 @@ public class ProfileAdminController {
     private SysUserService sysUserService;
 
     @Autowired
+    private SysDeptService sysDeptService;
+
+    @Autowired
     private PasswordService passwordService;
 
     @RequireUserLogin
-    @GetMapping("/checkPassword")
+    @RequestMapping("/my")
+    public UserPageVO my() {
+        UserSession user = SessionContextHelper.getLoginUser();
+        SysUser dbUser = sysUserService.findUser(user.getUserId());
+        UserPageVO up;
+        if(dbUser.getDeptId() != null) {
+            SysDept sysDept = sysDeptService.selectByPId(dbUser.getDeptId());
+            up = UserPageVO.from(dbUser,sysDept);
+        } else {
+            up = UserPageVO.from(dbUser);
+        }
+        up.setToken(user.getToken());
+        up.setTokenExpires(user.getTokenExpires());
+        return up;
+    }
+
+    @RequireUserLogin
+    @RequestMapping("/checkPassword")
     public boolean checkPassword(String password) {
         UserSession user = SessionContextHelper.getLoginUser();
         SysUser dbUser = sysUserService.findUser(user.getUserId());
@@ -49,7 +77,7 @@ public class ProfileAdminController {
     }
 
     @Log(title = "修改密码", businessType = BusinessType.EDIT)
-    @PostMapping("/modifyPwd")
+    @RequestMapping("/modifyPwd")
     @RequireUserLogin
     public void modifyPwd(@ApiParam(required = true) String oldPassword,@ApiParam(required = true) String newPassword) {
         UserSession loginUser = SessionContextHelper.getLoginUser();
@@ -114,7 +142,8 @@ public class ProfileAdminController {
     @RequireUserLogin
     @Log(title = "个人信息", businessType = BusinessType.EDIT)
     @PostMapping("/update")
-    public void update(String userName, String phoneNumber, String email, String sex) {
+    public void update(@ApiParam String userName,@ApiParam(required = true) String phoneNumber,
+                       @ApiParam(required = true) String email,@ApiParam String sex) {
         UserSession loginUser = SessionContextHelper.getLoginUser();
         sysUserService.updateMyInfos(loginUser.getUserId(),userName,email,phoneNumber,sex);
     }
@@ -125,12 +154,19 @@ public class ProfileAdminController {
     @RequireUserLogin
     @Log(title = "个人头像", businessType = BusinessType.EDIT)
     @PostMapping("/updateAvatar")
-    public void updateAvatar(@RequestParam("avatarfile") MultipartFile file) {
+    public Map updateAvatar(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
         UserSession loginUser = SessionContextHelper.getLoginUser();
         try {
             if (!file.isEmpty()) {
+                String contextPath = request.getContextPath();
                 String avatar = FileUploadUtil.upload(Global.getAvatarPath(), file);
-                sysUserService.updateMyAvatar(loginUser.getUserId(),avatar);
+                sysUserService.updateMyAvatar(loginUser.getUserId(),contextPath + avatar);
+
+                Map ajax = new HashMap();
+                ajax.put("fileName", file.getOriginalFilename());
+                ajax.put("url", contextPath + avatar);
+                ajax.put("url2", avatar);
+                return ajax;
             } else {
                 throw BusinessException.build("头像不能为空");
             }

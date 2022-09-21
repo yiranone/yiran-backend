@@ -10,6 +10,7 @@ import one.yiran.dashboard.common.constants.ShiroConstants;
 import one.yiran.dashboard.common.constants.SystemConstants;
 import one.yiran.dashboard.common.constants.UserConstants;
 import one.yiran.dashboard.common.expection.CaptchaException;
+import one.yiran.dashboard.entity.SysDept;
 import one.yiran.dashboard.entity.SysUser;
 import one.yiran.dashboard.factory.AsyncFactory;
 import one.yiran.dashboard.factory.AsyncManager;
@@ -18,6 +19,7 @@ import one.yiran.dashboard.common.expection.user.UserBlockedException;
 import one.yiran.dashboard.common.expection.user.UserDeleteException;
 import one.yiran.dashboard.common.expection.user.UserNotFoundException;
 import one.yiran.dashboard.common.expection.user.UserPasswordNotMatchException;
+import one.yiran.dashboard.service.SysDeptService;
 import one.yiran.dashboard.service.SysMenuService;
 import one.yiran.dashboard.service.SysUserOnlineService;
 import one.yiran.dashboard.service.SysUserService;
@@ -26,6 +28,7 @@ import one.yiran.dashboard.common.util.MessageUtil;
 import one.yiran.dashboard.common.util.ServletUtil;
 import one.yiran.dashboard.util.UserCacheUtil;
 import one.yiran.dashboard.util.UserConvertUtil;
+import one.yiran.dashboard.vo.UserPageVO;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -43,7 +46,7 @@ import java.util.Calendar;
 public class UserLoginController {
 
     @Autowired
-    private SysMenuService sysMenuService;
+    private SysDeptService sysDeptService;
 
     @Autowired
     private SysUserOnlineService onlineService;
@@ -55,7 +58,7 @@ public class UserLoginController {
     private SysUserService sysUserService;
 
     @PostMapping("/login")
-    public UserSession ajaxLogin(@ApiParam String username, @ApiParam String password) {
+    public UserPageVO ajaxLogin(@ApiParam String username, @ApiParam String password) {
         if(Global.isDebugMode()) {
             String debugUserName = Global.getDebugLoginName();
             String debugPassword = Global.getDebugPassword();
@@ -71,9 +74,19 @@ public class UserLoginController {
             }
             log.info("DebugMode用户{}登陆成功",username);
             String randomKey = RandomStringUtils.randomAscii(32);
-            UserSession ui = UserConvertUtil.convert(user);
-            UserCacheUtil.setSessionInfo(randomKey,ui);
-            return ui;
+            UserSession us = UserConvertUtil.convert(user);
+            UserCacheUtil.setSessionInfo(randomKey,us);
+
+            UserPageVO up;
+            if(user.getDeptId() != null) {
+                SysDept sysDept = sysDeptService.selectByPId(user.getDeptId());
+                up = UserPageVO.from(user,sysDept);
+            } else {
+                up = UserPageVO.from(user);
+            }
+            up.setToken(us.getToken());
+            up.setTokenExpires(us.getTokenExpires());
+            return up;
         }
         // 验证码校验
         if (!org.springframework.util.StringUtils.isEmpty(ServletUtil.getRequest().getAttribute(ShiroConstants.CURRENT_CAPTCHA))) {
@@ -131,20 +144,29 @@ public class UserLoginController {
         user = sysUserService.recordLoginIp(user.getUserId(), ip);
 
         String randomKey = RandomStringUtils.randomAlphanumeric(38);
-        UserSession ui = UserConvertUtil.convert(user);
+        UserSession us = UserConvertUtil.convert(user);
 
         //设置用户的来源系统
-        ui.setChannelId(user.getChannelId());
-        ui.setToken(randomKey);
+        us.setChannelId(user.getChannelId());
+        us.setToken(randomKey);
         Calendar c = Calendar.getInstance();
         c.add(Calendar.MINUTE, Global.getSessionTimeout().intValue());
-        ui.setTokenExpires(c.getTimeInMillis());
-        UserCacheUtil.setSessionInfo(randomKey,ui);
+        us.setTokenExpires(c.getTimeInMillis());
+        UserCacheUtil.setSessionInfo(randomKey,us);
 
         //在线用户
-        AsyncManager.me().execute(AsyncFactory.recordOnlineInfo(ui));
+        AsyncManager.me().execute(AsyncFactory.recordOnlineInfo(us));
 
-        return ui;
+        UserPageVO up;
+        if(user.getDeptId() != null) {
+            SysDept sysDept = sysDeptService.selectByPId(user.getDeptId());
+            up = UserPageVO.from(user,sysDept);
+        } else {
+            up = UserPageVO.from(user);
+        }
+        up.setToken(us.getToken());
+        up.setTokenExpires(us.getTokenExpires());
+        return up;
     }
 
     private boolean maybeEmail(String username) {
