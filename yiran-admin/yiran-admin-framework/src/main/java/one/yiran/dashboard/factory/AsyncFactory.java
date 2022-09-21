@@ -32,6 +32,7 @@ public class AsyncFactory {
         };
     }
 
+    //记录登陆用户信息表
     public static TimerTask recordLoginInfo(final String username, final String status, final String message, final Object... args) {
         final UserAgent userAgent = UserAgent.parseUserAgentString(ServletUtil.getRequest().getHeader("User-Agent"));
         final String ip = IpUtil.getIpAddr(ServletUtil.getRequest());
@@ -74,6 +75,7 @@ public class AsyncFactory {
         };
     }
 
+    //记录在线用户信息表
     public static TimerTask recordOnlineInfo(UserSession session) {
         final UserAgent userAgent = UserAgent.parseUserAgentString(ServletUtil.getRequest().getHeader("User-Agent"));
         final String ip = IpUtil.getIpAddr(ServletUtil.getRequest());
@@ -106,6 +108,7 @@ public class AsyncFactory {
                 sysUserOnline.setSessionId(session.getToken());
                 sysUserOnline.setExpireTime(session.getTokenExpires());
                 sysUserOnline.setStartTimestamp(new Date());
+                sysUserOnline.setLastAccessTime(new Date());
                 sysUserOnline.setDeptName(deptName);
                 sysUserOnline.setChannelName(channelName);
                 // 插入数据
