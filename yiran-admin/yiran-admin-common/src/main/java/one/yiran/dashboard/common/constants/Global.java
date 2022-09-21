@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -105,6 +106,12 @@ public class Global {
     }
     public static long getPasswordLimitTime() {
         return Long.valueOf(getConfig("dashboard.password.limit.time"));
+    }
+
+    public static boolean isAdmin(String loginName) {
+        if(StringUtils.isBlank(loginName))
+            return false;
+        return Arrays.stream(getConfig("dashboard.admin").split(",")).filter(e -> e.equals(loginName)).count() > 0;
     }
 
     public static String getResourcePrefix() {

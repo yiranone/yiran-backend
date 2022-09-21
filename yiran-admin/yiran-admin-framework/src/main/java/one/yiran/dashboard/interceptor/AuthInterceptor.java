@@ -62,7 +62,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
                 AsyncManager.me().execute(new TimerTask() {
                     @Override
                     public void run() {
-                        sysUserOnlineService.refreshUserLastAccessTime(sessionId,new Date());
+                        sysUserOnlineService.refreshUserLastAccessTime(sessionId, new Date());
                     }
                 });
             }
@@ -73,37 +73,41 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
 
-        if(token == null) {
+        if (token == null) {
             throw new UserNotLoginException();
         }
 
-        if(session == null) {
+        if (session == null) {
             throw new UserNotLoginException("用户未登录,或者登录已经过期");
         } else if (session.getIsLocked() == Boolean.TRUE) {
             throw BusinessException.build("您的账户被冻结,请联系客服");
         }
 
-        if(requirePermission != null) {
-           String[] perms = requirePermission.value();
-           if(perms != null && perms.length > 0) {
-               //校验用户权限
-               for(String perm : perms) {
-                   boolean has = sysRoleService.checkUserHasPermission(session.getUserId(),perm);
-                   if(!has) {
-                       log.info("校验用户{}权限{}未通过", session.getLoginName(), perm);
-                       throw BusinessException.build("用户缺少权限:" + perm);
-                   } else {
-                       log.info("校验用户{}权限{}通过", session.getLoginName(), perm);
-                   }
-               }
-           }
+        if (requirePermission != null) {
+            if (session.isAdmin()) {
+                //是管理员 忽略权限校验
+            } else {
+                String[] perms = requirePermission.value();
+                if (perms != null && perms.length > 0) {
+                    //校验用户权限
+                    for (String perm : perms) {
+                        boolean has = sysRoleService.checkUserHasPermission(session.getUserId(), perm);
+                        if (!has) {
+                            log.info("校验用户{}权限{}未通过", session.getLoginName(), perm);
+                            throw BusinessException.build("用户缺少权限:" + perm);
+                        } else {
+                            log.info("校验用户{}权限{}通过", session.getLoginName(), perm);
+                        }
+                    }
+                }
+            }
         }
 
         request.setAttribute("userId", session.getUserId());
         return true;
     }
 
-    private String getTok(HttpServletRequest request){
+    private String getTok(HttpServletRequest request) {
         return request.getHeader(Global.getAuthKey());
     }
 

@@ -40,10 +40,13 @@ public class HomeController {
         } else {
             menusList = sysMenuService.selectVisibleTreeMenusByUser(user.getUserId(),true);
         }
-
         return MenuUtil.toWebMenu(menusList);
     }
 
+    /**
+     * 权限树角色授权的时候用，所有的
+     * @return
+     */
     @AjaxWrapper
     @RequestMapping("/perms")
     public List<WebPerm> perms() {

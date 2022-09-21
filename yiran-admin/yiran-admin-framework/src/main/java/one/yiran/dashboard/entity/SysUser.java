@@ -2,6 +2,7 @@ package one.yiran.dashboard.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import one.yiran.dashboard.common.annotation.Option;
+import one.yiran.dashboard.common.constants.Global;
 import one.yiran.db.common.domain.TimedBasedEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -177,7 +178,8 @@ public class SysUser extends TimedBasedEntity {
     }
 
     public boolean isAdmin() {
-        return isAdmin(this.userId);
+        //return isAdmin(this.userId);
+        return Global.isAdmin(this.loginName);
     }
 
     public static boolean isAdmin(Long userId) {
