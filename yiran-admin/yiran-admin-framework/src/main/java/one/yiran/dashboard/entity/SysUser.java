@@ -54,7 +54,7 @@ public class SysUser extends TimedBasedEntity {
 
     @Excel(name = "手机号码")
     @Search
-    @Size(min = 0, max = 11, message = "手机号码长度不能超过11个字符")
+    @Size(min = 0, max = 32, message = "手机号码长度不能超过32个字符")
     @Column
     private String phoneNumber;
 
