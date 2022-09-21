@@ -591,7 +591,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
                 jpa.where(qSysUser.phoneNumber.eq(user.getPhoneNumber().trim()));
             }
         }
-        jpa.where(qSysUser.isDelete.ne(Boolean.TRUE));
+        jpa.where(qSysUser.isDelete.ne(Boolean.TRUE).or(qSysUser.isDelete.isNull()));
         long count = jpa.fetchCount();
 
         PageRequestUtil.injectQuery(request,jpa,qSysUser);
