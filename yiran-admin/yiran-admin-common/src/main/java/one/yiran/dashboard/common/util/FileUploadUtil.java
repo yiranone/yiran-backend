@@ -10,10 +10,12 @@ import one.yiran.dashboard.common.expection.file.FileSizeLimitExceededException;
 import one.yiran.dashboard.common.expection.file.InvalidExtensionException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * 文件上传工具类
@@ -98,7 +100,7 @@ public class FileUploadUtil {
     public static final String extractFilename(MultipartFile file) {
         String filename = file.getOriginalFilename();
         String extension = getExtension(file);
-        filename = DateUtil.datePath() + "/" + encodingFilename(filename) + "." + extension;
+        filename = DateFormatUtils.format(new Date(), "yyyy/MM") + "/" + encodingFilename(filename) + "." + extension;
         return filename;
     }
 
