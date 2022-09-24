@@ -29,7 +29,7 @@
 
         <!-- 引入依赖在这里 -->
         <!--SOFARPC 依赖-->
-        <dependency>
+        <!--<dependency>
             <groupId>com.alipay.sofa</groupId>
             <artifactId>rpc-sofa-boot-starter</artifactId>
             <exclusions>
@@ -47,12 +47,12 @@
                 </exclusion>
             </exclusions>
             <version>3.3.2</version>
-        </dependency>
-        <dependency>
+        </dependency>-->
+       <!-- <dependency>
             <artifactId>sofa-common-tools</artifactId>
             <groupId>com.alipay.sofa.common</groupId>
             <version>1.0.22</version>
-        </dependency>
+        </dependency>-->
         <!--SOFATracer 依赖-->
         <!--<dependency>
             <groupId>com.alipay.sofa</groupId>
@@ -60,7 +60,7 @@
             <version>3.3.2</version>
         </dependency>-->
         <!--SOFARegistry 依赖-->
-        <dependency>
+        <!--<dependency>
             <groupId>com.alipay.sofa</groupId>
             <artifactId>registry-client-all</artifactId>
             <version>5.2.0</version>
@@ -70,13 +70,13 @@
                     <groupId>com.alipay.sofa.common</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency>-->
         <!--runtime 依赖-->
-        <dependency>
+      <!--  <dependency>
             <groupId>com.alipay.sofa</groupId>
             <artifactId>runtime-sofa-boot-starter</artifactId>
             <version>3.3.2</version>
-        </dependency>
+        </dependency>-->
         <!--SOFALookout 依赖-->
      <!--   <dependency>
             <groupId>com.alipay.sofa.lookout</groupId>

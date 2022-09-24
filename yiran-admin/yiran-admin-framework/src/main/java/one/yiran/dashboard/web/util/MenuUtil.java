@@ -18,8 +18,8 @@ public class MenuUtil {
             webMenu.setIcon(sysMenu.getIcon());
         webMenu.setRouter(sysMenu.getRouter());
         webMenu.setMenuType(sysMenu.getMenuType());
-        if(StringUtils.isNotBlank(sysMenu.getPerms()))
-            webMenu.getAuthority().setPermission(sysMenu.getPerms());
+//        if(StringUtils.isNotBlank(sysMenu.getPerms()))
+//            webMenu.getAuthority().setPermission(sysMenu.getPerms());
 
         if (sysMenu.getChildren() != null && sysMenu.getChildren().size() > 0) {
             List<SysMenu> childs = sysMenu.getChildren();

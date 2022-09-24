@@ -11,7 +11,7 @@ public class WebMenu {
 //    private String path;
     private String name;
     private String menuType;
-    private Authority authority = new Authority();
+//    private Authority authority = new Authority();
     private String redirect;
     private String icon;
     private String component;
@@ -22,10 +22,10 @@ public class WebMenu {
 //    private WebMenuMeta meta = new WebMenuMeta();
     private List<WebMenu> children = new ArrayList<>();
 
-    @Data
-    public static class Authority {
-        private String permission;
-    }
+//    @Data
+//    public static class Authority {
+//        private String permission;
+//    }
 
 //    @Data
 //    public static class WebMenuMeta {
