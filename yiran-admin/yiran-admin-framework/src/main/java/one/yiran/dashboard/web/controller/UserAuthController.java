@@ -81,9 +81,10 @@ public class UserAuthController {
     @PostMapping("/userRole/update")
     public void insertAuthRole(@ApiParam(required = true) Long userId,
                                @ApiParam(required = true) Long[] roleIds) {
-        if (roleIds != null && !Arrays.asList(roleIds).contains(1L))
-            sysUserService.checkAdminModifyAllowed(new SysUser(userId), "取消授权");
         SysUser user = sysUserService.findUserCheckExist(userId);
+        if (roleIds != null && !Arrays.asList(roleIds).contains(1L)) {
+            sysUserService.checkAdminModifyAllowed(user.getLoginName(), "取消授权");
+        }
         ChannelCheckUtils.checkHasPermission(user.getChannelId());
         List<Long> toSaveRoleIds = filterRoles(userId, Arrays.asList(roleIds));
 

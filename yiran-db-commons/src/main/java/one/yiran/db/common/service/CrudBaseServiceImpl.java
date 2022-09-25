@@ -269,9 +269,19 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
     @Transactional
     @Override
     public long deleteByPId(K pId) throws BusinessException {
-        T ent = entityManager.find((Class<T>) tClass, pId);
-        entityManager.remove(ent);
-        return 1;
+//        T ent = entityManager.find((Class<T>) tClass, pId);
+//        entityManager.remove(ent);
+//        deleteByPIds(new K[]{pId});
+//        return 1;
+
+        Assert.notNull(pId,"");
+        String fieldName = doGetPrimaryId();
+        Class filedType = doGetPrimaryType();
+        Query query = entityManager.createQuery(
+                "update " + ((Class) tClass).getName() + " set isDelete = true WHERE  " + fieldName + " = :p1 ");
+        query.setParameter("p1", pId);
+        int deletedCount = query.executeUpdate();
+        return deletedCount;
     }
 
     @Transactional

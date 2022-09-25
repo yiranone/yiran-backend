@@ -51,7 +51,7 @@ public class ProfileAdminController {
     @RequestMapping("/my")
     public UserPageVO my() {
         UserSession user = SessionContextHelper.getLoginUser();
-        SysUser dbUser = sysUserService.findUser(user.getUserId());
+        SysUser dbUser = sysUserService.findUserCheckExist(user.getUserId());
         UserPageVO up;
         if(dbUser.getDeptId() != null) {
             SysDept sysDept = sysDeptService.selectByPId(dbUser.getDeptId());

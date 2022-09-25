@@ -206,7 +206,7 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
 
     @Override
     public int deleteAuthUsers(Long userId) {
-        sysUserService.checkAdminModifyAllowed(new SysUser(userId),"取消授权");
+        sysUserService.checkAdminModifyAllowed(sysUserService.findUser(userId).getLoginName(),"取消授权");
         return userRoleDao.deleteAllByUserId(userId);
     }
 
@@ -254,7 +254,7 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long, SysRole> imple
         }
         if(roleId.equals(1L)) {
             Arrays.stream(userIds).forEach(e -> {
-                sysUserService.checkAdminModifyAllowed(new SysUser(e), "取消授权");
+                sysUserService.checkAdminModifyAllowed(sysUserService.findUser(e).getLoginName(), "取消授权");
             });
         }
         List<SysUserRole> sysUserRoles = userRoleDao.findAllByRoleIdAndUserIdIn(roleId, userIds);

@@ -370,16 +370,17 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
     @Transactional
     @Override
     public void deleteAllUserInfoByUserId(Long userId) {
-        if(userDao.findByUserId(userId) == null ){
+        SysUser u = userDao.findByUserId(userId);
+        if(u == null ){
             throw new UserNotFoundException(userId);
         }
-        checkAdminModifyAllowed(new SysUser(userId),"删除");
+        checkAdminModifyAllowed(u.getLoginName(),"删除");
         //删除用户角色
         int delRoleCount = sysRoleService.deleteAuthUsers(userId);
         //删除用户岗位
         long delPostCount = sysPostService.deleteAuthUsers(userId);
         //逻辑删除用户信息
-        userDao.deleteById(userId);
+        super.deleteByPId(userId);
         log.info("逻辑删除用户Id{},删除用户角色数量{}, 删除用户岗位数量{}", userId, delRoleCount, delPostCount);
     }
 
@@ -472,7 +473,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
             try {
                 // 验证是否存在这个用户
                 SysUser u = userDao.findByLoginName(user.getLoginName());
-                checkAdminModifyAllowed(u,"导入");
+                checkAdminModifyAllowed(u.getLoginName(),"导入");
                 if (u == null) {
                     //user.setUserId(mongoSequenceService.getNextId(SysUser.SEQUENCE_KEY));
                     user.setSalt(Global.getSalt());
@@ -608,16 +609,10 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
         return PageModel.instance(count,userPageVOs);
     }
 
-
-    /**
-     * 校验用户是否允许操作
-     *
-     * @param user 用户信息
-     */
     @Override
-    public void checkAdminModifyAllowed(SysUser user, String actionName) {
-        if (!Global.isDebugMode() && user != null && user.getUserId() != null && user.isAdmin()) {
-            throw BusinessException.build("不允许" + StringUtils.defaultIfBlank(actionName,"操作") + "超级管理员用户" + StringUtils.defaultIfBlank(user.getLoginName(),""));
+    public void checkAdminModifyAllowed(String loginName, String actionName) {
+        if (!Global.isDebugMode() && Global.isAdmin(loginName)) {
+            throw BusinessException.build("不允许" + StringUtils.defaultIfBlank(actionName,"操作") + "超级管理员用户" + StringUtils.defaultIfBlank(loginName,""));
         }
     }
 

@@ -156,7 +156,7 @@ public class UserAdminController {
 
     @Log(title = "用户管理", businessType = BusinessType.DELETE)
     @RequirePermission(PermissionConstants.User.DELETE)
-    @PostMapping("/remove")
+    @PostMapping("/delete")
     public Map<String, Object> remove(@ApiParam(required = true) Long[] userIds) {
         return WrapUtil.wrap("deleteCount",sysUserService.deleteUserByIds(userIds));
     }
@@ -220,7 +220,7 @@ public class UserAdminController {
         sysUserService.resetLoginFail(dbUser.getUserId());
 
         dbUser.setUpdateBy(SessionContextHelper.getCurrentLoginName());
-        sysUserService.checkAdminModifyAllowed(dbUser, "重置");
+        sysUserService.checkAdminModifyAllowed(dbUser.getLoginName(), "重置");
         sysUserService.resetUserPwd(dbUser.getUserId(), dbUser.getPassword(), dbUser.getSalt());
     }
 
@@ -231,8 +231,8 @@ public class UserAdminController {
     @Log(title = "状态修改", businessType = BusinessType.EDIT)
     @PostMapping("/changeStatus")
     public void changeStatus(@ApiObject SysUser user) {
-        sysUserService.checkAdminModifyAllowed(user, "修改状态");
-        SysUser u = sysUserService.findUser(user.getUserId());
+        SysUser u = sysUserService.findUserCheckExist(user.getUserId());
+        sysUserService.checkAdminModifyAllowed(u.getLoginName(), "修改状态");
         SessionContextHelper.checkScopePermission(PermissionConstants.User.EDIT, u.getDeptId());
         u.setStatus(user.getStatus());
         sysUserService.saveUser(u);

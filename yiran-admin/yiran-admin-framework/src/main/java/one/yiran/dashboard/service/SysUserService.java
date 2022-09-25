@@ -75,7 +75,7 @@ public interface SysUserService {
 
     String importUser(List<SysUser> userList, boolean updateSupport, String operName);
 
-    void checkAdminModifyAllowed(SysUser user, String actionName);
+    void checkAdminModifyAllowed(String loginName, String actionName);
 
     SysUser registerUser(SysUser user);
 }
