@@ -1,4 +1,4 @@
-package com.biz.controller;
+package com.biz.controller.admin;
 
 import com.biz.constants.BizPermissionConstants;
 import com.biz.entity.Member;
@@ -16,6 +16,7 @@ import one.yiran.dashboard.entity.SysChannel;
 import one.yiran.dashboard.security.SessionContextHelper;
 import one.yiran.dashboard.service.SysChannelService;
 import one.yiran.dashboard.common.util.WrapUtil;
+import one.yiran.dashboard.web.util.ChannelCheckUtils;
 import one.yiran.db.common.util.PageRequestUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ public class MemberController {
     public PageModel<MemberVO> list(@ApiObject(createIfNull = true) MemberVO memberVO,
                                     @ApiParam String deptName, HttpServletRequest request) {
         PageRequest pageRequest = PageRequestUtil.fromRequest(request);
-        Long channelId = SessionContextHelper.getChannelId();
+        Long channelId = ChannelCheckUtils.getChannelIdIfNotAdmin();
         memberVO.setIsDelete(false);
         PageModel pe = memberService.selectPageDetail(pageRequest, memberVO, channelId);
         return pe;
@@ -58,6 +59,7 @@ public class MemberController {
     @PostMapping("/add")
     public MemberVO addMember(@ApiObject(validate = true) MemberVO member,
                               @ApiParam String password) {
+        ChannelCheckUtils.checkHasPermission(member.getChannelId());
         Long channelId = SessionContextHelper.getChannelIdWithCheck();
         Member db = new Member();
         if (StringUtils.isBlank(password)) {
@@ -102,6 +104,7 @@ public class MemberController {
         if (db == null) {
             throw BusinessException.build("会员不存在");
         }
+        ChannelCheckUtils.checkHasPermission(db.getChannelId());
         db.setStatus(member.getStatus());
         db.setStatus(member.getStatus());
         db.setPhone(member.getPhone());
@@ -123,6 +126,12 @@ public class MemberController {
     @RequirePermission(BizPermissionConstants.Member.DELETE)
     @PostMapping("/remove")
     public Map<String, Object> remove(@ApiParam(required = true) Long[] ids) {
+        for (Long id : ids) {
+            Member db = memberService.selectByPId(id);
+            if (db == null)
+                throw new UserNotFoundException();
+            ChannelCheckUtils.checkHasPermission(db.getChannelId());
+        }
         return WrapUtil.wrap("deleteCount",memberService.deleteByPIds(ids));
     }
 
@@ -132,7 +141,7 @@ public class MemberController {
         Member db =  memberService.selectByPId(memberId);
         if (db == null)
             throw new UserNotFoundException();
-
+        ChannelCheckUtils.checkHasPermission(db.getChannelId());
         SysChannel channel = channelService.selectByPId(db.getChannelId());
         return MemberVO.from(db,channel);
     }
@@ -146,6 +155,8 @@ public class MemberController {
         if (db == null) {
             throw BusinessException.build("会员不存在");
         }
+        ChannelCheckUtils.checkHasPermission(db.getChannelId());
+
         db.setSalt(Global.getSalt());
         db.setPassword(passwordService.encryptPassword(password, Global.getSalt()));
         db.setPasswordUpdateTime(new Date());

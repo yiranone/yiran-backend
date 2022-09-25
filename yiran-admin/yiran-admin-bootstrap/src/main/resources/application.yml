@@ -89,7 +89,8 @@ dashboard:
   version: 1.0.0
   cache: local # local redis
   salt: salt@defalut
-  debug:
+  admin: admin,system # 用,分割的超级管理员
+  debug: # debug模式用户不能登陆，只能下面的账号密码登陆
     mode: false
     loginName: admin
     password: password
