@@ -34,6 +34,7 @@ public class UserPageVO {
 
     //详细页面返回
     private List<Long> roleIds;
+    private List<String> roleNames;
 
     private Long deptId;
     private String deptName;

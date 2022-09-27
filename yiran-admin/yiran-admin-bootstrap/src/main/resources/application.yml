@@ -8,10 +8,13 @@ spring:
     username: xxx
     password: xxx
   jpa:
-    hibernate:
-      ddl-auto: update
-      naming:
-        strategy: org.hibernate.cfg.ImprovedNamingStrategy
+    properties:
+      hibernate:
+        ddl-auto: update
+        naming:
+          strategy: org.hibernate.cfg.ImprovedNamingStrategy
+        format_sql: false
+        metadata_builder_contributor: one.yiran.dashboard.config.sql.GroupConcatSqlFunctionsMetadataBuilderContributor
     show-sql: true
     open-in-view: false
     database-platform: org.hibernate.dialect.MySQL5Dialect

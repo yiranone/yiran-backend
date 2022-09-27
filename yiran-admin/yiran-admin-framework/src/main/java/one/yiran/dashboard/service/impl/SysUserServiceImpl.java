@@ -1,8 +1,12 @@
 package one.yiran.dashboard.service.impl;
 
+import com.google.common.collect.Lists;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.SimpleTemplate;
+import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import one.yiran.dashboard.common.constants.UserConstants;
@@ -277,8 +281,10 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
 
         QSysUser qUser = QSysUser.sysUser;
         QSysDept qDept = QSysDept.sysDept;
+        QSysRole qRole = QSysRole.sysRole;
         QSysUserRole qUserRole = QSysUserRole.sysUserRole;
-
+        SimpleTemplate<String> userRoleNamesTemplate = Expressions.simpleTemplate(String.class, "group_concat({0})", qRole.roleName);
+        StringPath userRoleNamesPath = Expressions.stringPath("userRoleNames");
         Predicate[] pres = PredicateBuilder.builder()
                 .addExpression(PredicateUtil.buildNotDeletePredicate(qUser))
                 .addLikeIfNotBlank(qDept.deptName, deptName)
@@ -287,17 +293,26 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
                 .addEntityByAnnotation(searchUser,QSysUser.sysUser)
                 .toArray();
 
-        JPAQuery<Tuple> q = queryFactory.select(qUser,qDept).from(qUser).leftJoin(qDept)
-                .on(qUser.deptId.eq(qDept.deptId)).where(pres);
+        JPAQuery<Tuple> q = queryFactory.select(qUser,qDept,userRoleNamesTemplate.as(userRoleNamesPath))
+                .from(qUser)
+                .leftJoin(qDept).on(qUser.deptId.eq(qDept.deptId))
+                .leftJoin(qUserRole).on(qUser.userId.eq(qUserRole.userId))
+                .leftJoin(qRole).on(qRole.roleId.eq(qUserRole.roleId))
+                .groupBy(qUser.userId)
+                .where(pres);
 
         PageRequestUtil.injectQuery(pageRequest,q,qUser,qDept);
 
         List<Tuple> ts = q.fetch();
         List<UserPageVO> userPageVOs = new ArrayList<>();
         for (Tuple r : ts) {
-           SysUser su = r.get(qUser);
-           SysDept sd = r.get(qDept);
-           userPageVOs.add(UserPageVO.from(su,sd));
+            SysUser su = r.get(qUser);
+            SysDept sd = r.get(qDept);
+            UserPageVO up =  UserPageVO.from(su,sd);
+            String userRoleNames = r.get(userRoleNamesPath);
+            if(userRoleNames != null)
+                up.setRoleNames(Lists.newArrayList(userRoleNames.split(",")));
+            userPageVOs.add(up);
         }
         long count = q.fetchCount();
         return PageModel.instance(count,userPageVOs);
