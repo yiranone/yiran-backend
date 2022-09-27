@@ -3,6 +3,7 @@ package one.yiran.dashboard.service.impl;
 import com.google.common.collect.Lists;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.SimpleTemplate;
@@ -277,18 +278,20 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
     }
 
     @Override
-    public PageModel<UserPageVO> getPageDetail(PageRequest pageRequest, SysUser searchUser, String deptName) {
+    public PageModel<UserPageVO> getPageDetail(PageRequest pageRequest, SysUser searchUser, String deptName,Long deptId, Long roleId) {
 
         QSysUser qUser = QSysUser.sysUser;
         QSysDept qDept = QSysDept.sysDept;
         QSysRole qRole = QSysRole.sysRole;
         QSysUserRole qUserRole = QSysUserRole.sysUserRole;
-        SimpleTemplate<String> userRoleNamesTemplate = Expressions.simpleTemplate(String.class, "group_concat({0})", qRole.roleName);
+        SimpleTemplate<String> userRoleNamesTemplate = Expressions.simpleTemplate(String.class, "GROUP_CONCAT({0})", qRole.roleName);
         StringPath userRoleNamesPath = Expressions.stringPath("userRoleNames");
         Predicate[] pres = PredicateBuilder.builder()
                 .addExpression(PredicateUtil.buildNotDeletePredicate(qUser))
                 .addLikeIfNotBlank(qDept.deptName, deptName)
                 .addEqualIfNotBlank(QSysUser.sysUser.loginName, searchUser.getLoginName())
+                .addEqualIfNotBlank(qUserRole.roleId, roleId)
+                .addEqualIfNotBlank(qDept.deptId, deptId)
 //                .addEqualIfNotBlank(QSysUser.sysUser.phoneNumber, searchUser.getPhoneNumber())
                 .addEntityByAnnotation(searchUser,QSysUser.sysUser)
                 .toArray();
@@ -310,7 +313,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
             SysDept sd = r.get(qDept);
             UserPageVO up =  UserPageVO.from(su,sd);
             String userRoleNames = r.get(userRoleNamesPath);
-            if(userRoleNames != null)
+            if (userRoleNames != null)
                 up.setRoleNames(Lists.newArrayList(userRoleNames.split(",")));
             userPageVOs.add(up);
         }

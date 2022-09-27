@@ -62,9 +62,13 @@ public class UserAdminController {
     //管理员列表页面
     @RequirePermission(PermissionConstants.User.VIEW)
     @RequestMapping("/list")
-    public PageModel<UserPageVO> list(@RequestBody SysUser sysUser, @ApiParam String deptName, HttpServletRequest request) {
+    public PageModel<UserPageVO> list(@RequestBody SysUser sysUser,
+                                      @ApiParam String deptName,
+                                      @ApiParam Long deptId,
+                                      @ApiParam Long roleId,
+                                      HttpServletRequest request) {
         PageRequest pageRequest = PageRequestUtil.fromRequest(request);
-        PageModel<UserPageVO> pe = sysUserService.getPageDetail(pageRequest, sysUser, deptName);
+        PageModel<UserPageVO> pe = sysUserService.getPageDetail(pageRequest, sysUser, deptName, deptId, roleId);
         return pe;
     }
 

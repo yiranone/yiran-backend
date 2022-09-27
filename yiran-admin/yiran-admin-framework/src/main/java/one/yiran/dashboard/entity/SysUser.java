@@ -80,7 +80,7 @@ public class SysUser extends TimedBasedEntity {
     @Column(length = 4)
     private String sex;
 
-    @Column(length = 255)
+    @Column(length = 2048)
     private String avatar;
 
     @JSONField(serialize = false)
@@ -110,7 +110,7 @@ public class SysUser extends TimedBasedEntity {
     private String assertSalt;
 
     @Option(value = {"1","2"},message = "状态只能是1，2。 1=正常,2=停用")
-    @Excel(name = "帐号状态", readConverterExp = "0=正常,1=停用")
+    @Excel(name = "帐号状态", readConverterExp = "1=正常,2=停用")
     @Search
     @Column(length = 8,nullable = false)
     private String status;

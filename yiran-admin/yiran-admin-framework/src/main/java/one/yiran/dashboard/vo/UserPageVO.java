@@ -27,6 +27,7 @@ public class UserPageVO {
     private String token;
     private Long tokenExpires; //token过期时间 毫秒
 
+    private String loginDate;
     private String createTime;
     private String updateTime;
     private String createBy;
@@ -54,6 +55,7 @@ public class UserPageVO {
         vo.setAvatar(sysUser.getAvatar());
         vo.setStatus(sysUser.getStatus());
         vo.setIsAdmin(sysUser.isAdmin());
+        vo.setLoginDate(DateUtil.dateTime(sysUser.getLoginDate()));
         vo.setCreateTime(DateUtil.dateTime(sysUser.getCreateTime()));
         vo.setUpdateTime(DateUtil.dateTime(sysUser.getUpdateTime()));
         vo.setCreateBy(sysUser.getCreateBy());

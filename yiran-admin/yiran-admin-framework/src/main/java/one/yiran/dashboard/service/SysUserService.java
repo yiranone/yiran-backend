@@ -48,7 +48,7 @@ public interface SysUserService {
      * @param searchUser
      * @return
      */
-    PageModel<UserPageVO> getPageDetail(PageRequest pageRequest, SysUser searchUser, String deptName);
+    PageModel<UserPageVO> getPageDetail(PageRequest pageRequest, SysUser searchUser, String deptName, Long deptId, Long roleId);
 
     long getListSize(SysUser searchUser, Date bTime, Date eTime);
 
