@@ -21,7 +21,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +35,12 @@ public class MenuAdminController {
 
     @Autowired
     private SysMenuService sysMenuService;
+
+    @RequirePermission(PermissionConstants.Menu.VIEW)
+    @PostMapping("/detail")
+    public SysMenu detail(@ApiParam(required = true) Long menuId) throws BusinessException {
+        return sysMenuService.selectByPId(menuId);
+    }
 
     @RequirePermission(PermissionConstants.Menu.VIEW)
     @PostMapping("/list")

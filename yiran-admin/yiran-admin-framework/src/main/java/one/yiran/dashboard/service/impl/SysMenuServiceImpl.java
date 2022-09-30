@@ -22,6 +22,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
+import static one.yiran.dashboard.common.constants.SystemConstants.MENU_IS_FRAME;
+import static one.yiran.dashboard.common.constants.SystemConstants.MENU_NOT_FRAME;
 
 @Service
 public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long, SysMenu> implements SysMenuService {
@@ -47,14 +49,23 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long, SysMenu> imple
             ).collect(toList());
         }
         sortMenus(sysMenus);
-        return toTree(sysMenus, 0);
+        List<SysMenu> tree = toTree(sysMenus, 0);
+        tree = tree.stream().filter(e ->
+                !StringUtils.equals(e.getMenuType(), "M") ||
+                e.getChildren() != null && e.getChildren().size() > 0).collect(toList());
+        return tree;
     }
 
     @Override
     public List<SysMenu> selectVisibleTreeMenus(boolean onlyMenu) {
         List<SysMenu> sysMenus = filterHomePageMenu(onlyMenu);
         sortMenus(sysMenus);
-        return toTree(sysMenus, 0);
+        List<SysMenu> tree = toTree(sysMenus, 0);
+        //目录下面没有菜单就不显示
+        tree = tree.stream().filter(e ->
+                !StringUtils.equals(e.getMenuType(), "M") ||
+                        e.getChildren() != null && e.getChildren().size() > 0).collect(toList());
+        return tree;
     }
 
     private List<SysMenu> filterHomePageMenu(boolean onlyMenu) {
@@ -64,6 +75,8 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long, SysMenu> imple
         }
         sysMenus = sysMenus.stream().filter(e -> StringUtils.equals(SystemConstants.MENU_VISIBLE, e.getVisible()))
                     .filter(e -> e.getIsDelete() == null || !e.getIsDelete().booleanValue()).collect(toList());
+
+
         return sysMenus;
     }
 
@@ -138,16 +151,32 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long, SysMenu> imple
             if (StringUtils.isBlank(m.getVisible())) {
                 throw BusinessException.build("菜单菜单状态不能为空");
             }
-            if (StringUtils.equals(m.getMenuType(), "C") && StringUtils.isBlank(m.getRouter())) {
-                throw BusinessException.build("菜单router不能为空");
+            if(StringUtils.equals(m.getMenuType(), "C") ){
+                if (StringUtils.isBlank(m.getIsFrame())) {
+                    throw BusinessException.build("是否外链不能为空");
+                }
+                if (StringUtils.isBlank(m.getRouter())) {
+                    throw BusinessException.build("菜单路由地址不能为空");
+                }
+                if (StringUtils.equals(m.getIsFrame(),MENU_NOT_FRAME) && StringUtils.isBlank(m.getComponent())) {
+                    throw BusinessException.build("菜单组件不能为空");
+                }
+                if(StringUtils.equals(m.getIsFrame(),MENU_IS_FRAME)) {
+                    if (!StringUtils.startsWith(m.getRouter(), "http")) {
+                        throw BusinessException.build("是链接的时候路由地址必须以http开头");
+                    }
+                }
             }
-            if (StringUtils.equals(m.getMenuType(), "C") && StringUtils.isBlank(m.getComponent())) {
-                throw BusinessException.build("菜单组件不能为空");
+            if (StringUtils.equals(m.getMenuType(), "M")) {
+                m.setIsFrame(MENU_NOT_FRAME);
             }
 //            if (StringUtils.equals(m.getMenuType(), "C") && StringUtils.isBlank(m.getTarget())) {
 //                throw BusinessException.build("打开方式不能为空");
 //            }
         } else if (StringUtils.equals(m.getMenuType(), "F")) {
+            if(StringUtils.isBlank(m.getIsFrame())) {
+                throw BusinessException.build("是否是链接不能为空");
+            }
             m.setRouter("");
         }
 

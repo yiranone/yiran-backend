@@ -19,6 +19,12 @@ public class SystemConstants {
     public static final String MENU_VISIBLE = "1";
     public static final String MENU_INVISIBLE = "2";
 
+    public static final String MENU_IS_FRAME = "1";
+    public static final String MENU_NOT_FRAME = "2";
+
+    public static final String MENU_IS_CACHE = "1";
+    public static final String MENU_NOT_CACHE = "2";
+
     public static final String STATUS_ENABLE = "0";
     public static final String STATUS_DISABLE = "1";
 
