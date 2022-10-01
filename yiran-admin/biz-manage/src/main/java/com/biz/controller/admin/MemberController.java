@@ -59,8 +59,10 @@ public class MemberController {
     @PostMapping("/add")
     public MemberVO addMember(@ApiObject(validate = true) MemberVO member,
                               @ApiParam String password) {
-        ChannelCheckUtils.checkHasPermission(member.getChannelId());
         Long channelId = SessionContextHelper.getChannelIdWithCheck();
+        if(member.getChannelId() == null)
+            member.setChannelId(channelId);
+        ChannelCheckUtils.checkHasPermission(member.getChannelId());
         Member db = new Member();
         if (StringUtils.isBlank(password)) {
             throw BusinessException.build("密码不能为空");

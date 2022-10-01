@@ -17,6 +17,8 @@ public class ChannelCheckUtils {
     }
 
     public static void checkHasPermission(Long channelId) {
+        if(channelId == null)
+            throw BusinessException.build("校验对象渠道为空");
         if(Global.isAdmin(SessionContextHelper.getCurrentLoginName())) {
             return;
         }
