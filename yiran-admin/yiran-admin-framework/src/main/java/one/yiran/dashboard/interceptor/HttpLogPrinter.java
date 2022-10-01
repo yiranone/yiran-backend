@@ -45,8 +45,10 @@ public class HttpLogPrinter {
             } catch (Exception e){
 
             }
-            respMessage = StringUtils.substring(respMessage,0,1000);
-
+            String more = "";
+            if(StringUtils.length(respMessage) > 1000)
+                more = "...";
+            respMessage = StringUtils.substring(respMessage,0,1000) + more;
             String queryString = StringUtils.defaultIfBlank(httpServletRequest.getQueryString(),"");
             queryString = StringUtils.isNotBlank(queryString) ? "?" + queryString : "";
             String method = httpServletRequest.getMethod();
