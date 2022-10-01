@@ -33,16 +33,9 @@ public class SysMenu extends TimedBasedEntity {
     @Column(length = 50)
     private String menuName;
 
-//    @Search
-//    @Size(min = 0, max = 200, message = "请求地址不能超过200个字符")
-//    @Column
-//    private String url;
-
     @Search
     @Column
     private Long parentId;
-    @Column(length = 50)
-    private String parentName;
 
     /**
      * 显示顺序
@@ -50,12 +43,6 @@ public class SysMenu extends TimedBasedEntity {
     @NotNull(message = "显示顺序不能为空")
     @Column
     private Integer orderNum;
-
-    /**
-     * 打开方式：menuItem页签 menuBlank新窗口
-     */
-    @Column
-    private String target;
 
     @Column(length = 32)
     private String router;
