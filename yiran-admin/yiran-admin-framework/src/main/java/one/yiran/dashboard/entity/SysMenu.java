@@ -79,10 +79,10 @@ public class SysMenu extends TimedBasedEntity {
     @Column(length = 1)
     private String isFrame;
 
-    @Search
-    @Option(value = {"1","2"}, message = "是否缓存只能是1，2; 1=是,2=否")
-    @Column(length = 1)
-    private String isCache;
+//    @Search
+//    @Option(value = {"1","2"}, message = "是否缓存只能是1，2; 1=是,2=否")
+//    @Column(length = 1)
+//    private String isCache;
 
     /**
      * 权限字符串

@@ -29,11 +29,6 @@ public class MenuUtil {
             webMenu.setLink(sysMenu.getRouter());
 //            webMenu.setRouter(null);
         }
-        if(StringUtils.isNotBlank(sysMenu.getIsCache()) || StringUtils.equals(sysMenu.getIsCache(),SystemConstants.MENU_NOT_CACHE)) {
-            webMenu.setIsCache(false);
-        } else {
-            webMenu.setIsCache(true);
-        }
         try {
             if (StringUtils.isNotBlank(sysMenu.getQuery())) {
                 String[] kvs = sysMenu.getQuery().split("&");
