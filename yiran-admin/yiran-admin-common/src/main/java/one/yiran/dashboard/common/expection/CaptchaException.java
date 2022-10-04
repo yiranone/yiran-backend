@@ -11,4 +11,8 @@ public class CaptchaException extends BusinessException {
     public CaptchaException() {
         super(400, "验证码错误");
     }
+
+    public CaptchaException(String msg) {
+        super(400, msg);
+    }
 }

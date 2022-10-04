@@ -69,10 +69,12 @@ public class UserLoginController {
         }
         if(!StringUtils.equals(Global.getCaptchaType(),"none")) {
             //开启了验证码
+            if(StringUtils.isBlank(captchaVerification))
+                throw new CaptchaException("没有输入验证码");
             boolean pass = captchaService.verification(captchaVerification);
             if(!pass) {
                 AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.jcaptcha.error")));
-                throw new CaptchaException();
+                throw new CaptchaException("验证码校验不通过");
             }
         }
         // 用户名或密码为空 错误
