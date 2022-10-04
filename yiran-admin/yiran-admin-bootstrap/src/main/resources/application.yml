@@ -103,7 +103,7 @@ dashboard:
       count: 3
       time: 1
   captcha:
-    type: blockPuzzle # none blockPuzzle
+    type: blockPuzzle # none blockPuzzle clickWord
   filepath: ${BASE_DIR:/tmp}/muggle
   ali:
     oss:
