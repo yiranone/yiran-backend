@@ -1,11 +1,9 @@
 package one.yiran.dashboard.security.service;
 
 import one.yiran.dashboard.common.constants.Global;
-import one.yiran.dashboard.common.constants.ShiroConstants;
 import one.yiran.dashboard.common.constants.SystemConstants;
 import one.yiran.dashboard.common.constants.UserConstants;
 import one.yiran.dashboard.common.util.MessageUtil;
-import one.yiran.dashboard.common.util.ServletUtil;
 import one.yiran.dashboard.entity.SysUser;
 import one.yiran.dashboard.factory.AsyncFactory;
 import one.yiran.dashboard.factory.AsyncManager;
@@ -30,9 +28,7 @@ public class SysRegisterService {
 
         SysUser regUser = new SysUser();
         regUser.setLoginName(username);
-        if (!StringUtils.isEmpty(ServletUtil.getRequest().getAttribute(ShiroConstants.CURRENT_CAPTCHA))) {
-            msg = "验证码错误";
-        } else if (StringUtils.isEmpty(username)) {
+        if (StringUtils.isEmpty(username)) {
             msg = "用户名不能为空";
         } else if (StringUtils.isEmpty(password)) {
             msg = "用户密码不能为空";

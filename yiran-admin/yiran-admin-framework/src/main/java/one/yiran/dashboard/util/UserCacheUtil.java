@@ -2,14 +2,13 @@ package one.yiran.dashboard.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.cache.Cache;
-import one.yiran.dashboard.common.model.UserSession;
+import one.yiran.dashboard.cache.DashboardCacheService;
+import one.yiran.dashboard.cache.LocalCacheService;
+import one.yiran.dashboard.cache.RedisCacheService;
 import one.yiran.dashboard.common.constants.Global;
+import one.yiran.dashboard.common.model.UserSession;
 import one.yiran.dashboard.common.util.SpringUtil;
 import org.apache.commons.lang3.StringUtils;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.params.SetParams;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
@@ -34,55 +33,22 @@ public class UserCacheUtil {
 
     public static void setSessionInfo(String key, UserSession sessionInfo) {
         String s = JSON.toJSONString(sessionInfo);
-        if(Global.userLocalCache()) {
-            Cache cache = getCache();
-            cache.put(Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX, s);
-            return;
-        }
-
-        Jedis resource = getJedis();
-        try {
-            resource.set(Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX, s, SetParams.setParams().ex(getSessionTimeout()));
-        } finally {
-            if (resource != null)
-                resource.close();
-        }
+        String k = Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX;
+        getCacheService().set(k,s,getSessionTimeout());
     }
 
     public static void removeSessionInfo(String key) {
-        if(Global.userLocalCache()) {
-            Cache cache = getCache();
-            cache.invalidate(key);
-            return;
-        }
-        Jedis pool = getJedis();
-        try {
-            pool.del(Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX);
-        } finally {
-            if (pool != null)
-                pool.close();
-        }
+        String k = Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX;
+        getCacheService().delete(k);
     }
 
     public static UserSession getSessionInfo(String key) {
-        if(Global.userLocalCache()) {
-            Cache cache = getCache();
-            Object o = cache.getIfPresent(Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX);
-            if (o == null)
-                return null;
-            return JSONObject.parseObject(o.toString(), UserSession.class);
-        }
-        Jedis pool = getJedis();
-        try {
-            Object o = pool.get(Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX);
-            if (o == null)
-                return null;
-            pool.expire(Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX, getSessionTimeout());
-            return JSONObject.parseObject(o.toString(), UserSession.class);
-        } finally {
-            if (pool != null)
-                pool.close();
-        }
+        String k = Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX;
+        String data = getCacheService().get(k);
+        if (StringUtils.isBlank(data))
+            return null;
+        getCacheService().expire(k, getSessionTimeout());
+        return JSONObject.parseObject(data, UserSession.class);
     }
 
     public static UserSession getSessionInfo(HttpServletRequest request) {
@@ -95,37 +61,27 @@ public class UserCacheUtil {
 
 
     public static void setSmsInfo(String key, String value) {
-        if(Global.userLocalCache()) {
-            return;
-        }
-        Jedis pool = getJedis();
-        try {
-            pool.set(Global.getRedisPrefix() + SMS_PREFIX + key + SMS_SUFFIX, value, SetParams.setParams().ex(300));
-        } finally {
-            if (pool != null)
-                pool.close();
-        }
+        String k = Global.getRedisPrefix() + SMS_PREFIX + key + SMS_SUFFIX;
+        getCacheService().set(k,value,5*60*1000);
     }
 
     public static String getSmsInfo(String key) {
-        if(Global.userLocalCache()) {
-            return "";
-        }
-        Jedis pool = getJedis();
-        try {
-            Object o = pool.get(Global.getRedisPrefix() + SMS_PREFIX + key + SMS_SUFFIX);
-            return o == null ? null : o.toString();
-        } finally {
-            if (pool != null)
-                pool.close();
-        }
+        String k = Global.getRedisPrefix() + SMS_PREFIX + key + SMS_SUFFIX;
+        return getCacheService().get(k);
     }
 
-    private static Jedis getJedis() {
-        JedisPool jedisPool = SpringUtil.getBean(JedisPool.class);
-        return jedisPool.getResource();
+    private static DashboardCacheService getCacheService(){
+        if(Global.userLocalCache()) {
+            return SpringUtil.getBean(LocalCacheService.class);
+        }
+        return SpringUtil.getBean(RedisCacheService.class);
     }
-    private static com.google.common.cache.Cache getCache() {
-        return SpringUtil.getBean(com.google.common.cache.Cache.class);
-    }
+
+//    private static Jedis getJedis() {
+//        JedisPool jedisPool = SpringUtil.getBean(JedisPool.class);
+//        return jedisPool.getResource();
+//    }
+//    private static com.google.common.cache.Cache getCache() {
+//        return SpringUtil.getBean(com.google.common.cache.Cache.class);
+//    }
 }

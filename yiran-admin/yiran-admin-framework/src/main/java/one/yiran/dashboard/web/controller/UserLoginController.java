@@ -1,12 +1,12 @@
 package one.yiran.dashboard.web.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import one.yiran.dashboard.captcha.service.impl.DefaultCaptchaServiceImpl;
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
 import one.yiran.dashboard.common.annotation.ApiParam;
 import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.common.model.UserSession;
 import one.yiran.dashboard.common.constants.Global;
-import one.yiran.dashboard.common.constants.ShiroConstants;
 import one.yiran.dashboard.common.constants.SystemConstants;
 import one.yiran.dashboard.common.constants.UserConstants;
 import one.yiran.dashboard.common.expection.CaptchaException;
@@ -20,7 +20,6 @@ import one.yiran.dashboard.common.expection.user.UserDeleteException;
 import one.yiran.dashboard.common.expection.user.UserNotFoundException;
 import one.yiran.dashboard.common.expection.user.UserPasswordNotMatchException;
 import one.yiran.dashboard.service.SysDeptService;
-import one.yiran.dashboard.service.SysMenuService;
 import one.yiran.dashboard.service.SysUserOnlineService;
 import one.yiran.dashboard.service.SysUserService;
 import one.yiran.dashboard.common.util.IpUtil;
@@ -30,12 +29,15 @@ import one.yiran.dashboard.util.UserCacheUtil;
 import one.yiran.dashboard.util.UserConvertUtil;
 import one.yiran.dashboard.vo.UserPageVO;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 登录验证
@@ -56,42 +58,22 @@ public class UserLoginController {
 
     @Autowired
     private SysUserService sysUserService;
+    @Autowired
+    private DefaultCaptchaServiceImpl captchaService;
 
     @PostMapping("/login")
-    public UserPageVO ajaxLogin(@ApiParam String username, @ApiParam String password) {
+    public UserPageVO ajaxLogin(@ApiParam String username, @ApiParam String password,
+                                @ApiParam String captchaVerification) {
         if(Global.isDebugMode()) {
-            String debugUserName = Global.getDebugLoginName();
-            String debugPassword = Global.getDebugPassword();
-            if(!org.apache.commons.lang3.StringUtils.equals(debugUserName,username)) {
-                throw BusinessException.build("维护中，"+username+"不能登陆");
-            }
-            if(!org.apache.commons.lang3.StringUtils.equals(debugPassword,password)) {
-                throw BusinessException.build("维护中，"+username+"密码不正确，不能登陆");
-            }
-            SysUser user = sysUserService.findUserByLoginName(username);
-            if (user == null) {
-                throw BusinessException.build("虚拟" + username + "不存在");
-            }
-            log.info("DebugMode用户{}登陆成功",username);
-            String randomKey = RandomStringUtils.randomAscii(32);
-            UserSession us = UserConvertUtil.convert(user);
-            UserCacheUtil.setSessionInfo(randomKey,us);
-
-            UserPageVO up;
-            if(user.getDeptId() != null) {
-                SysDept sysDept = sysDeptService.selectByPId(user.getDeptId());
-                up = UserPageVO.from(user,sysDept);
-            } else {
-                up = UserPageVO.from(user);
-            }
-            up.setToken(us.getToken());
-            up.setTokenExpires(us.getTokenExpires());
-            return up;
+            return debugFunction(username, password);
         }
-        // 验证码校验
-        if (!org.springframework.util.StringUtils.isEmpty(ServletUtil.getRequest().getAttribute(ShiroConstants.CURRENT_CAPTCHA))) {
-            AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.jcaptcha.error")));
-            throw new CaptchaException();
+        if(!StringUtils.equals(Global.getCaptchaType(),"none")) {
+            //开启了验证码
+            boolean pass = captchaService.verification(captchaVerification);
+            if(!pass) {
+                AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.jcaptcha.error")));
+                throw new CaptchaException();
+            }
         }
         // 用户名或密码为空 错误
         if (org.springframework.util.StringUtils.isEmpty(username) || org.springframework.util.StringUtils.isEmpty(password)) {
@@ -169,6 +151,36 @@ public class UserLoginController {
         return up;
     }
 
+    private UserPageVO debugFunction(String username, String password) {
+        String debugUserName = Global.getDebugLoginName();
+        String debugPassword = Global.getDebugPassword();
+        if(!StringUtils.equals(debugUserName, username)) {
+            throw BusinessException.build("维护中，"+ username +"不能登陆");
+        }
+        if(!StringUtils.equals(debugPassword, password)) {
+            throw BusinessException.build("维护中，"+ username +"密码不正确，不能登陆");
+        }
+        SysUser user = sysUserService.findUserByLoginName(username);
+        if (user == null) {
+            throw BusinessException.build("虚拟" + username + "不存在");
+        }
+        log.info("DebugMode用户{}登陆成功", username);
+        String randomKey = RandomStringUtils.randomAscii(32);
+        UserSession us = UserConvertUtil.convert(user);
+        UserCacheUtil.setSessionInfo(randomKey,us);
+
+        UserPageVO up;
+        if(user.getDeptId() != null) {
+            SysDept sysDept = sysDeptService.selectByPId(user.getDeptId());
+            up = UserPageVO.from(user,sysDept);
+        } else {
+            up = UserPageVO.from(user);
+        }
+        up.setToken(us.getToken());
+        up.setTokenExpires(us.getTokenExpires());
+        return up;
+    }
+
     private boolean maybeEmail(String username) {
         if (!username.matches(UserConstants.EMAIL_PATTERN)) {
             return false;
@@ -198,5 +210,12 @@ public class UserLoginController {
             return "退出登陆成功";
         }
         return "退出登陆异常";
+    }
+
+    @RequestMapping("/login/config")
+    public Map<String,String> loginConfig(HttpServletRequest request) {
+        Map<String,String> map = new HashMap<>();
+        map.put("captcha",Global.getCaptchaType());
+        return map;
     }
 }

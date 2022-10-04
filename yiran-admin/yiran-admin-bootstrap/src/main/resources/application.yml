@@ -102,7 +102,9 @@ dashboard:
     limit:
       count: 3
       time: 1
-  filepath: ${BASE_DIR:/tmp}/data/job
+  captcha:
+    type: blockPuzzle # none blockPuzzle
+  filepath: ${BASE_DIR:/tmp}/muggle
   ali:
     oss:
       enable: false

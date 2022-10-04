@@ -266,6 +266,7 @@ public class Global {
         String s = getConfig("dashboard.auth.member.key");
         return StringUtils.isBlank(s) ? "MEMBER_AUTH" :s;
     }
+    //前端http请求head里面的key
     public static String getAuthKey() {
         String s = getConfig("dashboard.auth.key");
         return StringUtils.isBlank(s) ? "Authorization" :s;
@@ -273,6 +274,10 @@ public class Global {
     public static String getRedisPrefix() {
         String s = getConfig("spring.redis.prefix");
         return StringUtils.isBlank(s) ? "rk" :s;
+    }
+    // none  blockPuzzle  clickWord
+    public static String getCaptchaType() {
+        return getConfig("dashboard.captcha.type");
     }
 
     public static String fileHash(String fileName, String timestamp) {

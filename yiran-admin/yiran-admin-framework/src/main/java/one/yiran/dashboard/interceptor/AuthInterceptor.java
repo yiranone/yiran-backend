@@ -11,6 +11,7 @@ import one.yiran.dashboard.service.SysRoleService;
 import one.yiran.dashboard.util.UserCacheUtil;
 import one.yiran.dashboard.factory.AsyncManager;
 import one.yiran.dashboard.service.SysUserOnlineService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
@@ -47,24 +48,27 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
 
+        UserSession session = null;
         String token = getTok(request);
-        UserSession session = UserCacheUtil.getSessionInfo(token);
-        if (session != null) {
-            //用户登陆了，修改下在线用户列表
-            String sessionId = session.getToken();
-            Long lastSync = session.getLastSyncToDbTime();
-            Long now = new Date().getTime();
+        if(StringUtils.isNotBlank(token)) {
+            session = UserCacheUtil.getSessionInfo(token);
+            if (session != null) {
+                //用户登陆了，修改下在线用户列表
+                String sessionId = session.getToken();
+                Long lastSync = session.getLastSyncToDbTime();
+                Long now = new Date().getTime();
 
-            //每10s做一次持久化，异步在数据库写入用户在线
-            if (sessionId != null && (lastSync == null || lastSync + 10 * 1000 < now)) {
-                session.setLastSyncToDbTime(now);
-                UserCacheUtil.setSessionInfo(sessionId, session);
-                AsyncManager.me().execute(new TimerTask() {
-                    @Override
-                    public void run() {
-                        sysUserOnlineService.refreshUserLastAccessTime(sessionId, new Date());
-                    }
-                });
+                //每10s做一次持久化，异步在数据库写入用户在线
+                if (sessionId != null && (lastSync == null || lastSync + 10 * 1000 < now)) {
+                    session.setLastSyncToDbTime(now);
+                    UserCacheUtil.setSessionInfo(sessionId, session);
+                    AsyncManager.me().execute(new TimerTask() {
+                        @Override
+                        public void run() {
+                            sysUserOnlineService.refreshUserLastAccessTime(sessionId, new Date());
+                        }
+                    });
+                }
             }
         }
 
