@@ -13,7 +13,12 @@ import one.yiran.dashboard.captcha.model.vo.CaptchaVO;
 import one.yiran.dashboard.captcha.model.vo.PointVO;
 import one.yiran.dashboard.captcha.util.ImageUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -23,11 +28,16 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.Random;
 
+@Component
+@ConditionalOnProperty(name = "dashboard.captcha.type",havingValue = "blockPuzzle")
 public class BlockPuzzleCaptchaServiceImpl extends AbstractCaptchaService {
 
-    @Override
-    public void init(Properties config) {
-        super.init(config);
+    @Resource(name = "captchaConfig")
+    private Properties config;
+
+    @PostConstruct
+    public void init() {
+        super.init(this.config);
     }
 
 	@Override

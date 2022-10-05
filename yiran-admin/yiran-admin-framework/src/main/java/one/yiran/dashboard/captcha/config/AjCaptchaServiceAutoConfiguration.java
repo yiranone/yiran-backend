@@ -27,8 +27,8 @@ public class AjCaptchaServiceAutoConfiguration {
 
     private static Logger logger = LoggerFactory.getLogger(AjCaptchaServiceAutoConfiguration.class);
 
-    @Bean
-    public CaptchaService captchaService(AjCaptchaProperties prop) {
+    @Bean(name = "captchaConfig")
+    public Properties captchaService(AjCaptchaProperties prop) {
         logger.info("自定义配置项：{}", prop.toString());
         if(StringUtils.equals(Global.getCaptchaType(),"none")) {
             logger.info("系统没有配置验证码校验");
@@ -68,8 +68,10 @@ public class AjCaptchaServiceAutoConfiguration {
 //            config.put(Const.CAPTCHA_INIT_ORIGINAL, "true");
 //            initializeBaseMap(prop.getJigsaw(), prop.getPicClick());
 //        }
-        CaptchaService s = CaptchaServiceFactory.getInstance(config);
-        return s;
+//        CaptchaService s = CaptchaServiceFactory.getInstance(config);
+//        return s;
+
+        return config;
     }
 
 //    private static void initializeBaseMap(String jigsaw, String picClick) {

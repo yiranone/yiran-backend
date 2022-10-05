@@ -107,6 +107,7 @@ public abstract class AbstractCaptchaService implements CaptchaService {
                 limitHandler = new FrequencyLimitHandler.DefaultLimitHandler(config);
             }
         }
+
     }
 
     protected DashboardCacheService getCacheService(String cacheType) {

@@ -1,60 +1,38 @@
 package one.yiran.dashboard.captcha.service.impl;
 
 
+import lombok.extern.slf4j.Slf4j;
+import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.cache.DashboardCacheService;
 import one.yiran.dashboard.captcha.model.common.RepCodeEnum;
 import one.yiran.dashboard.captcha.model.common.ResponseModel;
 import one.yiran.dashboard.captcha.model.vo.CaptchaVO;
 import one.yiran.dashboard.captcha.service.CaptchaService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Properties;
+import static one.yiran.dashboard.captcha.service.impl.AbstractCaptchaService.REDIS_SECOND_CAPTCHA_KEY;
 
+@Slf4j
 @Component
-public class DefaultCaptchaServiceImpl extends AbstractCaptchaService{
+public class DefaultCaptchaService{
 
-    @Override
-    public String captchaType() {
-        return "default";
-    }
+    @Autowired(required = false)
+    private CaptchaService captchaService;
 
-    @Override
-    public void init(Properties config) {
-        for (String s : CaptchaServiceFactory.instances.keySet()) {
-            if(captchaType().equals(s)){
-                continue;
-            }
-            getService(s).init(config);
-        }
-    }
-
-	@Override
-	public void destroy(Properties config) {
-		for (String s : CaptchaServiceFactory.instances.keySet()) {
-			if(captchaType().equals(s)){
-				continue;
-			}
-			getService(s).destroy(config);
-		}
-	}
-
-	private CaptchaService getService(String captchaType){
-        return CaptchaServiceFactory.instances.get(captchaType);
-    }
-
-    @Override
     public ResponseModel get(CaptchaVO captchaVO) {
+        if(captchaService == null)
+            throw BusinessException.build("系统不需要验证码");
         if (captchaVO == null) {
             return RepCodeEnum.NULL_ERROR.parseError("captchaVO");
         }
         if (StringUtils.isEmpty(captchaVO.getCaptchaType())) {
             return RepCodeEnum.NULL_ERROR.parseError("类型");
         }
-        return getService(captchaVO.getCaptchaType()).get(captchaVO);
+        return captchaService.get(captchaVO);
     }
 
-    @Override
     public ResponseModel check(CaptchaVO captchaVO) {
         if (captchaVO == null) {
             return RepCodeEnum.NULL_ERROR.parseError("captchaVO");
@@ -65,10 +43,9 @@ public class DefaultCaptchaServiceImpl extends AbstractCaptchaService{
         if (StringUtils.isEmpty(captchaVO.getToken())) {
             return RepCodeEnum.NULL_ERROR.parseError("token");
         }
-        return getService(captchaVO.getCaptchaType()).check(captchaVO);
+        return captchaService.check(captchaVO);
     }
 
-    @Override
     public ResponseModel verification(CaptchaVO captchaVO) {
         if (captchaVO == null) {
             return RepCodeEnum.NULL_ERROR.parseError("captchaVO");
@@ -85,7 +62,7 @@ public class DefaultCaptchaServiceImpl extends AbstractCaptchaService{
             //二次校验取值后，即刻失效
             cacheService.delete(codeKey);
         } catch (Exception e) {
-            logger.error("验证码坐标解析失败", e);
+            log.error("验证码坐标解析失败", e);
             return ResponseModel.errorMsg(e.getMessage());
         }
         return ResponseModel.success();
@@ -102,7 +79,7 @@ public class DefaultCaptchaServiceImpl extends AbstractCaptchaService{
             }
             return ex;
         } catch (Exception e) {
-            logger.error("验证码坐标解析失败", e);
+            log.error("验证码坐标解析失败", e);
             return false;
         }
     }

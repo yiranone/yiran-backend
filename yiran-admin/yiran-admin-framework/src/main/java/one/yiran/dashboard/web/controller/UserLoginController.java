@@ -1,7 +1,7 @@
 package one.yiran.dashboard.web.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import one.yiran.dashboard.captcha.service.impl.DefaultCaptchaServiceImpl;
+import one.yiran.dashboard.captcha.service.impl.DefaultCaptchaService;
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
 import one.yiran.dashboard.common.annotation.ApiParam;
 import one.yiran.common.exception.BusinessException;
@@ -59,7 +59,7 @@ public class UserLoginController {
     @Autowired
     private SysUserService sysUserService;
     @Autowired
-    private DefaultCaptchaServiceImpl captchaService;
+    private DefaultCaptchaService captchaService;
 
     @PostMapping("/login")
     public UserPageVO ajaxLogin(@ApiParam String username, @ApiParam String password,

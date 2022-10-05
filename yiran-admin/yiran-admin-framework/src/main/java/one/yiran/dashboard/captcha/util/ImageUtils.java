@@ -144,6 +144,9 @@ public class ImageUtils {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            if(bytes.length == 0) {
+                throw new RuntimeException("目录:"+path+",图片"+i+"加载失败");
+            }
             String string = Base64Util.encodeToString(bytes);
             String filename = String.valueOf(i).concat(".png");
             imgMap.put(filename, string);

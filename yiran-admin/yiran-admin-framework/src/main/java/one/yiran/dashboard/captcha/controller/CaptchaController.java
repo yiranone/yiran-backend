@@ -1,17 +1,15 @@
 package one.yiran.dashboard.captcha.controller;
 
+import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.captcha.model.common.ResponseModel;
 import one.yiran.dashboard.captcha.model.vo.CaptchaVO;
-import one.yiran.dashboard.captcha.service.CaptchaService;
-import one.yiran.dashboard.captcha.service.impl.DefaultCaptchaServiceImpl;
+import one.yiran.dashboard.captcha.service.impl.DefaultCaptchaService;
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,25 +18,37 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/captcha")
 public class CaptchaController {
 
-    @Autowired
-    private DefaultCaptchaServiceImpl captchaService;
+    @Autowired(required = false)
+    private DefaultCaptchaService captchaService;
 
     @RequestMapping("/get")
-    public ResponseModel get(@RequestBody CaptchaVO data, HttpServletRequest request) {
+    public Object get(@RequestBody CaptchaVO data, HttpServletRequest request) {
         assert request.getRemoteHost()!=null;
         data.setBrowserInfo(getRemoteId(request));
-        return captchaService.get(data);
+        ResponseModel model = captchaService.get(data);
+        if(!model.isSuccess()){
+            throw BusinessException.build(model.getRepMsg());
+        }
+        return model.getRepData();
     }
 
     @RequestMapping("/check")
-    public ResponseModel check(@RequestBody CaptchaVO data, HttpServletRequest request) {
+    public Object check(@RequestBody CaptchaVO data, HttpServletRequest request) {
         data.setBrowserInfo(getRemoteId(request));
-        return captchaService.check(data);
+        ResponseModel model = captchaService.check(data);
+        if(!model.isSuccess()){
+            throw BusinessException.build(model.getRepMsg());
+        }
+        return model.getRepData();
     }
 
     //@PostMapping("/verify")
-    public ResponseModel verify(@RequestBody CaptchaVO data, HttpServletRequest request) {
-        return captchaService.verification(data);
+    public Object verify(@RequestBody CaptchaVO data, HttpServletRequest request) {
+        ResponseModel model = captchaService.verification(data);
+        if(!model.isSuccess()){
+            throw BusinessException.build(model.getRepMsg());
+        }
+        return model.getRepData();
     }
 
     public static final String getRemoteId(HttpServletRequest request) {
