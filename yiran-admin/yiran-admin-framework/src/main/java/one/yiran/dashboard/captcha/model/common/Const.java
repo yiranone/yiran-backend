@@ -1,8 +1,5 @@
 package one.yiran.dashboard.captcha.model.common;
 
-/***
- * @author wongbin
- */
 public interface Const {
 
     /**

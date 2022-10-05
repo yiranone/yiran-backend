@@ -1,6 +1,9 @@
 package one.yiran.dashboard.captcha.service.impl;
 
 
+import com.alibaba.fastjson.JSON;
+import one.yiran.common.util.AESUtil;
+import one.yiran.common.util.RandomUtil;
 import one.yiran.dashboard.cache.DashboardCacheService;
 import one.yiran.dashboard.captcha.model.common.CaptchaTypeEnum;
 import one.yiran.dashboard.captcha.model.common.Const;
@@ -8,10 +11,7 @@ import one.yiran.dashboard.captcha.model.common.RepCodeEnum;
 import one.yiran.dashboard.captcha.model.common.ResponseModel;
 import one.yiran.dashboard.captcha.model.vo.CaptchaVO;
 import one.yiran.dashboard.captcha.model.vo.PointVO;
-import one.yiran.dashboard.captcha.util.AESUtil;
 import one.yiran.dashboard.captcha.util.ImageUtils;
-import one.yiran.dashboard.captcha.util.JsonUtil;
-import one.yiran.dashboard.captcha.util.RandomUtils;
 import one.yiran.dashboard.common.ip.LoadFileUtil;
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+
+import static one.yiran.common.util.RandomUtil.getRandomInt;
 
 public class ClickWordCaptchaServiceImpl extends AbstractCaptchaService {
 
@@ -120,10 +122,10 @@ public class ClickWordCaptchaServiceImpl extends AbstractCaptchaService {
          * ]
          */
         try {
-            point = JsonUtil.parseArray(s, PointVO.class);
+            point = JSON.parseArray(s, PointVO.class);
             //aes解密
             pointJson = decrypt(captchaVO.getPointJson(), point.get(0).getSecretKey());
-            point1 = JsonUtil.parseArray(pointJson, PointVO.class);
+            point1 = JSON.parseArray(pointJson, PointVO.class);
         } catch (Exception e) {
             logger.error("验证码坐标解析失败", e);
             afterValidateFail(captchaVO);
@@ -142,7 +144,7 @@ public class ClickWordCaptchaServiceImpl extends AbstractCaptchaService {
         String secretKey = point.get(0).getSecretKey();
         String value = null;
         try {
-            value = AESUtil.aesEncrypt(captchaVO.getToken().concat("---").concat(pointJson), secretKey);
+            value = AESUtil.encrypt(captchaVO.getToken().concat("---").concat(pointJson), secretKey);
         } catch (Exception e) {
             logger.error("AES加密失败", e);
             afterValidateFail(captchaVO);
@@ -218,11 +220,11 @@ public class ClickWordCaptchaServiceImpl extends AbstractCaptchaService {
 
         int wordCount = getWordTotalCount();
         //定义随机1到arr.length某一个字不参与校验
-        int num = RandomUtils.getRandomInt(1, wordCount);
+        int num = RandomUtil.getRandomInt(1, wordCount);
         Set<String> currentWords = getRandomWords(wordCount);
         String secretKey = null;
         if (captchaAesStatus) {
-            secretKey = AESUtil.getKey();
+            secretKey = RandomUtil.getRandomString(16);
         }
         /*for (int i = 0; i < wordCount; i++) {
             String word;
@@ -237,14 +239,14 @@ public class ClickWordCaptchaServiceImpl extends AbstractCaptchaService {
             point.setSecretKey(secretKey);
             //随机字体颜色
             if (isFontColorRandom()) {
-                backgroundGraphics.setColor(new Color(RandomUtils.getRandomInt(1, 255),
-                        RandomUtils.getRandomInt(1, 255), RandomUtils.getRandomInt(1, 255)));
+                backgroundGraphics.setColor(new Color(RandomUtil.getRandomInt(1, 255),
+                        RandomUtil.getRandomInt(1, 255), RandomUtil.getRandomInt(1, 255)));
             } else {
                 backgroundGraphics.setColor(Color.BLACK);
             }
             //设置角度
             AffineTransform affineTransform = new AffineTransform();
-            affineTransform.rotate(Math.toRadians(RandomUtils.getRandomInt(-45, 45)), 0, 0);
+            affineTransform.rotate(Math.toRadians(RandomUtil.getRandomInt(-45, 45)), 0, 0);
             Font rotatedFont = clickWordFont.deriveFont(affineTransform);
             backgroundGraphics.setFont(rotatedFont);
             backgroundGraphics.drawString(word, point.getX(), point.getY());
@@ -269,12 +271,12 @@ public class ClickWordCaptchaServiceImpl extends AbstractCaptchaService {
         //pointList信息不传到前端，只做后端check校验
         //dataVO.setPointList(pointList);
         dataVO.setWordList(wordList);
-        dataVO.setToken(RandomUtils.getUUID());
+        dataVO.setToken(RandomUtil.getUUID());
         dataVO.setSecretKey(secretKey);
         //将坐标信息存入redis中
         String codeKey = String.format(REDIS_CAPTCHA_KEY, dataVO.getToken());
         DashboardCacheService cacheService = DashboardCacheService.getCacheService();
-        cacheService.set(codeKey, JsonUtil.toJSONString(pointList), EXPIRESIN_SECONDS);
+        cacheService.set(codeKey, JSON.toJSONString(pointList), EXPIRESIN_SECONDS);
 //        base64StrToImage(getImageToBase64Str(backgroundImage), "D:\\点击.png");
         return dataVO;
     }
@@ -283,7 +285,7 @@ public class ClickWordCaptchaServiceImpl extends AbstractCaptchaService {
         Set<String> words = new HashSet<>();
         int size = HAN_ZI.length();
         for (; ; ) {
-            String t = HAN_ZI.charAt(RandomUtils.getRandomInt(size)) + "";
+            String t = HAN_ZI.charAt(RandomUtil.getRandomInt(size)) + "";
             words.add(t);
             if (words.size() >= wordCount) {
                 break;
@@ -305,15 +307,15 @@ public class ClickWordCaptchaServiceImpl extends AbstractCaptchaService {
         int avgWidth = imageWidth / (wordCount + 1);
         int x, y;
         if (avgWidth < HAN_ZI_SIZE_HALF) {
-            x = RandomUtils.getRandomInt(1 + HAN_ZI_SIZE_HALF, imageWidth);
+            x = RandomUtil.getRandomInt(1 + HAN_ZI_SIZE_HALF, imageWidth);
         } else {
             if (wordSortIndex == 0) {
-                x = RandomUtils.getRandomInt(1 + HAN_ZI_SIZE_HALF, avgWidth * (wordSortIndex + 1) - HAN_ZI_SIZE_HALF);
+                x = RandomUtil.getRandomInt(1 + HAN_ZI_SIZE_HALF, avgWidth * (wordSortIndex + 1) - HAN_ZI_SIZE_HALF);
             } else {
-                x = RandomUtils.getRandomInt(avgWidth * wordSortIndex + HAN_ZI_SIZE_HALF, avgWidth * (wordSortIndex + 1) - HAN_ZI_SIZE_HALF);
+                x = RandomUtil.getRandomInt(avgWidth * wordSortIndex + HAN_ZI_SIZE_HALF, avgWidth * (wordSortIndex + 1) - HAN_ZI_SIZE_HALF);
             }
         }
-        y = RandomUtils.getRandomInt(HAN_ZI_SIZE, imageHeight - HAN_ZI_SIZE);
+        y = RandomUtil.getRandomInt(HAN_ZI_SIZE, imageHeight - HAN_ZI_SIZE);
         return new PointVO(x, y, null);
     }
 

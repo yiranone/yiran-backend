@@ -1,5 +1,8 @@
 package one.yiran.dashboard.captcha.util;
 
+import com.alibaba.fastjson.JSON;
+import one.yiran.common.util.Base64Util;
+import one.yiran.common.util.RandomUtil;
 import one.yiran.dashboard.captcha.model.common.CaptchaBaseMapEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -30,23 +33,24 @@ public class ImageUtils {
 
     public static void cacheImage(String captchaOriginalPathJigsaw, String captchaOriginalPathClick) {
         //滑动拼图
-        if (StringUtils.isBlank(captchaOriginalPathJigsaw)) {
-            originalCacheMap.putAll(getResourcesImagesFile("defaultImages/jigsaw/original"));
-            slidingBlockCacheMap.putAll(getResourcesImagesFile("defaultImages/jigsaw/slidingBlock"));
-        } else {
-            originalCacheMap.putAll(getImagesFile(captchaOriginalPathJigsaw + File.separator + "original"));
-            slidingBlockCacheMap.putAll(getImagesFile(captchaOriginalPathJigsaw + File.separator + "slidingBlock"));
-        }
+//        if (StringUtils.isBlank(captchaOriginalPathJigsaw)) {
+            originalCacheMap.putAll(getResourcesImagesFile("images/captcha/jigsaw/original",8));
+            slidingBlockCacheMap.putAll(getResourcesImagesFile("images/captcha/jigsaw/slidingBlock",6));
+//        }
+//        else {
+//            originalCacheMap.putAll(getImagesFile(captchaOriginalPathJigsaw + File.separator + "original"));
+//            slidingBlockCacheMap.putAll(getResourcesImagesFile(captchaOriginalPathJigsaw + File.separator + "slidingBlock"));
+//        }
         //点选文字
-        if (StringUtils.isBlank(captchaOriginalPathClick)) {
-            picClickCacheMap.putAll(getResourcesImagesFile("defaultImages/pic-click"));
-        } else {
-            picClickCacheMap.putAll(getImagesFile(captchaOriginalPathClick));
-        }
+//        if (StringUtils.isBlank(captchaOriginalPathClick)) {
+            picClickCacheMap.putAll(getResourcesImagesFile("images/captcha/pic-click",8));
+//        } else {
+//            picClickCacheMap.putAll(getImagesFile(captchaOriginalPathClick));
+//        }
         fileNameMap.put(CaptchaBaseMapEnum.ORIGINAL.getCodeValue(), originalCacheMap.keySet().toArray(new String[0]));
         fileNameMap.put(CaptchaBaseMapEnum.SLIDING_BLOCK.getCodeValue(), slidingBlockCacheMap.keySet().toArray(new String[0]));
         fileNameMap.put(CaptchaBaseMapEnum.PIC_CLICK.getCodeValue(), picClickCacheMap.keySet().toArray(new String[0]));
-        logger.info("初始化底图:{}", JsonUtil.toJSONString(fileNameMap));
+        logger.info("初始化底图:{}", JSON.toJSONString(fileNameMap));
     }
 
     public static void cacheBootImage(Map<String, String> originalMap, Map<String, String> slidingBlockMap, Map<String, String> picClickMap) {
@@ -56,16 +60,15 @@ public class ImageUtils {
         fileNameMap.put(CaptchaBaseMapEnum.ORIGINAL.getCodeValue(), originalCacheMap.keySet().toArray(new String[0]));
         fileNameMap.put(CaptchaBaseMapEnum.SLIDING_BLOCK.getCodeValue(), slidingBlockCacheMap.keySet().toArray(new String[0]));
         fileNameMap.put(CaptchaBaseMapEnum.PIC_CLICK.getCodeValue(), picClickCacheMap.keySet().toArray(new String[0]));
-        logger.info("自定义resource底图:{}", JsonUtil.toJSONString(fileNameMap));
+        logger.info("自定义resource底图:{}", JSON.toJSONString(fileNameMap));
     }
-
 
     public static BufferedImage getOriginal() {
         String[] strings = fileNameMap.get(CaptchaBaseMapEnum.ORIGINAL.getCodeValue());
         if (null == strings || strings.length == 0) {
             return null;
         }
-        Integer randomInt = RandomUtils.getRandomInt(0, strings.length);
+        Integer randomInt = RandomUtil.getRandomInt(0, strings.length);
         String s = originalCacheMap.get(strings[randomInt]);
         return getBase64StrToImage(s);
     }
@@ -75,7 +78,7 @@ public class ImageUtils {
         if (null == strings || strings.length == 0) {
             return null;
         }
-        Integer randomInt = RandomUtils.getRandomInt(0, strings.length);
+        Integer randomInt = RandomUtil.getRandomInt(0, strings.length);
         String s = slidingBlockCacheMap.get(strings[randomInt]);
         return s;
     }
@@ -85,7 +88,7 @@ public class ImageUtils {
         if (null == strings || strings.length == 0) {
             return null;
         }
-        Integer randomInt = RandomUtils.getRandomInt(0, strings.length);
+        Integer randomInt = RandomUtil.getRandomInt(0, strings.length);
         String s = picClickCacheMap.get(strings[randomInt]);
         return getBase64StrToImage(s);
     }
@@ -129,11 +132,11 @@ public class ImageUtils {
     }
 
 
-    private static Map<String, String> getResourcesImagesFile(String path) {
+    private static Map<String, String> getResourcesImagesFile(String path,int count) {
         //默认提供六张底图
         Map<String, String> imgMap = new HashMap<>();
         ClassLoader classLoader = ImageUtils.class.getClassLoader();
-        for (int i = 1; i <= 6; i++) {
+        for (int i = 1; i <= count; i++) {
             InputStream resourceAsStream = classLoader.getResourceAsStream(path.concat("/").concat(String.valueOf(i).concat(".png")));
             byte[] bytes = new byte[0];
             try {
@@ -141,7 +144,7 @@ public class ImageUtils {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            String string = Base64Utils.encodeToString(bytes);
+            String string = Base64Util.encodeToString(bytes);
             String filename = String.valueOf(i).concat(".png");
             imgMap.put(filename, string);
         }
@@ -159,7 +162,7 @@ public class ImageUtils {
             try {
                 FileInputStream fileInputStream = new FileInputStream(item);
                 byte[] bytes = FileCopyUtils.copyToByteArray(fileInputStream);
-                String string = Base64Utils.encodeToString(bytes);
+                String string = Base64Util.encodeToString(bytes);
                 imgMap.put(item.getName(), string);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();

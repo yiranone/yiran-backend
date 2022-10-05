@@ -8,11 +8,6 @@ package one.yiran.dashboard.captcha.model.common;
 
 import java.text.MessageFormat;
 
-/**
- * 返回应答码
- * @author
- *
- */
 public enum RepCodeEnum {
 
     /** 0001 - 0099 网关应答码 */

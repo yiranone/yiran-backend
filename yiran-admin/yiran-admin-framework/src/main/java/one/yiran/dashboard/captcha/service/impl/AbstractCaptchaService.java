@@ -1,14 +1,15 @@
 package one.yiran.dashboard.captcha.service.impl;
 
+import one.yiran.common.util.AESUtil;
+import one.yiran.common.util.ImageUtil;
+import one.yiran.common.util.MD5Util;
 import one.yiran.dashboard.cache.DashboardCacheService;
 import one.yiran.dashboard.captcha.model.common.Const;
 import one.yiran.dashboard.captcha.model.common.RepCodeEnum;
 import one.yiran.dashboard.captcha.model.common.ResponseModel;
 import one.yiran.dashboard.captcha.model.vo.CaptchaVO;
 import one.yiran.dashboard.captcha.service.CaptchaService;
-import one.yiran.dashboard.captcha.util.AESUtil;
 import one.yiran.dashboard.captcha.util.ImageUtils;
-import one.yiran.dashboard.captcha.util.MD5Util;
 import one.yiran.dashboard.common.ip.LoadFileUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -44,7 +45,7 @@ public abstract class AbstractCaptchaService implements CaptchaService {
 
     protected static Long EXPIRESIN_THREE = 3 * 60L;
 
-    protected static String waterMark = "我的水印";
+    protected static String waterMark = "";
 
     protected static String waterMarkFontStr = "WenQuanZhengHei.ttf";
 
@@ -164,7 +165,7 @@ public abstract class AbstractCaptchaService implements CaptchaService {
 	protected String getValidateClientId(CaptchaVO req){
     	// 以服务端获取的客户端标识 做识别标志
 		if(StringUtils.isNotEmpty(req.getBrowserInfo())){
-			return MD5Util.md5(req.getBrowserInfo());
+			return MD5Util.encode(req.getBrowserInfo());
 		}
 		// 以客户端Ui组件id做识别标志
 		if(StringUtils.isNotEmpty(req.getClientUid())){
@@ -206,36 +207,6 @@ public abstract class AbstractCaptchaService implements CaptchaService {
         }
     }
 
-    public static boolean base64StrToImage(String imgStr, String path) {
-        if (imgStr == null) {
-            return false;
-        }
-
-        Base64.Decoder decoder = Base64.getDecoder();
-        try {
-            // 解密
-            byte[] b = decoder.decode(imgStr);
-            // 处理数据
-            for (int i = 0; i < b.length; ++i) {
-                if (b[i] < 0) {
-                    b[i] += 256;
-                }
-            }
-            //文件夹不存在则自动创建
-            File tempFile = new File(path);
-            if (!tempFile.getParentFile().exists()) {
-                tempFile.getParentFile().mkdirs();
-            }
-            OutputStream out = new FileOutputStream(tempFile);
-            out.write(b);
-            out.flush();
-            out.close();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
     /**
      * 解密前端坐标aes加密
      *
@@ -244,7 +215,7 @@ public abstract class AbstractCaptchaService implements CaptchaService {
      * @throws Exception
      */
     public static String decrypt(String point, String key) throws Exception {
-        return AESUtil.aesDecrypt(point, key);
+        return AESUtil.decrypt(point, key);
     }
 
     protected static int getEnOrChLength(String s) {

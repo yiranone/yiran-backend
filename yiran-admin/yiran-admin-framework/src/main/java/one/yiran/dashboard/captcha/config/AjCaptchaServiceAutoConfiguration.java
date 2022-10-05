@@ -62,36 +62,36 @@ public class AjCaptchaServiceAutoConfiguration {
         config.put(Const.CAPTCHA_FONT_STYLE, prop.getFontStyle() + "");
         config.put(Const.CAPTCHA_WORD_COUNT, prop.getClickWordCount() + "");
 
-        if ((StringUtils.isNotBlank(prop.getJigsaw()) && prop.getJigsaw().startsWith("classpath:"))
-                || (StringUtils.isNotBlank(prop.getPicClick()) && prop.getPicClick().startsWith("classpath:"))) {
-            //自定义resources目录下初始化底图
-            config.put(Const.CAPTCHA_INIT_ORIGINAL, "true");
-            initializeBaseMap(prop.getJigsaw(), prop.getPicClick());
-        }
+//        if ((StringUtils.isNotBlank(prop.getJigsaw()) && prop.getJigsaw().startsWith("classpath:"))
+//                || (StringUtils.isNotBlank(prop.getPicClick()) && prop.getPicClick().startsWith("classpath:"))) {
+//            //自定义resources目录下初始化底图
+//            config.put(Const.CAPTCHA_INIT_ORIGINAL, "true");
+//            initializeBaseMap(prop.getJigsaw(), prop.getPicClick());
+//        }
         CaptchaService s = CaptchaServiceFactory.getInstance(config);
         return s;
     }
 
-    private static void initializeBaseMap(String jigsaw, String picClick) {
-        ImageUtils.cacheBootImage(getResourcesImagesFile(jigsaw + "/original/*.png"),
-                getResourcesImagesFile(jigsaw + "/slidingBlock/*.png"),
-                getResourcesImagesFile(picClick + "/*.png"));
-    }
+//    private static void initializeBaseMap(String jigsaw, String picClick) {
+//        ImageUtils.cacheBootImage(getResourcesImagesFile(jigsaw + "/original/*.png"),
+//                getResourcesImagesFile(jigsaw + "/slidingBlock/*.png"),
+//                getResourcesImagesFile(picClick + "/*.png"));
+//    }
 
-    public static Map<String, String> getResourcesImagesFile(String path) {
-        Map<String, String> imgMap = new HashMap<>();
-        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        try {
-            Resource[] resources = resolver.getResources(path);
-            for (Resource resource : resources) {
-                byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
-                String string = Base64Utils.encodeToString(bytes);
-                String filename = resource.getFilename();
-                imgMap.put(filename, string);
-            }
-        } catch (Exception e) {
-            logger.error("加载资源失败",e);
-        }
-        return imgMap;
-    }
+//    public static Map<String, String> getResourcesImagesFile(String path) {
+//        Map<String, String> imgMap = new HashMap<>();
+//        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+//        try {
+//            Resource[] resources = resolver.getResources(path);
+//            for (Resource resource : resources) {
+//                byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
+//                String string = Base64Utils.encodeToString(bytes);
+//                String filename = resource.getFilename();
+//                imgMap.put(filename, string);
+//            }
+//        } catch (Exception e) {
+//            logger.error("加载资源失败",e);
+//        }
+//        return imgMap;
+//    }
 }
