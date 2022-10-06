@@ -35,7 +35,7 @@ public class AjCaptchaServiceAutoConfiguration {
             return null;
         }
         Properties config = new Properties();
-        config.put(Const.CAPTCHA_CACHETYPE, prop.getCacheType().name());
+//        config.put(Const.CAPTCHA_CACHETYPE, prop.getCacheType().name());
         config.put(Const.CAPTCHA_WATER_MARK, prop.getWaterMark());
         config.put(Const.CAPTCHA_FONT_TYPE, prop.getFontType());
 //        config.put(Const.CAPTCHA_TYPE, prop.getType().getCodeValue());

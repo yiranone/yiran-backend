@@ -68,10 +68,6 @@ public class AjCaptchaProperties {
     private String timingClear = "180";
 
     /**
-     * 缓存类型redis/local/....
-     */
-    private StorageType cacheType = StorageType.local;
-    /**
      * 历史数据清除开关
      */
     private boolean historyDataClearEnable = false;
@@ -279,14 +275,6 @@ public class AjCaptchaProperties {
         this.aesStatus = aesStatus;
     }
 
-    public StorageType getCacheType() {
-        return cacheType;
-    }
-
-    public void setCacheType(StorageType cacheType) {
-        this.cacheType = cacheType;
-    }
-
     public String getInterferenceOptions() {
         return interferenceOptions;
     }
@@ -325,7 +313,6 @@ public class AjCaptchaProperties {
                 ", interferenceOptions='" + interferenceOptions + '\'' +
                 ", cacheNumber='" + cacheNumber + '\'' +
                 ", timingClear='" + timingClear + '\'' +
-                ", cacheType=" + cacheType +
                 ", reqFrequencyLimitEnable=" + reqFrequencyLimitEnable +
                 ", reqGetLockLimit=" + reqGetLockLimit +
                 ", reqGetLockSeconds=" + reqGetLockSeconds +
