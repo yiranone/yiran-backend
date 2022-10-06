@@ -4,6 +4,7 @@ import com.querydsl.core.types.Predicate;
 import one.yiran.common.domain.PageModel;
 import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.common.annotation.AjaxWrapper;
+import one.yiran.dashboard.common.annotation.ApiObject;
 import one.yiran.dashboard.common.annotation.ApiParam;
 import one.yiran.dashboard.common.annotation.Log;
 import one.yiran.dashboard.common.annotation.RequirePermission;
@@ -26,6 +27,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Controller
+@AjaxWrapper
 @RequestMapping("/system/channel")
 public class ChannelAdminController {
 
@@ -34,7 +36,6 @@ public class ChannelAdminController {
 
     @RequirePermission(PermissionConstants.Channel.VIEW)
     @PostMapping("/list")
-    @AjaxWrapper
     public PageModel list(@ApiParam String searchChannelName, @ApiParam String searchChannelCode,
                           @ApiParam String searchStatus,
                           @ApiParam LocalDate searchExpireDate1,@ApiParam LocalDate searchExpireDate2,
@@ -56,7 +57,6 @@ public class ChannelAdminController {
     @Log(title = PermissionConstants.Channel.NAME, businessType = BusinessType.EXPORT)
     @RequirePermission(PermissionConstants.Channel.EXPORT)
     @PostMapping("/export")
-    @AjaxWrapper
     public String export(SysChannel SysChannel, HttpServletRequest request) {
         PageModel<SysChannel> list = sysChannelService.selectPage(PageRequestUtil.fromRequestIgnorePageSize(request), SysChannel);
         ExcelUtil<SysChannel> util = new ExcelUtil<SysChannel>(SysChannel.class);
@@ -66,8 +66,7 @@ public class ChannelAdminController {
     @RequirePermission(PermissionConstants.Channel.ADD)
     @Log(title = PermissionConstants.Channel.NAME, businessType = BusinessType.ADD)
     @PostMapping("/add")
-    @AjaxWrapper
-    public SysChannel addSave(@Validated @RequestBody SysChannel channel) {
+    public SysChannel addSave(@ApiObject(validate = true) SysChannel channel) {
         if (!sysChannelService.checkChannelKeyUnique(channel)) {
             throw BusinessException.build("新增渠道'" + channel.getChannelName() + "'失败，渠道代码已存在");
         }
@@ -80,8 +79,7 @@ public class ChannelAdminController {
     @RequirePermission(PermissionConstants.Channel.EDIT)
     @Log(title = PermissionConstants.Channel.NAME, businessType = BusinessType.EDIT)
     @PostMapping("/edit")
-    @AjaxWrapper
-    public SysChannel editSave(@Validated @RequestBody SysChannel channel) {
+    public SysChannel editSave(@ApiObject(validate = true) SysChannel channel) {
         if (!sysChannelService.checkChannelKeyUnique(channel)) {
             throw BusinessException.build("修改参数'" + channel.getChannelCode() + "'失败，渠道代码已存在");
         }
@@ -99,14 +97,12 @@ public class ChannelAdminController {
     @RequirePermission(PermissionConstants.Channel.DELETE)
     @Log(title = PermissionConstants.Channel.NAME, businessType = BusinessType.DELETE)
     @PostMapping("/remove")
-    @AjaxWrapper
-    public long remove(@ApiParam(required = true) Long[] ids) {
-        return sysChannelService.deleteByPIds(ids);
+    public long remove(@ApiParam(required = true) Long[] channelIds) {
+        return sysChannelService.deleteByPIds(channelIds);
     }
 
     @PostMapping("/checkChannelKeyUnique")
-    @ResponseBody
-    public boolean checkChannelKeyUnique(@RequestBody SysChannel SysChannel) {
+    public boolean checkChannelKeyUnique(@ApiObject SysChannel SysChannel) {
         return sysChannelService.checkChannelKeyUnique(SysChannel);
     }
 }
