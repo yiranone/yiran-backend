@@ -35,6 +35,12 @@ public class ChannelAdminController {
     private SysChannelService sysChannelService;
 
     @RequirePermission(PermissionConstants.Channel.VIEW)
+    @PostMapping("/detail")
+    public SysChannel detail(@ApiParam(required = true) Long channelId) {
+        return sysChannelService.selectByPId(channelId);
+    }
+
+    @RequirePermission(PermissionConstants.Channel.VIEW)
     @PostMapping("/list")
     public PageModel list(@ApiParam String searchChannelName, @ApiParam String searchChannelCode,
                           @ApiParam String searchStatus,
