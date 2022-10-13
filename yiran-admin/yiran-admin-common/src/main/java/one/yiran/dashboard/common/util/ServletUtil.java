@@ -90,15 +90,20 @@ public class ServletUtil {
      * @param request
      */
     public static boolean isAjaxRequest(HttpServletRequest request) {
+        String contentType = request.getHeader("Content-Type");
+        if (contentType != null && contentType.indexOf("application/json") != -1) {
+            return true;
+        }
+        if (contentType != null && contentType.indexOf("boundary") != -1) {
+            return false;
+        }
+
         String accept = request.getHeader("accept");
         if (accept != null && accept.indexOf("application/json") != -1) {
             return true;
         }
 
-        String contentType = request.getHeader("Content-Type");
-        if (contentType != null && contentType.indexOf("application/json") != -1) {
-            return true;
-        }
+
 
         String xRequestedWith = request.getHeader("X-Requested-With");
         if (xRequestedWith != null && xRequestedWith.indexOf("XMLHttpRequest") != -1) {
@@ -109,16 +114,12 @@ public class ServletUtil {
         if (StringUtils.lastIndexOfIgnoreCase(uri, ".json") > 0) {
             return true;
         }
-        if (StringUtils.lastIndexOfIgnoreCase(uri, ".xml") > 0) {
-            return true;
-        }
+
         String ajax = request.getParameter("__ajax");
         if (StringUtils.lastIndexOfIgnoreCase(ajax, "json") > 0) {
             return true;
         }
-        if (StringUtils.lastIndexOfIgnoreCase(ajax, "xml") > 0) {
-            return true;
-        }
+
         return false;
     }
 
