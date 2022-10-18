@@ -1,14 +1,19 @@
 package one.yiran.dashboard.cache;
 
 import lombok.AllArgsConstructor;
+import one.yiran.common.thread.NamedThreadFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 @Service
 public class LocalCacheService implements DashboardCacheService{
+
+    private static final ScheduledExecutorService blockHeightExecutor = new ScheduledThreadPoolExecutor(2, new NamedThreadFactory("BscHeightProcess", true));
 
     @Override
     public String set(String key, String value) {
@@ -27,7 +32,6 @@ public class LocalCacheService implements DashboardCacheService{
         if (cacheMap.containsKey(key)) {
             delete(key);
         } else if (cacheList.size() >= maxCapacity) {
-            cleanUpExpired();
             if (cacheList.size() >= maxCapacity) {
                 synchronized (this) {
                     cacheMap.remove(cacheList.removeFirst());
@@ -167,6 +171,7 @@ public class LocalCacheService implements DashboardCacheService{
             this.defaultTtlTime = defaultTtlTime;
         }
         cacheMap = new ConcurrentHashMap<>();
+
         Thread thread = new Thread(this::cleanUpExpired, "cache_clear_thread");
         thread.setDaemon(true);
         thread.start();
