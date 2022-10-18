@@ -2,6 +2,8 @@ package one.yiran.dashboard.cache;
 
 import lombok.AllArgsConstructor;
 import one.yiran.common.thread.NamedThreadFactory;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
@@ -9,11 +11,17 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class LocalCacheService implements DashboardCacheService{
 
-    private static final ScheduledExecutorService blockHeightExecutor = new ScheduledThreadPoolExecutor(2, new NamedThreadFactory("BscHeightProcess", true));
+    private static final ScheduledExecutorService localCacheCleanService = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("local-cache-clean", true));
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void start() throws Exception {
+        localCacheCleanService.scheduleAtFixedRate(this::cleanUpExpired,1,1, TimeUnit.MINUTES);
+    }
 
     @Override
     public String set(String key, String value) {
@@ -124,11 +132,6 @@ public class LocalCacheService implements DashboardCacheService{
     private static final int DEFAULT_MAX_CAPACITY = 1024 * 100;
 
     /**
-     * 定期全面清理过期数据的间隔时间: 1分钟
-     */
-    private static final int ONE_MINUTE = 60 * 1000;
-
-    /**
      * 最大容量
      */
     private int maxCapacity;
@@ -171,33 +174,21 @@ public class LocalCacheService implements DashboardCacheService{
             this.defaultTtlTime = defaultTtlTime;
         }
         cacheMap = new ConcurrentHashMap<>();
-
-        Thread thread = new Thread(this::cleanUpExpired, "cache_clear_thread");
-        thread.setDaemon(true);
-        thread.start();
     }
 
     /**
      * 定期全面清理过期数据.
      */
     private void cleanUpExpired() {
-        long last = System.currentTimeMillis()/1000;
-        while (true) {
-            long now = System.currentTimeMillis()/1000;
-            while (now - ONE_MINUTE < last) {
-                Thread.yield();
-                now = System.currentTimeMillis()/1000;
-            }
-            for (Map.Entry<String, CacheValue<String>> entry : cacheMap.entrySet()) {
-                CacheValue<String> value = entry.getValue();
-                if (value.ttlTime <= now) {
-                    synchronized (this) {
-                        cacheMap.remove(entry.getKey());
-                        cacheList.remove(entry.getKey());
-                    }
+        long now = System.currentTimeMillis()/1000;
+        for (Map.Entry<String, CacheValue<String>> entry : cacheMap.entrySet()) {
+            CacheValue<String> value = entry.getValue();
+            if (value.ttlTime <= now) {
+                synchronized (this) {
+                    cacheMap.remove(entry.getKey());
+                    cacheList.remove(entry.getKey());
                 }
             }
-            last = now;
         }
     }
 
