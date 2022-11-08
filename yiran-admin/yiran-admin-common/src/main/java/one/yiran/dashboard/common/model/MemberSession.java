@@ -11,6 +11,7 @@ public class MemberSession {
 
     private String phone;
     private String name;
+    private String nickName;
     private String avatar;
     private String token;
     private Boolean isLocked;

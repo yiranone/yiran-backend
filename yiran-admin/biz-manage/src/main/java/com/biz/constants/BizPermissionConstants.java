@@ -2,7 +2,7 @@ package com.biz.constants;
 
 public class BizPermissionConstants {
 
-    public static final String EXT_PREFIX = "ext";
+    public static final String EXT_PREFIX = "biz";
 
     // 业务模块权限
     public static class Member {

@@ -45,6 +45,7 @@ public interface CrudBaseService<K,T> {
       * @throws BusinessException
       */
      long deleteByPId(K pId) throws BusinessException;
+     long delete(Predicate predicate) throws BusinessException;
      long deleteByPIds(K[] pIds) throws BusinessException;
      long deleteAll();
 
@@ -59,6 +60,7 @@ public interface CrudBaseService<K,T> {
       * @return
       */
      long remove(K pId);
+     long remove(Predicate predicate);
      long remove(List<K> pIds);
      long removeAll();
      long removeByPIds(K[] pIds) throws BusinessException;

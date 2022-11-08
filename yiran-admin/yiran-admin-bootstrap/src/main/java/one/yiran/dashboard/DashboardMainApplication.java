@@ -19,8 +19,6 @@ import javax.annotation.PostConstruct;
 //@EnableCaching
 @EnableScheduling
 @ComponentScan(value = {"one.yiran","com.biz"})
-@EntityScan({"one.yiran","com.biz"})
-@EnableJpaRepositories(value = {"one.yiran","com.biz"})
 //@EnableConfigurationProperties(ApplicationProperties.class)
 @Slf4j
 public class DashboardMainApplication {

@@ -44,25 +44,33 @@ public class PredicateBuilder {
 
         public Builder addGreaterOrEqualIfNotBlank(Path path, Object value) {
             if (value != null)
-                boxes.add(new PredicateBox(path, Ops.GOE, value, false));
+                doAddOPredict(path, value, Ops.GOE);
             return this;
         }
 
         public Builder addLittlerOrEqualIfNotBlank(Path path, Object value) {
             if (value != null)
-                boxes.add(new PredicateBox(path, Ops.LOE, value, false));
+                doAddOPredict(path, value, Ops.LOE);
             return this;
         }
 
         public Builder addEqualIfNotBlank(Path path, Object value) {
-            if (value != null)
-                boxes.add(new PredicateBox(path, Ops.EQ, value, false));
+            if(value instanceof String ) {
+                if(StringUtils.isNotBlank((String)value))
+                    doAddOPredict(path, value, Ops.EQ);
+            } else if (value != null) {
+                doAddOPredict(path, value, Ops.EQ);
+            }
             return this;
+        }
+
+        private void doAddOPredict(Path path, Object value, Ops eq) {
+            boxes.add(new PredicateBox(path, eq, value, false));
         }
 
         public Builder addLikeIfNotBlank(StringPath path, String value) {
             if (StringUtils.isNotBlank(value))
-                boxes.add(new PredicateBox(path, Ops.LIKE, "%" + value + "%", false));
+                doAddOPredict(path, "%" + value + "%", Ops.LIKE);
             return this;
         }
 
@@ -126,18 +134,18 @@ public class PredicateBuilder {
                                     }
                                 }
                             } else {
-                                boxes.add(new PredicateBox(pathValue, Ops.EQ, value, false));
+                                doAddOPredict(pathValue, value, Ops.EQ);
                             }
                         } else if (op.equals(Search.Op.REGEX)) {
-                            boxes.add(new PredicateBox(pathValue, Ops.LIKE, "%" + value + "%", false));
+                            doAddOPredict(pathValue, "%" + value + "%", Ops.LIKE);
                         } else if (op.equals(Search.Op.IN)) {
-                            boxes.add(new PredicateBox(pathValue, Ops.IN, value, false));
+                            doAddOPredict(pathValue, value, Ops.IN);
                         } else if (op.equals(Search.Op.GT)) {
-                            boxes.add(new PredicateBox(pathValue, Ops.GT, value, false));
+                            doAddOPredict(pathValue, value, Ops.GT);
                         } else if (op.equals(Search.Op.GTE)) {
-                            boxes.add(new PredicateBox(pathValue, Ops.GOE, value, false));
+                            doAddOPredict(pathValue, value, Ops.GOE);
                         } else if (op.equals(Search.Op.LT)) {
-                            boxes.add(new PredicateBox(pathValue, Ops.LOE, value, false));
+                            doAddOPredict(pathValue, value, Ops.LOE);
                         }
                     }
                 }

@@ -55,6 +55,12 @@ public class QClassUtil {
     public static Path getFieldPath(Class qClazz,String fieldName){
         return getFieldPath(qClazz.getName(),fieldName);
     }
+    public static Path getFieldPathByClass(Class clazz,String fieldName){
+        String fullName = clazz.getName();
+        String entitySimpleName = fullName.substring(fullName.lastIndexOf(".") + 1);
+        String qFullName = fullName.substring(0,fullName.lastIndexOf(".")) + ".Q" + entitySimpleName;
+        return getFieldPath(qFullName,fieldName);
+    }
     public static Path searchFieldOrderPath(String fieldName, EntityPath... paths){
         if (paths != null) {
             for (EntityPath p : paths) {

@@ -117,7 +117,7 @@ public class PageRequestUtil {
                 throw BusinessException.build("参数请求异常，排序字段"+request.getOrderByColumn()+"不支持");
             }
             if(StringUtils.isNotBlank(request.getOrderDirection())){
-                if (request.getOrderDirection().equals("DESC")) {
+                if (request.getOrderDirection().equalsIgnoreCase("DESC")) {
                     query.orderBy(new OrderSpecifier(Order.DESC,orderPath));
                 } else {
                     query.orderBy(new OrderSpecifier(Order.ASC,orderPath));

@@ -102,8 +102,11 @@ dashboard:
     limit:
       count: 3
       time: 1
+    pattern:
+      login: ^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,20}$
+      asset: ^[0-9]{6}$
   captcha:
-    type: blockPuzzle # none blockPuzzle clickWord
+    type: none # none blockPuzzle clickWord
   filepath: ${BASE_DIR:/tmp}/muggle
   ali:
     oss:

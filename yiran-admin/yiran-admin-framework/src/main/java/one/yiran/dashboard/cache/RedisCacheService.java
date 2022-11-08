@@ -1,12 +1,14 @@
 package one.yiran.dashboard.cache;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.params.SetParams;
 
 @Service
+@ConditionalOnProperty(name = "dashboard.cache",havingValue = "redis")
 public class RedisCacheService implements DashboardCacheService{
 
     @Autowired
@@ -21,7 +23,11 @@ public class RedisCacheService implements DashboardCacheService{
     public String set(String key, String value, long secondsToExpire) {
         Jedis resource = pool.getResource();
         try {
-            return resource.set(key, value, SetParams.setParams().px(secondsToExpire*1000));
+            if(secondsToExpire < 0) {
+                return resource.set(key, value);
+            } else {
+                return resource.set(key, value, SetParams.setParams().px(secondsToExpire*1000));
+            }
         } finally {
             if (resource != null) {
                 resource.close();

@@ -19,7 +19,7 @@ public class UserCacheUtil {
     private static final String SESSION_PREFIX = ".user.{";
     private static final String SESSION_SUFFIX = "}.token";
 
-    private static final String SMS_PREFIX = ".sms.{";
+    private static final String SMS_PREFIX = ".sms_user.{";
     private static final String SMS_SUFFIX = "}.code";
 
     // 返回s

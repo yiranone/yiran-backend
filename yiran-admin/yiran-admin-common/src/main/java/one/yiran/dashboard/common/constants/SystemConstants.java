@@ -25,7 +25,7 @@ public class SystemConstants {
     public static final String MENU_IS_CACHE = "1";
     public static final String MENU_NOT_CACHE = "2";
 
-    public static final String STATUS_ENABLE = "0";
-    public static final String STATUS_DISABLE = "1";
+    public static final String STATUS_ENABLE = "1";
+    public static final String STATUS_DISABLE = "2";
 
 }

@@ -1,7 +1,9 @@
 package one.yiran.dashboard.cache;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import one.yiran.common.thread.NamedThreadFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -13,7 +15,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
+@ConditionalOnProperty(name = "dashboard.cache",havingValue = "local")
 public class LocalCacheService implements DashboardCacheService{
 
     private static final ScheduledExecutorService localCacheCleanService = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("local-cache-clean", true));
@@ -111,12 +115,14 @@ public class LocalCacheService implements DashboardCacheService{
     public String get(String key) {
         CacheValue<String> cacheValue = cacheMap.get(key);
         if (cacheValue != null) {
-            cacheList.remove(key);
-            if (cacheValue.ttlTime > System.currentTimeMillis()/1000) {
-                cacheList.addLast((String) key);
+            if (cacheValue.ttlTime == -1 || cacheValue.ttlTime > System.currentTimeMillis()/1000) {
+                cacheList.remove(key);
+                cacheList.addLast(key);
                 return cacheValue.value;
+            } else {
+                cacheList.remove(key);
+                cacheMap.remove(key);
             }
-            cacheMap.remove(key);
         }
         return null;
     }
@@ -183,8 +189,9 @@ public class LocalCacheService implements DashboardCacheService{
         long now = System.currentTimeMillis()/1000;
         for (Map.Entry<String, CacheValue<String>> entry : cacheMap.entrySet()) {
             CacheValue<String> value = entry.getValue();
-            if (value.ttlTime <= now) {
+            if (value.ttlTime != -1 && value.ttlTime <= now) {
                 synchronized (this) {
+                    log.info("缓存删除过期数据 {}",entry.getKey());
                     cacheMap.remove(entry.getKey());
                     cacheList.remove(entry.getKey());
                 }

@@ -4,6 +4,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -22,9 +23,9 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 @Configuration
-//@EnableJpaRepositories
-//@EnableJpaRepositories(basePackages = "one.yiran")
-//@EnableTransactionManagement
+@EntityScan(basePackages = {"one.yiran","com.biz"})
+@EnableJpaRepositories(value = {"one.yiran","com.biz"})
+@EnableTransactionManagement
 public class JPAConfiguration {
 
 //    @Autowired
@@ -47,7 +48,7 @@ public class JPAConfiguration {
 //
 //        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
 //        factory.setJpaVendorAdapter(vendorAdapter);
-//        factory.setPackagesToScan("one.yiran");
+//        factory.setPackagesToScan("one.yiran.dashboard.entity,com.biz");
 //        factory.setDataSource(dataSource);
 //        factory.afterPropertiesSet();
 //
@@ -62,6 +63,7 @@ public class JPAConfiguration {
 //    @Bean
 //    public PlatformTransactionManager transactionManager(DataSource dataSource) throws SQLException {
 //        JpaTransactionManager txManager = new JpaTransactionManager();
+//        txManager.setDataSource(dataSource);
 //        txManager.setEntityManagerFactory(entityManagerFactory(dataSource));
 //        return txManager;
 //    }

@@ -2,6 +2,9 @@ package one.yiran.db.common.service;
 
 import com.querydsl.core.types.*;
 import com.querydsl.core.types.dsl.EntityPathBase;
+import com.querydsl.core.types.dsl.NumberPath;
+import com.querydsl.core.types.dsl.SimpleExpression;
+import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -273,15 +276,27 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
 //        entityManager.remove(ent);
 //        deleteByPIds(new K[]{pId});
 //        return 1;
-
         Assert.notNull(pId,"");
         String fieldName = doGetPrimaryId();
-        Class filedType = doGetPrimaryType();
-        Query query = entityManager.createQuery(
-                "update " + ((Class) tClass).getName() + " set isDelete = true WHERE  " + fieldName + " = :p1 ");
-        query.setParameter("p1", pId);
-        int deletedCount = query.executeUpdate();
-        return deletedCount;
+        SimpleExpression numberKeyPath = getSimpleExpression(fieldName);
+        return delete(numberKeyPath.eq(pId));
+
+//        Assert.notNull(pId,"");
+//        String fieldName = doGetPrimaryId();
+//        Class filedType = doGetPrimaryType();
+//        Query query = entityManager.createQuery(
+//                "update " + ((Class) tClass).getName() + " set isDelete = true WHERE  " + fieldName + " = :p1 ");
+//        query.setParameter("p1", pId);
+//        int deletedCount = query.executeUpdate();
+//        return deletedCount;
+    }
+
+    @Override
+    public long delete(Predicate predicate) throws BusinessException {
+        Path isDeletePath = getDeletePath();
+        if(predicate == null)
+            throw BusinessException.build("predicate不能为空");
+        return queryFactory.update(entityPath()).set(isDeletePath,true).where(predicate).execute();
     }
 
     @Transactional
@@ -289,40 +304,48 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
     public long deleteByPIds(K[] ids) throws BusinessException {
         Assert.notNull(ids,"");
         String fieldName = doGetPrimaryId();
-        Class filedType = doGetPrimaryType();
+//        Class filedType = doGetPrimaryType();
 
-        String sb = "";
-        for(int i = 0; i <ids.length; i ++) {
-            sb = sb + ":p" + i;
-            if(i != ids.length-1) {
-                sb = sb + ",";
-            }
-        }
-        Query query = entityManager.createQuery(
-                "update " + ((Class) tClass).getName() + " set isDelete = true WHERE  " + fieldName + " in (" + sb + ")");
+        SimpleExpression numberKeyPath = getSimpleExpression(fieldName);
+        return delete(numberKeyPath.in(ids));
 
-        if (Long.class.isAssignableFrom(filedType)) {
-            for(int i = 0; i <ids.length; i ++) {
-                query.setParameter("p"+i, Long.valueOf(ids[i].toString()));
-            }
-        } else {
-            for(int i = 0; i <ids.length; i ++) {
-                query.setParameter("p"+i, ids[i]);
-            }
-        }
-
-        int deletedCount = query.executeUpdate();
-        return deletedCount;
+//        String sb = "";
+//        for(int i = 0; i <ids.length; i ++) {
+//            sb = sb + ":p" + i;
+//            if(i != ids.length-1) {
+//                sb = sb + ",";
+//            }
+//        }
+//        Query query = entityManager.createQuery(
+//                "update " + ((Class) tClass).getName() + " set isDelete = true WHERE  " + fieldName + " in (" + sb + ")");
+//
+//        if (Long.class.isAssignableFrom(filedType)) {
+//            for(int i = 0; i <ids.length; i ++) {
+//                query.setParameter("p"+i, Long.valueOf(ids[i].toString()));
+//            }
+//        } else {
+//            for(int i = 0; i <ids.length; i ++) {
+//                query.setParameter("p"+i, ids[i]);
+//            }
+//        }
+//
+//        int deletedCount = query.executeUpdate();
+//        return deletedCount;
     }
 
     @Transactional
     @Override
     public long deleteAll() {
-        Query query = entityManager.createQuery(
-                "update " + ((Class) tClass).getName() + " set isDelete = true");
-        int deletedCount = query.executeUpdate();
-        return deletedCount;
+        Path isDeletePath = getDeletePath();
+        return queryFactory.update(entityPath()).set(isDeletePath,true).execute();
+
+//        Query query = entityManager.createQuery(
+//                "update " + ((Class) tClass).getName() + " set isDelete = true");
+//        int deletedCount = query.executeUpdate();
+//        return deletedCount;
     }
+
+
 
     @Transactional
     @Override
@@ -359,11 +382,32 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
     public long remove(K pId) {
         Assert.notNull(pId,"");
         String fieldName = doGetPrimaryId();
+        SimpleExpression numberKeyPath = getSimpleExpression(fieldName);
+        return remove(numberKeyPath.eq(pId));
+//        Assert.notNull(pId,"");
+//        String fieldName = doGetPrimaryId();
+//        Path keyPath = QClassUtil.getFieldPath((Class) tClass, fieldName);
+//
+//        Query query = entityManager.createQuery(
+//                "DELETE FROM  " + ((Class) tClass).getName() + " WHERE  " + fieldName +" = (:p)");
+//        int deletedCount = query.setParameter("p", pId).executeUpdate();
+//        return deletedCount;
+    }
 
-        Query query = entityManager.createQuery(
-                "DELETE FROM  " + ((Class) tClass).getName() + " WHERE  " + fieldName +" = (:p)");
-        int deletedCount = query.setParameter("p", pId).executeUpdate();
-        return deletedCount;
+    private SimpleExpression getSimpleExpression(String fieldName) {
+        Path keyPath = QClassUtil.getFieldPathByClass((Class) tClass, fieldName);
+        if (!(keyPath instanceof SimpleExpression)) {
+            log.error("实体{}主键{}无法转换为SimpleExpression",((Class<?>) tClass).getName(),fieldName);
+            throw BusinessException.build("主键异常");
+        }
+        return (SimpleExpression) keyPath;
+    }
+
+    @Override
+    public long remove(Predicate predicate) {
+        if(predicate == null)
+            throw BusinessException.build("predicate不能为空");
+        return queryFactory.delete(entityPath()).where(predicate).execute();
     }
 
     /**
@@ -376,12 +420,14 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
     public long remove(List<K> pIds) {
         Assert.notNull(pIds,"");
         String fieldName = doGetPrimaryId();
+        SimpleExpression numberKeyPath = getSimpleExpression(fieldName);
+        return remove(numberKeyPath.in(pIds));
 
-        Query query = entityManager.createQuery(
-                "DELETE FROM  " + ((Class) tClass).getName() + " WHERE  " + fieldName +" in (:p)");
-        int deletedCount = query.setParameter("p", pIds).executeUpdate();
-
-        return deletedCount;
+//        Query query = entityManager.createQuery(
+//                "DELETE FROM  " + ((Class) tClass).getName() + " WHERE  " + fieldName +" in (:p)");
+//        int deletedCount = query.setParameter("p", pIds).executeUpdate();
+//
+//        return deletedCount;
     }
 
     @Transactional
@@ -389,38 +435,43 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
     public long removeByPIds(K[] ids) throws BusinessException {
         Assert.notNull(ids,"");
         String fieldName = doGetPrimaryId();
-        Class filedType = doGetPrimaryType();
-
-        String sb = "";
-        for(int i = 0; i <ids.length; i ++) {
-            sb = sb + ":p" + i;
-            if(i != ids.length-1) {
-                sb = sb + ",";
-            }
-        }
-        Query query = entityManager.createQuery(
-                "DELETE FROM  " + ((Class) tClass).getName() + " WHERE  " + fieldName + " in (" + sb + ")");
-
-        if (Long.class.isAssignableFrom(filedType)) {
-            for(int i = 0; i <ids.length; i ++) {
-                query.setParameter("p"+i, Long.valueOf(ids[i].toString()));
-            }
-        } else {
-            for(int i = 0; i <ids.length; i ++) {
-                query.setParameter("p"+i, ids[i]);
-            }
-        }
-        int deletedCount = query.executeUpdate();
-        return deletedCount;
+        SimpleExpression numberKeyPath = getSimpleExpression(fieldName);
+        return remove(numberKeyPath.in(ids));
+//        Assert.notNull(ids,"");
+//        String fieldName = doGetPrimaryId();
+//        Class filedType = doGetPrimaryType();
+//
+//        String sb = "";
+//        for(int i = 0; i <ids.length; i ++) {
+//            sb = sb + ":p" + i;
+//            if(i != ids.length-1) {
+//                sb = sb + ",";
+//            }
+//        }
+//        Query query = entityManager.createQuery(
+//                "DELETE FROM  " + ((Class) tClass).getName() + " WHERE  " + fieldName + " in (" + sb + ")");
+//
+//        if (Long.class.isAssignableFrom(filedType)) {
+//            for(int i = 0; i <ids.length; i ++) {
+//                query.setParameter("p"+i, Long.valueOf(ids[i].toString()));
+//            }
+//        } else {
+//            for(int i = 0; i <ids.length; i ++) {
+//                query.setParameter("p"+i, ids[i]);
+//            }
+//        }
+//        int deletedCount = query.executeUpdate();
+//        return deletedCount;
     }
 
     @Transactional
     @Override
     public long removeAll() {
-        Query query = entityManager.createQuery(
-                "DELETE FROM  " + ((Class) tClass).getName());
-        int deletedCount = query.executeUpdate();
-        return deletedCount;
+//        Query query = entityManager.createQuery(
+//                "DELETE FROM  " + ((Class) tClass).getName());
+//        int deletedCount = query.executeUpdate();
+//        return deletedCount;
+        return queryFactory.delete(entityPath()).execute();
     }
 
     private String doGetPrimaryId(){
@@ -469,6 +520,13 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
                 }
             }
         });
+    }
+
+    private Path getDeletePath() {
+        Path isDeletePath = QClassUtil.getFieldPathByClass((Class) tClass, "isDelete");
+        if (isDeletePath == null)
+            throw BusinessException.build("isDelete字段不存在");
+        return isDeletePath;
     }
 
     private List<Predicate> exactFromObject(T target, EntityPath path) {

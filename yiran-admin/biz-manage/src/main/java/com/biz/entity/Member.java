@@ -28,19 +28,39 @@ public class Member extends TimedBasedEntity {
     @Id
     private Long memberId;
 
+    @Column(length = 6)
+    private String memberCode;
+
+    @Search
+    //@NotBlank(message = "登陆名不能为空")
+    @Column(length = 18)
+    private String loginName;
+
+    @Search
+    //@NotBlank(message = "邮箱不能为空")
+    @Column(length = 18)
+    private String email;
+
+    @Column(length = 4)
+    private String countryCode;
+
     @Search
     @NotBlank(message = "手机号不能为空")
     @Column(length = 13,nullable = false)
     private String phone;
 
     @Option(value = {"1","2"},message = "状态只能是1，2。 1=正常,2=停用")
-    @Excel(name = "帐号状态", readConverterExp = "0=正常,1=停用")
+    @Excel(name = "帐号状态", readConverterExp = "1=正常,2=停用")
     @Search
     @Column(length = 8,nullable = false)
     private String status;
 
     @Column(length = 32)
     private String name;
+
+    @Column(length = 32)
+    private String nickName;
+
 
     @Column(length = 256)
     private String avatar;
@@ -96,4 +116,12 @@ public class Member extends TimedBasedEntity {
     @Column(nullable = false)
     private Long channelId;
 
+    @Column
+    private Long inviteMemberId;
+
+    @Column(length = 32)
+    private String inviteMemberNickName; //上级用户昵称
+
+    @Column(length = 32)
+    private String registerChannel; //注册来源
 }
