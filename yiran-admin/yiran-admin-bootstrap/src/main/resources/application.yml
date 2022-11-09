@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: home
   main:
     banner-mode: "OFF"
   application:
@@ -131,6 +133,3 @@ dashboard:
   job:
     enable: true
 
----
-spring:
-  profiles: home

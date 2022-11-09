@@ -6,3 +6,4 @@ yiran-admin/yiran-admin-bootstrap/src/main/resources/application2.yml
 target
 *.DS_Store
 /yiran-admin/yiran-admin-bootstrap/logx/
+/yiran-admin/yiran-admin-bootstrap/src/main/resources/application-home.yml

@@ -31,8 +31,8 @@ import java.util.Map;
 
 @AjaxWrapper
 @Controller
-@RequestMapping("/ext/member")
-public class MemberController {
+@RequestMapping("/biz/member")
+public class AdminMemberController {
 
     @Autowired
     private MemberService memberService;
@@ -162,6 +162,8 @@ public class MemberController {
         db.setSalt(Global.getSalt());
         db.setPassword(passwordService.encryptPassword(password, Global.getSalt()));
         db.setPasswordUpdateTime(new Date());
+        db.setPasswordErrorTime(null);
+        db.setPasswordErrorCount(0L);
 
         db.setUpdateBy(SessionContextHelper.getCurrentLoginName());
         db = memberService.update(db);

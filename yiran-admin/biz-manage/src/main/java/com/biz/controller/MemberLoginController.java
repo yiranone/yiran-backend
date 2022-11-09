@@ -44,7 +44,6 @@ public class MemberLoginController {
     private MemberService memberService;
     @Autowired
     private SysChannelService channelService;
-
     @Autowired
     private MemberPasswordService memberPasswordService;
 
