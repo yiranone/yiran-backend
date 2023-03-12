@@ -3,14 +3,16 @@ package one.yiran.dashboard.interceptor;
 import lombok.extern.slf4j.Slf4j;
 import one.yiran.dashboard.common.util.ServletUtil;
 import org.springframework.core.annotation.Order;
+import org.springframework.scheduling.annotation.Async;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Date;
 
 @Slf4j
-@WebFilter(urlPatterns="/*")
+@WebFilter(urlPatterns="/*",asyncSupported = true)
 @Order(2)
 public class CacheRequestFilter implements Filter {
 
@@ -30,6 +32,7 @@ public class CacheRequestFilter implements Filter {
             byte[] bytes = contentCachingRequestWrapper.getBody();
             String requestJson = new String(bytes,request.getCharacterEncoding());
             request.setAttribute("REQ_JSON",requestJson);
+            request.setAttribute("REQ_TIME",new Date());
             sRequest = contentCachingRequestWrapper;
         }
         chain.doFilter(sRequest, sResponse);

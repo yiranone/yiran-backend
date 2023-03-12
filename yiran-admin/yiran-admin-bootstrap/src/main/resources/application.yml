@@ -3,12 +3,21 @@ spring:
     active: home
   main:
     banner-mode: "OFF"
+    allow-bean-definition-overriding: true
   application:
     name: SP后台管理
   datasource:
     url: jdbc:mysql://1.1.1.1:3306/sp-back?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
     username: xxx
     password: xxx
+    hikari:
+      maximum-pool-size: 60 # 连接池最大连接数，默认是 10
+      connection-timeout: 60000 # 链接超时时间，默认 30000(30 秒)
+      idle-timeout: 60000  # 空闲连接存活最大时间，默认 600000(10 分钟)
+      validation-timeout: 3000  # 连接将被测试活动的最大时间量
+      max-lifetime: 60000  # 此属性控制池中连接的最长生命周期，值 0 表示无限生命周期，默认 1800000(30 分钟)
+      login-timeout: 5  # 连接到数据库时等待的最长时间(秒)
+      minimum-idle: 10  # 池中维护的最小空闲连接数
   jpa:
     properties:
       hibernate:
@@ -35,14 +44,11 @@ spring:
         max-active: 8
         max-wait: -1
         time-between-eviction-runs: 30
-  http:
-    encoding:
-      charset: UTF-8
-      force: true
-      enabled: true
   mvc:
     throw-exception-if-no-handler-found: true
     static-path-pattern: /static/*
+    async:
+      request-timeout: 110000
   messages:
     encoding: UTF-8
     basename: i18n/messages
@@ -66,11 +72,13 @@ server:
     max-http-header-size: 81940
   servlet:
     context-path: /api
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
   address: 0.0.0.0
 
-
 logging:
-  path: ${LOG_DIR:..}/logx
   level:
     root: INFO
     one.yiran: INFO
@@ -78,9 +86,10 @@ logging:
     org.springframework.data: INFO
     org.springframework.security: INFO
     org.springframework.beans.factory.support.DefaultListableBeanFactory: INFO
-    org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener: INFO
+    org.apache.http.client.protocol.ResponseProcessCookies: ERROR
     org.apache.shiro: INFO
-#    org.springframework.data.mongodb.core: DEBUG
+  file:
+    path: ${LOG_DIR:..}/logx
 
 
 # 防止XSS攻击

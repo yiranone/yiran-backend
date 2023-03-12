@@ -30,7 +30,7 @@ public class SysLoginInfo extends TimedBasedEntity {
      */
     @Excel(name = "用户账号")
     @Search
-    @Column
+    @Column(length = 32)
     private String loginName;
 
     /**
@@ -38,7 +38,7 @@ public class SysLoginInfo extends TimedBasedEntity {
      */
     @Excel(name = "登录状态", readConverterExp = "0=成功,1=失败")
     @Search
-    @Column
+    @Column(length = 32)
     private String status;
 
     /**
@@ -46,28 +46,28 @@ public class SysLoginInfo extends TimedBasedEntity {
      */
     @Excel(name = "登录地址")
     @Search
-    @Column
+    @Column(length = 32)
     private String ipAddr;
 
     /**
      * 登录地点
      */
     @Excel(name = "登录地点")
-    @Column
+    @Column(length = 64)
     private String loginLocation;
 
     /**
      * 浏览器类型
      */
     @Excel(name = "浏览器")
-    @Column
+    @Column(length = 32)
     private String browser;
 
     /**
      * 操作系统
      */
     @Excel(name = "操作系统")
-    @Column
+    @Column(length = 32)
     private String os;
 
     /**
@@ -84,6 +84,9 @@ public class SysLoginInfo extends TimedBasedEntity {
     @Column
     private Date loginTime;
 
+    @Excel(name = "User or Member")
+    @Column(length = 32)
+    private String category;
 
     @Override
     public String toString() {

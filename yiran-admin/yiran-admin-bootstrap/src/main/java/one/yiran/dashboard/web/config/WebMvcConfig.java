@@ -2,7 +2,7 @@ package one.yiran.dashboard.web.config;
 
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.alibaba.fastjson.serializer.SimpleDateFormatSerializer;
+//import com.alibaba.fastjson.serializer.SimpleDateFormatSerializer;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.biz.interceptor.MemberInterceptor;
@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -36,6 +37,8 @@ import java.util.List;
 
 @Configuration
 @EnableWebMvc
+//@EnableAsync
+//@Enable
 public class WebMvcConfig implements WebMvcConfigurer, InitializingBean {
 
     private static SerializeConfig serializeConfig = new SerializeConfig();
@@ -43,7 +46,7 @@ public class WebMvcConfig implements WebMvcConfigurer, InitializingBean {
 
     static {
         dateFormat = "yyyy-MM-dd HH:mm:ss";
-        serializeConfig.put(Date.class, new SimpleDateFormatSerializer(dateFormat));
+//        serializeConfig.put(Date.class, new SimpleDateFormatSerializer(dateFormat));
     }
 
     @Override
@@ -87,7 +90,8 @@ public class WebMvcConfig implements WebMvcConfigurer, InitializingBean {
                 /*SerializerFeature.WriteMapNullValue,*/
                 SerializerFeature.WriteDateUseDateFormat,
                 SerializerFeature.WriteBigDecimalAsPlain,
-                SerializerFeature.DisableCircularReferenceDetect);
+                SerializerFeature.DisableCircularReferenceDetect,
+                SerializerFeature.WriteDateUseDateFormat);
         config.setSerializeConfig(serializeConfig);
 
         fastJsonHttpMessageConverter.setFastJsonConfig(config);
@@ -138,8 +142,7 @@ public class WebMvcConfig implements WebMvcConfigurer, InitializingBean {
     //添加转换器
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        //converters.add(1,ajaxMessageConverter());
-
+        converters.add(0,ajaxMessageConverter());
     }
 
     @Bean
@@ -178,7 +181,7 @@ public class WebMvcConfig implements WebMvcConfigurer, InitializingBean {
     private CorsConfiguration corsConfig() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         // 请求常用的三种配置，*代表允许所有，也可以自定义属性（比如 header 只能带什么，只能是 post 方式等）
-        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addAllowedOriginPattern("*");
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");
         corsConfiguration.setAllowCredentials(true);

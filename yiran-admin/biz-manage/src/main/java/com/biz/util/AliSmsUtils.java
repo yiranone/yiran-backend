@@ -21,42 +21,42 @@ public class AliSmsUtils {
 
     public static final String DEFAULT_COUNTRY_CODE = "86";
 
-    public static SmsResponse sendSms(String channelCode, String countryCode, String phoneNumber, String jsonString, String usePasswordResetTempate) {
+    public static SmsResponse sendSms(Long channelId, String countryCode, String phoneNumber, String jsonString, String usePasswordResetTempate) {
         if(StringUtils.isBlank(countryCode))
             throw new RuntimeException("发送短信失败,短信所属国家异常异常");
         if(!StringUtils.equalsAnyIgnoreCase(usePasswordResetTempate, "register", "resetPass")) {
             throw new RuntimeException("发送短信失败,短信类型异常");
         }
         String sms_template = StringUtils.equalsIgnoreCase("resetPass",usePasswordResetTempate) ?
-                cacheValue(channelCode, PlatformConfigEnum.SMS_RESET_PASSWORD_TEMPLATE) :
-                cacheValue(channelCode, PlatformConfigEnum.SMS_TEMPLATE);
+                cacheValue(channelId, PlatformConfigEnum.SMS_RESET_PASSWORD_TEMPLATE) :
+                cacheValue(channelId, PlatformConfigEnum.SMS_TEMPLATE);
         if (!DEFAULT_COUNTRY_CODE.equals(countryCode)) {//国际短信
-            sms_template = cacheValue(channelCode, PlatformConfigEnum.SMS_GLOBE_TEMPLATE);
+            sms_template = cacheValue(channelId, PlatformConfigEnum.SMS_GLOBE_TEMPLATE);
             phoneNumber = countryCode + phoneNumber;
         } else {
 
         }
-        return sendSms(channelCode, phoneNumber, jsonString, sms_template);
+        return sendSms(channelId, phoneNumber, jsonString, sms_template);
     }
 
-    public static SmsResponse sendSms(String channelCode, String phoneNumber, String jsonString, String sms_template) {
-        String reginId = cacheValue(channelCode, PlatformConfigEnum.SMS_REGIONId);
-        log.info("发送短信:channelCode={} phoneNumber={} jsonString={} sms_template={} reginId={}",channelCode,phoneNumber,jsonString,sms_template,reginId);
+    public static SmsResponse sendSms(Long channelId, String phoneNumber, String jsonString, String sms_template) {
+        String reginId = cacheValue(channelId, PlatformConfigEnum.SMS_REGIONId);
+        log.info("发送短信:channelCode={} phoneNumber={} jsonString={} sms_template={} reginId={}",channelId,phoneNumber,jsonString,sms_template,reginId);
         if(StringUtils.isBlank(reginId))
             throw new RuntimeException("发送短信失败,SMS_REGIONId没有配置");
         DefaultProfile profile = DefaultProfile.getProfile(
                 reginId,
-                cacheValue(channelCode, PlatformConfigEnum.SMS_ACCESS_KEY_ID),
-                cacheValue(channelCode, PlatformConfigEnum.SMS_ACCESS_KEY_SECRET));
+                cacheValue(channelId, PlatformConfigEnum.SMS_ACCESS_KEY_ID),
+                cacheValue(channelId, PlatformConfigEnum.SMS_ACCESS_KEY_SECRET));
         IAcsClient client = new DefaultAcsClient(profile);
         CommonRequest request = new CommonRequest();
         request.setMethod(MethodType.POST);
-        request.setDomain(cacheValue(channelCode, PlatformConfigEnum.SMS_DOMAIN));
-        request.setVersion(cacheValue(channelCode, PlatformConfigEnum.SMS_VERSION));
+        request.setDomain(cacheValue(channelId, PlatformConfigEnum.SMS_DOMAIN));
+        request.setVersion(cacheValue(channelId, PlatformConfigEnum.SMS_VERSION));
         request.setAction("SendSms");
-        request.putQueryParameter("RegionId", cacheValue(channelCode, PlatformConfigEnum.SMS_REGIONId));
+        request.putQueryParameter("RegionId", cacheValue(channelId, PlatformConfigEnum.SMS_REGIONId));
         request.putQueryParameter("PhoneNumbers", phoneNumber);
-        request.putQueryParameter("SignName", cacheValue(channelCode, PlatformConfigEnum.SMS_SIGN_NAME));
+        request.putQueryParameter("SignName", cacheValue(channelId, PlatformConfigEnum.SMS_SIGN_NAME));
         request.putQueryParameter("TemplateCode", sms_template);
         if (!StringUtils.isEmpty(jsonString)) {
             request.putQueryParameter("TemplateParam", jsonString);
@@ -76,8 +76,8 @@ public class AliSmsUtils {
         }
     }
 
-    private static String cacheValue(String channelCode, PlatformConfigEnum keyEnum){
-        return MemberCacheUtil.getSystemConfig(channelCode, keyEnum.name());
+    private static String cacheValue(Long channelId, PlatformConfigEnum keyEnum){
+        return MemberCacheUtil.getSystemConfig(channelId, keyEnum.name());
     }
 
 }

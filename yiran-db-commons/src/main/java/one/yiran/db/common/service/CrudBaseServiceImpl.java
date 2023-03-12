@@ -122,7 +122,7 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
 
     @Override
     public List<T> selectList(PageRequest request, T target, List<Predicate> predicates) {
-        log.info("query list sql Entity:{},{}", tClass.getTypeName(),predicates);
+        log.debug("query list sql Entity:{},{}", tClass.getTypeName(),predicates);
         return doSelectList(request, target, predicates, null, null);
     }
 

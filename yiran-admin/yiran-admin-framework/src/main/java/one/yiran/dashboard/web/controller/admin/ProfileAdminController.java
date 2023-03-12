@@ -160,11 +160,15 @@ public class ProfileAdminController {
             if (!file.isEmpty()) {
                 String contextPath = request.getContextPath();
                 String avatar = FileUploadUtil.upload(Global.getAvatarPath(), file);
-                sysUserService.updateMyAvatar(loginUser.getUserId(),contextPath + avatar);
+                String contextPathAvatar = avatar;
+                if(!StringUtils.startsWith(avatar,"http")) {
+                    contextPathAvatar = contextPath + avatar;
+                }
+                sysUserService.updateMyAvatar(loginUser.getUserId(),contextPathAvatar);
 
                 Map ajax = new HashMap();
                 ajax.put("fileName", file.getOriginalFilename());
-                ajax.put("url", contextPath + avatar);
+                ajax.put("url", contextPathAvatar);
                 ajax.put("url2", avatar);
                 return ajax;
             } else {

@@ -27,7 +27,7 @@ public class TimedBasedEntity implements Serializable {
     @UpdateTimeAdvise
     private Date updateTime;
 
-    @Column(length = 32,nullable = false,updatable = false)
+    @Column(length = 32,updatable = false)
     private String createBy;
 
     @Column(length = 32)

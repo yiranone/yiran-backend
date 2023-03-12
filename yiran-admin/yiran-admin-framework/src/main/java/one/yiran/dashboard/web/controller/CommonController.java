@@ -77,13 +77,17 @@ public class CommonController {
         String[] image = MimeTypeUtil.IMAGE_EXTENSION;
         String[] media = MimeTypeUtil.MEDIA_EXTENSION;
         String[] both = ArrayUtils.addAll(image, media);
-        String url = FileUploadUtil.upload(Global.getUploadPath(), file,both);
+        String fileRelatedPath = FileUploadUtil.upload(Global.getUploadPath(), file,both);
         //String url = serverConfig.getRequestUrl() + fileName;
         String contextPath = request.getContextPath();
+        String contextPathAvatar = fileRelatedPath;
+        if(!StringUtils.startsWith(fileRelatedPath,"http")) {
+            contextPathAvatar = contextPath + fileRelatedPath;
+        }
         Map ajax = new HashMap();
         ajax.put("fileName", file.getOriginalFilename());
-        ajax.put("url", contextPath + url);
-        ajax.put("url2", url);
+        ajax.put("url", contextPathAvatar);
+        ajax.put("url2", fileRelatedPath);
         return ajax;
     }
 

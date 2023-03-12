@@ -38,7 +38,7 @@ public class PasswordService {
 
         Long loginUserId = user.getUserId();
         if (!matches(user, password)) {
-            AsyncManager.me().execute(AsyncFactory.recordLoginInfo(loginName, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.password.retry.limit.count", passwordErrorCount)));
+            AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(loginName, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.password.retry.limit.count", passwordErrorCount)));
             if(timeExpire(passwordErrorTime)) {
                 passwordErrorCount = 1;
             } else {

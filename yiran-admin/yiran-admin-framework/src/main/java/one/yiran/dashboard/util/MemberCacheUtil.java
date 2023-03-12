@@ -87,8 +87,8 @@ public class MemberCacheUtil {
         getCacheService().delete(k);
     }
 
-    public static String getSystemConfig(String channelCode, String key) {
-        String result = getSystemConfig(channelCode + "_" + key);
+    public static String getSystemConfig(Long channelId, String key) {
+        String result = getSystemConfig(channelId + "_" + key);
         if (StringUtils.isNotBlank(result)) {
             return result;
         }
@@ -103,6 +103,12 @@ public class MemberCacheUtil {
     public static void setSystemConfig(String key, String value) {
         String k = Global.getRedisPrefix() + CONFIG_PREFIX + key + CONFIG_SUFFIX;
         getCacheService().set(k,value);
+    }
+
+    public static void setSystemConfig(String key, String value, int ttlSeconds) {
+        String k = Global.getRedisPrefix() + CONFIG_PREFIX + key + CONFIG_SUFFIX;
+        getCacheService().set(k,value,ttlSeconds);
+
     }
 
     private static DashboardCacheService getCacheService(){

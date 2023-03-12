@@ -2,7 +2,6 @@ package one.yiran.dashboard.service.impl;
 
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import javafx.util.converter.LocalDateStringConverter;
 import one.yiran.common.domain.PageModel;
 import one.yiran.common.domain.PageRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +65,7 @@ public class SysUserOnlineServiceImpl extends CrudBaseServiceImpl<String, SysUse
         Assert.notNull(accessTime,"");
         QSysUserOnline online = QSysUserOnline.sysUserOnline;
         queryFactory.update(online).set(online.lastAccessTime,accessTime).
+                set(online.status, SysUserOnline.OnlineStatus.on_line).
         where(online.sessionId.eq(sessionId)).execute();
     }
 
@@ -90,12 +90,12 @@ public class SysUserOnlineServiceImpl extends CrudBaseServiceImpl<String, SysUse
         Date x = DateUtil.toDate(dateTime);
         QSysUserOnline online = QSysUserOnline.sysUserOnline;
         long aff = queryFactory.update(online).set(online.status, SysUserOnline.OnlineStatus.off_line).
-                where(online.lastAccessTime.loe(x)).execute();
-        log.info("设置在线->离线人数{}",aff);
+                where(online.lastAccessTime.loe(x).and(online.status.eq(SysUserOnline.OnlineStatus.on_line))).execute();
+        log.info("后台用户登陆状态变化，转换{}人为离线状态",aff);
         dateTime = LocalDateTime.now().minusMinutes(sessionTimeout).minusDays(1);
         x = DateUtil.toDate(dateTime);
         aff = queryFactory.delete(online).where(online.lastAccessTime.loe(x)).execute();
-        log.info("离线->删除人数{}",aff);
+        log.info("后台用户登陆状态变化，删除离线人数{}人",aff);
 
     }
 

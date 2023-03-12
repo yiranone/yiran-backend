@@ -141,6 +141,8 @@ public class MemberRegisterController {
                            @ApiParam(required = true) String phone,
                            @ApiParam String msgType){
         String channelCode = channelVO.getChannelCode();
+        Long channelId = channelVO.getChannelId();
+
         if (StringUtils.isEmpty(channelCode)) {
             throw BusinessException.build("channelCode不能为空");
         }
@@ -153,7 +155,7 @@ public class MemberRegisterController {
         if(StringUtils.isBlank(msgType)) {
             msgType = "register";
         }
-        AliSmsUtils.sendSms(channelCode, countryCode, phone, new JSONObject() {{
+        AliSmsUtils.sendSms(channelId, countryCode, phone, new JSONObject() {{
             put("code", randomNumber);
         }}.toJSONString(), msgType);
 

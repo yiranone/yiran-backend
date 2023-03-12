@@ -19,6 +19,7 @@ import java.util.TimerTask;
 
 public class AsyncFactory {
     private static final Logger sys_user_logger = LoggerFactory.getLogger("sys-user");
+    private static final Logger sys_user_member = LoggerFactory.getLogger("sys-member");
 
     public static TimerTask recordOperateInfo(final SysOperateLog sysOperateLog) {
         return new TimerTask() {
@@ -32,8 +33,16 @@ public class AsyncFactory {
         };
     }
 
+    public static TimerTask recordUserLoginInfo(final String username, final String status, final String message, final Object... args) {
+       return recordLoginInfo("User",username, status, message, args);
+    }
+
+    public static TimerTask recordMemberLoginInfo(final String username, final String status, final String message, final Object... args) {
+        return recordLoginInfo("Member",username, status, message, args);
+    }
+
     //记录登陆用户信息表
-    public static TimerTask recordLoginInfo(final String username, final String status, final String message, final Object... args) {
+    public static TimerTask recordLoginInfo(final String category, final String username, final String status, final String message, final Object... args) {
         final UserAgent userAgent = UserAgent.parseUserAgentString(ServletUtil.getRequest().getHeader("User-Agent"));
         final String ip = IpUtil.getIpAddr(ServletUtil.getRequest());
         return new TimerTask() {
@@ -47,22 +56,26 @@ public class AsyncFactory {
                 s.append(LogUtil.getBlock(status));
                 s.append(LogUtil.getBlock(message));
                 // 打印信息到日志
-                sys_user_logger.info(s.toString(), args);
+                if(StringUtils.equals(category, "User"))
+                    sys_user_logger.info(s.toString(), args);
+                else
+                    sys_user_member.info(s.toString(), args);
                 // 获取客户端操作系统
                 String os = userAgent.getOperatingSystem().getName();
                 // 获取客户端浏览器
                 String browser = userAgent.getBrowser().getName();
                 // 封装对象
                 SysLoginInfo logininfor = new SysLoginInfo();
-                logininfor.setCreateBy(username);
+                logininfor.setCreateBy(StringUtils.substring(username,0,32));
                 logininfor.setCreateTime(new Date());
-                logininfor.setLoginName(username);
-                logininfor.setIpAddr(ip);
-                logininfor.setLoginLocation(ipString);
-                logininfor.setBrowser(browser);
-                logininfor.setOs(os);
-                logininfor.setMsg(message);
+                logininfor.setLoginName(StringUtils.substring(username,0,32));
+                logininfor.setIpAddr(StringUtils.substring(ip,0,32));
+                logininfor.setLoginLocation(StringUtils.substring(ipString,0,32));
+                logininfor.setBrowser(StringUtils.substring(browser,0,32));
+                logininfor.setOs(StringUtils.substring(os,0,32));
+                logininfor.setMsg(StringUtils.substring(message,0,1024));
                 logininfor.setLoginTime(new Date());
+                logininfor.setCategory(category);
                 // 日志状态
                 if (SystemConstants.SUCCESS.equals(status) || SystemConstants.LOGOUT.equals(status) || SystemConstants.REGISTER.equals(status)) {
                     logininfor.setStatus(SystemConstants.SUCCESS);

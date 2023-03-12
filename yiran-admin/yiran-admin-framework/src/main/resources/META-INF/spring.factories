@@ -1,0 +1,2 @@
+#org.springframework.boot.SpringApplicationRunListener=\
+#one.yiran.dashboard.aspect.ZSpringApplicationRunListener
