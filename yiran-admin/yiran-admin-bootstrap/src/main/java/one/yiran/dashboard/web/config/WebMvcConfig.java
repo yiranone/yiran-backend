@@ -18,11 +18,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -113,7 +115,7 @@ public class WebMvcConfig implements WebMvcConfigurer, InitializingBean {
         supportedMediaTypes.add(MediaType.TEXT_EVENT_STREAM);
         supportedMediaTypes.add(MediaType.TEXT_HTML);
         supportedMediaTypes.add(MediaType.TEXT_MARKDOWN);
-        supportedMediaTypes.add(MediaType.TEXT_PLAIN);
+//        supportedMediaTypes.add(MediaType.TEXT_PLAIN);
         supportedMediaTypes.add(MediaType.TEXT_XML);
         fastJsonHttpMessageConverter.setSupportedMediaTypes(supportedMediaTypes);
 
@@ -194,5 +196,19 @@ public class WebMvcConfig implements WebMvcConfigurer, InitializingBean {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfig());
         return new CorsFilter(source);
+    }
+
+
+    @Override
+    public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+        configurer.setTaskExecutor(mvcTaskExecutor());
+//        configurer.setDefaultTimeout(180_000);
+    }
+
+    @Bean
+    public ThreadPoolTaskExecutor mvcTaskExecutor() {
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setThreadNamePrefix("mvc-task-");
+        return taskExecutor;
     }
 }

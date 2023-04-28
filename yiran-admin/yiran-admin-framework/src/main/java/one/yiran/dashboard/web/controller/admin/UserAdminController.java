@@ -137,6 +137,7 @@ public class UserAdminController {
         dbUser.setPhoneNumber(user.getPhoneNumber());
         dbUser.setEmail(user.getEmail());
         dbUser.setUserName(user.getUserName());
+        dbUser.setLoginName(user.getLoginName());
         dbUser.setSex(user.getSex());
         dbUser.setRoleIds(user.getRoleIds());
         dbUser.setPostIds(user.getPostIds());

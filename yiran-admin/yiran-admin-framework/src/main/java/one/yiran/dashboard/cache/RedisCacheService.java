@@ -7,6 +7,8 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.params.SetParams;
 
+import java.util.Set;
+
 @Service
 @ConditionalOnProperty(name = "dashboard.cache",havingValue = "redis")
 public class RedisCacheService implements DashboardCacheService{
@@ -66,6 +68,18 @@ public class RedisCacheService implements DashboardCacheService{
         Jedis resource = pool.getResource();
         try {
             return resource.get(key);
+        } finally {
+            if (resource != null) {
+                resource.close();
+            }
+        }
+    }
+
+    @Override
+    public Set<String> keys(String pattern) {
+        Jedis resource = pool.getResource();
+        try {
+            return resource.keys(pattern);
         } finally {
             if (resource != null) {
                 resource.close();

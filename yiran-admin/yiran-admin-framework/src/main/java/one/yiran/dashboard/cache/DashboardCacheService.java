@@ -3,6 +3,8 @@ package one.yiran.dashboard.cache;
 import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.common.util.SpringUtil;
 
+import java.util.Set;
+
 public interface DashboardCacheService {
 
     String set(String key, String value);
@@ -14,6 +16,8 @@ public interface DashboardCacheService {
     String delete(String key);
 
     String get(String key);
+
+    Set<String> keys(String pattern);
 
     String type();
 

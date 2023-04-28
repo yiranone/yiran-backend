@@ -40,6 +40,7 @@ public class UserPageVO {
     private Long deptId;
     private String deptName;
     private Long channelId;
+    private String channelName;
     private Boolean isLock;
 
     public static UserPageVO from(SysUser sysUser) {

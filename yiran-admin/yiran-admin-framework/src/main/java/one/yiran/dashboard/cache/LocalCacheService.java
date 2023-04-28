@@ -10,10 +10,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -128,6 +130,15 @@ public class LocalCacheService implements DashboardCacheService{
     }
 
     @Override
+    public Set<String> keys(String pattern) {
+        if (cacheMap == null) {
+            return null;
+        }
+        String pattern2 = pattern.replaceAll("\\{","\\\\{").replaceAll("\\*", ".*");
+        return cacheMap.keySet().stream().filter(d -> d.matches(pattern2)).collect(Collectors.toSet());
+    }
+
+    @Override
     public String type() {
         return "local";
     }
@@ -234,5 +245,10 @@ public class LocalCacheService implements DashboardCacheService{
         public V setValue(V value) {
             return this.v = value;
         }
+    }
+
+    public static void main(String[] args) {
+        String d = "134{";
+        System.out.println(d.replaceAll("\\{","\\\\{"));
     }
 }

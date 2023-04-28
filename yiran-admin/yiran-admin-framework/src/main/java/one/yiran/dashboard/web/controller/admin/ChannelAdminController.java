@@ -79,7 +79,7 @@ public class ChannelAdminController {
         String loginName = SessionContextHelper.getCurrentLoginName();
         channel.setCreateBy(loginName);
         channel.setUpdateBy(loginName);
-        return sysChannelService.insert(channel);
+        return sysChannelService.create(channel);
     }
 
     @RequirePermission(PermissionConstants.Channel.EDIT)

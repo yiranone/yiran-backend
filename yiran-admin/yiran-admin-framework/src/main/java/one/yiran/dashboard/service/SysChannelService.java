@@ -9,4 +9,6 @@ public interface SysChannelService extends CrudBaseService<Long, SysChannel> {
 
     SysChannel selectByChannelCode(String channelCode);
     SysChannel selectByChannelIdWithCheck(Long channelId);
+
+    SysChannel create(SysChannel channel);
 }

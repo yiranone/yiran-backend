@@ -2,22 +2,20 @@ package one.yiran.dashboard.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.cache.Cache;
+import lombok.extern.slf4j.Slf4j;
 import one.yiran.dashboard.cache.DashboardCacheService;
 import one.yiran.dashboard.cache.LocalCacheService;
 import one.yiran.dashboard.cache.RedisCacheService;
 import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.common.model.MemberSession;
-import one.yiran.dashboard.common.model.UserSession;
 import one.yiran.dashboard.common.util.SpringUtil;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.params.SetParams;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.UUID;
+import java.util.Set;
 
+@Slf4j
 public class MemberCacheUtil {
 
     private static final String DEFAULT_CACHE = "DEFAULT";
@@ -36,7 +34,20 @@ public class MemberCacheUtil {
         return SESSION_TIMEOUT;
     }
 
+    public static String getMemberToken(Long memberId) {
+        return memberId + "_" + RandomStringUtils.randomAlphanumeric(38);
+    }
+
     public static void setSessionInfo(String key, MemberSession member) {
+        //踢掉上一个
+        Set<String> keys = getCacheService().keys(Global.getRedisPrefix() + SESSION_PREFIX + member.getMemberId() + "_*");
+        if (null != keys && keys.size() > 0) {
+            for (String k : keys) {
+                log.info("清理上次登录的信息:{}", k);
+                clearKey(k);
+            }
+        }
+
         String s = JSON.toJSONString(member);
         String k = Global.getRedisPrefix() + SESSION_PREFIX + key + SESSION_SUFFIX;
         getCacheService().set(k,s,getSessionTimeout());
@@ -109,6 +120,14 @@ public class MemberCacheUtil {
         String k = Global.getRedisPrefix() + CONFIG_PREFIX + key + CONFIG_SUFFIX;
         getCacheService().set(k,value,ttlSeconds);
 
+    }
+
+    public static void clearKey(String key) {
+        try {
+            getCacheService().delete(key);
+        } catch (Exception e) {
+            log.error("access cache error", e);
+        }
     }
 
     private static DashboardCacheService getCacheService(){

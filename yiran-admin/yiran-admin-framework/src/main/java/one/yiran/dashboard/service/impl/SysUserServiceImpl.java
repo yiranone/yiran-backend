@@ -283,6 +283,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
         QSysUser qUser = QSysUser.sysUser;
         QSysDept qDept = QSysDept.sysDept;
         QSysRole qRole = QSysRole.sysRole;
+        QSysChannel qChannel = QSysChannel.sysChannel;
         QSysUserRole qUserRole = QSysUserRole.sysUserRole;
         SimpleTemplate<String> userRoleNamesTemplate = Expressions.simpleTemplate(String.class, "GROUP_CONCAT({0})", qRole.roleName);
         StringPath userRoleNamesPath = Expressions.stringPath("userRoleNames");
@@ -296,8 +297,9 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
                 .addEntityByAnnotation(searchUser,QSysUser.sysUser)
                 .toArray();
 
-        JPAQuery<Tuple> q = queryFactory.select(qUser,qDept,userRoleNamesTemplate.as(userRoleNamesPath))
+        JPAQuery<Tuple> q = queryFactory.select(qUser,qDept,qChannel.channelName,userRoleNamesTemplate.as(userRoleNamesPath))
                 .from(qUser)
+                .leftJoin(qChannel).on(qChannel.channelId.eq(qUser.channelId))
                 .leftJoin(qDept).on(qUser.deptId.eq(qDept.deptId))
                 .leftJoin(qUserRole).on(qUser.userId.eq(qUserRole.userId))
                 .leftJoin(qRole).on(qRole.roleId.eq(qUserRole.roleId))
@@ -312,6 +314,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
             SysUser su = r.get(qUser);
             SysDept sd = r.get(qDept);
             UserPageVO up =  UserPageVO.from(su,sd);
+            up.setChannelName(r.get(qChannel.channelName));
             String userRoleNames = r.get(userRoleNamesPath);
             if (userRoleNames != null)
                 up.setRoleNames(Lists.newArrayList(userRoleNames.split(",")));
