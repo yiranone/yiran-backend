@@ -6,8 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import one.yiran.common.util.BigDecimalFormatUtil;
 import one.yiran.common.util.DateUtil;
 import one.yiran.common.util.IpUtil;
-import one.yiran.common.util.MoneyDisplayUtil;
 import one.yiran.dashboard.common.constants.Global;
+import one.yiran.db.common.util.ServletRequestUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,20 +16,26 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 打印请求响应的日志耗时
+ */
 @Slf4j
 public class HttpLogPrinter {
 
+    public static final String HTTP_SERVLET_KEY_IS_AJAX = ServletRequestUtil.HTTP_SERVLET_KEY_IS_AJAX;
+    public static final String HTTP_SERVLET_KEY_REQ_JSON = ServletRequestUtil.HTTP_SERVLET_KEY_REQ_JSON;
+    public static final String HTTP_SERVLET_KEY_REQ_TIME = ServletRequestUtil.HTTP_SERVLET_KEY_REQ_TIME;
     public static void print(HttpServletRequest httpServletRequest, Object responseObject) {
         try {
-            boolean isAjax = httpServletRequest.getAttribute("IS_AJAX") == null ? false : Boolean.valueOf(httpServletRequest.getAttribute("IS_AJAX").toString()).booleanValue();
+            boolean isAjax = httpServletRequest.getAttribute(HttpLogPrinter.HTTP_SERVLET_KEY_IS_AJAX) == null ? false : Boolean.valueOf(httpServletRequest.getAttribute(HTTP_SERVLET_KEY_IS_AJAX).toString()).booleanValue();
             if(!isAjax)
                 return;
 
-            String reqMessage = httpServletRequest.getAttribute("REQ_JSON") == null ? "" : httpServletRequest.getAttribute("REQ_JSON").toString();
+            String reqMessage = httpServletRequest.getAttribute(HTTP_SERVLET_KEY_REQ_JSON) == null ? "" : httpServletRequest.getAttribute(HTTP_SERVLET_KEY_REQ_JSON).toString();
 
             String reqTime = "";
             try {
-                Date reqTimeS = httpServletRequest.getAttribute("REQ_TIME") == null ? null : (Date) httpServletRequest.getAttribute("REQ_TIME");
+                Date reqTimeS = httpServletRequest.getAttribute(HTTP_SERVLET_KEY_REQ_TIME) == null ? null : (Date) httpServletRequest.getAttribute(HTTP_SERVLET_KEY_REQ_TIME);
                 if (reqTimeS!= null) {
                     reqTime = DateUtil.parseDateToStr("HH:mm:ss.SSS",reqTimeS);
                     long gap = (System.currentTimeMillis() - reqTimeS.getTime());

@@ -26,13 +26,13 @@ public class CacheRequestFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) sRequest;
         boolean isAjax = ServletUtil.isAjaxRequest(request);
-        request.setAttribute("IS_AJAX",isAjax);
+        request.setAttribute(HttpLogPrinter.HTTP_SERVLET_KEY_IS_AJAX,isAjax);
         if(isAjax) {
             ContentCachingRequestWrapper contentCachingRequestWrapper = new ContentCachingRequestWrapper(request);
             byte[] bytes = contentCachingRequestWrapper.getBody();
             String requestJson = new String(bytes,request.getCharacterEncoding());
-            request.setAttribute("REQ_JSON",requestJson);
-            request.setAttribute("REQ_TIME",new Date());
+            request.setAttribute(HttpLogPrinter.HTTP_SERVLET_KEY_REQ_JSON,requestJson);
+            request.setAttribute(HttpLogPrinter.HTTP_SERVLET_KEY_REQ_TIME,new Date());
             sRequest = contentCachingRequestWrapper;
         }
         chain.doFilter(sRequest, sResponse);

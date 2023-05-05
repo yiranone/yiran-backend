@@ -6,6 +6,7 @@ import one.yiran.dashboard.common.model.MemberSession;
 import one.yiran.dashboard.common.model.UserSession;
 import one.yiran.dashboard.common.annotation.Log;
 import one.yiran.dashboard.common.constants.SystemConstants;
+import one.yiran.dashboard.interceptor.HttpLogPrinter;
 import one.yiran.dashboard.util.MemberCacheUtil;
 import one.yiran.dashboard.entity.SysOperateLog;
 import one.yiran.dashboard.factory.AsyncManager;
@@ -130,7 +131,7 @@ public class LogAspect {
 //            Map<String, String[]> map = ServletUtil.getRequest().getParameterMap();
 //            String params = JSON.toJSONString(map);
 
-            String reqMessage = ServletUtil.getRequest().getAttribute("REQ_JSON") == null ? "" : ServletUtil.getRequest().getAttribute("REQ_JSON").toString();
+            String reqMessage = ServletUtil.getRequest().getAttribute(HttpLogPrinter.HTTP_SERVLET_KEY_REQ_JSON) == null ? "" : ServletUtil.getRequest().getAttribute(HttpLogPrinter.HTTP_SERVLET_KEY_REQ_JSON).toString();
             sysOperateLog.setOperateParam(StringUtils.substring(reqMessage, 0, 2000));
         }
     }
