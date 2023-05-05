@@ -32,8 +32,6 @@ import java.util.List;
 public class MemberMoneyStatsTask {
 
     @Autowired
-    private MemberDao memberDao;
-    @Autowired
     private MemberService memberService;
     @Autowired
     private MemberMoneyDao userMoneyDao;
@@ -44,9 +42,6 @@ public class MemberMoneyStatsTask {
     private MoneyApplicationDao moneyApplicationDao;
 
     @Autowired
-    private PayRecordDao payRecordDao;
-
-    @Autowired
     private CurrencyConfigDao currencyConfigDao;
 
     @Autowired
@@ -55,11 +50,13 @@ public class MemberMoneyStatsTask {
     @Autowired
     private PayRecordService payRecordService;
 
-    @Scheduled(cron = "10 */1 * * * ?")
+    @Scheduled(cron = "10 */10 * * * ?")
     public void excuteTask() {
         log.info("UserMoneyStatsTask start");
+        long start = System.currentTimeMillis();
         refresh();
-        log.info("UserMoneyStatsTask end");
+        long gap = System.currentTimeMillis() - start;
+        log.info("UserMoneyStatsTask end 耗时:{}ms",gap);
     }
 
     private void refresh() {
