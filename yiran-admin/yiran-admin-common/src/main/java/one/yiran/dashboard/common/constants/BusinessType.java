@@ -58,7 +58,12 @@ public enum BusinessType {
     /**
      * 执行
      */
-    OPERATE(10,"执行");
+    OPERATE(10,"执行"),
+
+    /**
+     * 审核
+     */
+    AUDIT(11,"审核");;
 
     @Getter
     private Integer index;

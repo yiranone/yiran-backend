@@ -9,6 +9,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @EqualsAndHashCode(callSuper = false)
@@ -24,6 +25,9 @@ public class SysLoginInfo extends TimedBasedEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Excel(name = "序号", cellType = Excel.ColumnType.NUMERIC)
     private Long infoId;
+
+    @Column(updatable = false)
+    private Long channelId;
 
     /**
      * 用户账号
@@ -83,6 +87,12 @@ public class SysLoginInfo extends TimedBasedEntity {
     @Excel(name = "访问时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     @Column
     private Date loginTime;
+
+    /**
+     * 登陆用户的id  memberId，userId
+     */
+    @Column
+    private Long categoryId;
 
     @Excel(name = "User or Member")
     @Column(length = 32)

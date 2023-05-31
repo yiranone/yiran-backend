@@ -37,8 +37,9 @@ public class PasswordService {
         }
 
         Long loginUserId = user.getUserId();
+        Long channelId = user.getChannelId();
         if (!matches(user, password)) {
-            AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(loginName, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.password.retry.limit.count", passwordErrorCount)));
+            AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(channelId,loginUserId,loginName, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.password.retry.limit.count", passwordErrorCount)));
             if(timeExpire(passwordErrorTime)) {
                 passwordErrorCount = 1;
             } else {
@@ -71,5 +72,9 @@ public class PasswordService {
             throw BusinessException.build("密码异常，随机因子不能为空");
         }
         return MD5Util.hash(password + salt);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(MD5Util.hash("123456salt@defalut"));
     }
 }

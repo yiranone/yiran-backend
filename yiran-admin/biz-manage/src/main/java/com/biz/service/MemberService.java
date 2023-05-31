@@ -10,6 +10,7 @@ import one.yiran.db.common.service.CrudBaseService;
 
 public interface MemberService extends CrudBaseService<Long, Member> {
 
+    Member newMember(Long channelId);
     Member selectByPhone(Long channelId, String phone);
     Member selectByEmail(Long channelId, String email);
     Member selectByLoginName(Long channelId, String loginName);
@@ -26,4 +27,6 @@ public interface MemberService extends CrudBaseService<Long, Member> {
     Member registerMember(Long channelId, Member member);
 
     Member resetPassword(Long memberId, String password);
+
+    Member updateMember(MemberVO member);
 }

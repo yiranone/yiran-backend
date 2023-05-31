@@ -64,8 +64,21 @@ public class PredicateBuilder {
             return this;
         }
 
+        public Builder addEqual(Path path, Object value) {
+            if (value == null) {
+                doAddOPredict(path, null, Ops.EQ, true);
+            } else {
+                addEqualIfNotBlank(path,value);
+            }
+            return this;
+        }
+
         private void doAddOPredict(Path path, Object value, Ops eq) {
             boxes.add(new PredicateBox(path, eq, value, false));
+        }
+
+        private void doAddOPredict(Path path, Object value, Ops eq, boolean allowNull) {
+            boxes.add(new PredicateBox(path, eq, value, allowNull));
         }
 
         public Builder addLikeIfNotBlank(StringPath path, String value) {
@@ -163,6 +176,22 @@ public class PredicateBuilder {
             return toList().toArray(new Predicate[]{});
         }
 
+        public Predicate toPredicate() {
+            List<Predicate> cvs = toList();
+            if (cvs == null || cvs.size() == 0) {
+                return null;
+            }
+            BooleanExpression booleanExpression = null;
+            for (Predicate p : cvs) {
+                if (booleanExpression == null) {
+                    booleanExpression = (BooleanOperation)p;
+                } else {
+                    booleanExpression = booleanExpression.and(p);
+                }
+            }
+            return booleanExpression;
+        }
+
         private List<Predicate> convert() {
             List<Predicate> list = new ArrayList<>();
             for (PredicateBox b : boxes) {
@@ -244,6 +273,14 @@ public class PredicateBuilder {
                     } else {
                         log.error("ops还不支持 path={},ops={} value{}", path, ops, value);
                         throw new RuntimeException("ops还不支持");
+                    }
+                } else {
+                    //value == null
+                    if (allowNull) {
+                        list.add(((SimpleExpression) path).isNull());
+                    } else {
+                        log.error("ops还不支持 path={},ops={} value is null,but not allow", path, ops);
+                        throw new RuntimeException("value is null,but not allow");
                     }
                 }
             }

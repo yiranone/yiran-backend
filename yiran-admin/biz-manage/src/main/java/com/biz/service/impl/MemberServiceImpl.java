@@ -51,6 +51,20 @@ public class MemberServiceImpl extends CrudBaseServiceImpl<Long, Member> impleme
     private CurrencyConfigDao currencyConfigDao;
 
     @Override
+    public Member newMember(Long channelId) {
+        Member m = new Member();
+        m.setIsDelete(Boolean.FALSE);
+        m.setStatus(SystemConstants.STATUS_ENABLE);
+        m.setChannelId(channelId);
+        m.setRegisterTime(new Date());
+        m.setCreateTime(new Date());
+        m.setUpdateTime(new Date());
+        m.setSalt(Global.getSalt());
+        m.setAssertSalt(Global.getSalt());
+        return m;
+    }
+
+    @Override
     public Member selectByPhone(Long channelId, String phone) {
         Assert.notNull(channelId,"channelId不能为空");
         Assert.hasLength(phone,"phone不能为空");
@@ -235,4 +249,14 @@ public class MemberServiceImpl extends CrudBaseServiceImpl<Long, Member> impleme
         return member;
     }
 
+    @Override
+    @Transactional
+    public Member updateMember(MemberVO t) {
+        Member db = memberDao.lockById(t.getMemberId());
+        db.setStatus(t.getStatus());
+        db.setUpdateBy(t.getUpdateBy());
+        db.setRemark(t.getRemark());
+
+        return this.update(db);
+    }
 }

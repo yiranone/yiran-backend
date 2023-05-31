@@ -61,7 +61,6 @@ public class Member extends TimedBasedEntity {
     @Column(length = 32)
     private String nickName;
 
-
     @Column(length = 256)
     private String avatar;
 
@@ -110,6 +109,10 @@ public class Member extends TimedBasedEntity {
     @Excel(name = "最后登陆时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss", type = Excel.Type.EXPORT)
     @Column
     private Date loginDate;
+
+    @Excel(name = "注册时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss", type = Excel.Type.EXPORT)
+    @Column(nullable = false)
+    private Date registerTime;
 
     @Search
     @NotNull(message = "渠道不能为空")

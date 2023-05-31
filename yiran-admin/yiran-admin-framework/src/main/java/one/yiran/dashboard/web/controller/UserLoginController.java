@@ -73,26 +73,26 @@ public class UserLoginController {
                 throw new CaptchaException("没有输入验证码");
             boolean pass = captchaService.verification(captchaVerification);
             if(!pass) {
-                AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.jcaptcha.error")));
+                AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(null,null, username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.jcaptcha.error")));
                 throw new CaptchaException("验证码校验不通过");
             }
         }
         // 用户名或密码为空 错误
         if (org.springframework.util.StringUtils.isEmpty(username) || org.springframework.util.StringUtils.isEmpty(password)) {
-            AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("not.null")));
+            AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(null,null,username, SystemConstants.LOGIN_FAIL, MessageUtil.message("not.null")));
             throw new UserNotFoundException(username);
         }
 
         // 用户名不在指定范围内 错误
         if (username.length() < UserConstants.USERNAME_MIN_LENGTH
                 || username.length() > UserConstants.USERNAME_MAX_LENGTH) {
-            AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.password.not.match")));
+            AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(null,null,username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.password.not.match")));
             throw new UserPasswordNotMatchException("用户名长度不正确，长度应该在"+ UserConstants.USERNAME_MIN_LENGTH +"和" + UserConstants.USERNAME_MAX_LENGTH + "之间",username);
         }
         // 密码如果不在指定范围内 错误
         if (password.length() < UserConstants.PASSWORD_MIN_LENGTH
                 || password.length() > UserConstants.PASSWORD_MAX_LENGTH) {
-            AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.password.not.match")));
+            AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(null,null,username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.password.not.match")));
             throw new UserPasswordNotMatchException("密码长度不正确，长度应该在"+ UserConstants.PASSWORD_MIN_LENGTH +"和" + UserConstants.PASSWORD_MAX_LENGTH + "之间",username);
         }
         // 查询用户信息
@@ -107,23 +107,23 @@ public class UserLoginController {
         }
 
         if (user == null) {
-            AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.not.exists")));
+            AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(null,null,username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.not.exists")));
             throw new UserNotFoundException(username);
         }
 
         if (Boolean.TRUE.equals(user.getIsDelete())) {
-            AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.password.delete")));
+            AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(user.getChannelId(),user.getUserId(),username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.password.delete")));
             throw new UserDeleteException();
         }
 
         if (UserConstants.USER_BLOCKED.equals(user.getStatus())) {
-            AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.blocked", user.getRemark())));
+            AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(user.getChannelId(),user.getUserId(),username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.blocked", user.getRemark())));
             throw new UserBlockedException();
         }
 
         passwordService.validate(user, password);
 
-        AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(username, SystemConstants.LOGIN_SUCCESS, MessageUtil.message("user.login.success")));
+        AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(user.getChannelId(),user.getUserId(),username, SystemConstants.LOGIN_SUCCESS, MessageUtil.message("user.login.success")));
         String ip = IpUtil.getIpAddr(ServletUtil.getRequest());
         user = sysUserService.recordLoginIp(user.getUserId(), ip);
 
@@ -203,7 +203,7 @@ public class UserLoginController {
         if (user != null) {
             String loginName = user.getLoginName();
             // 记录用户退出日志
-            AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(loginName, SystemConstants.LOGOUT, MessageUtil.message("user.logout.success")));
+            AsyncManager.me().execute(AsyncFactory.recordUserLoginInfo(user.getChannelId(),user.getUserId(),loginName, SystemConstants.LOGOUT, MessageUtil.message("user.logout.success")));
             //设置数据库里面的用户状态为离线
             log.info("设置用户{}为离线状态 token={}",loginName, user.getToken());
             onlineService.forceLogout(user.getToken());

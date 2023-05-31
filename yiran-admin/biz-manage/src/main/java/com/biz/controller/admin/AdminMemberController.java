@@ -2,6 +2,8 @@ package com.biz.controller.admin;
 
 import com.biz.constants.BizPermissionConstants;
 import com.biz.entity.Member;
+import com.biz.entity.MemberMoney;
+import com.biz.service.MemberMoneyService;
 import com.biz.service.MemberService;
 import com.biz.service.util.MemberPasswordService;
 import com.biz.vo.MemberVO;
@@ -28,7 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Map;
 
-
 @AjaxWrapper
 @Controller
 @RequestMapping("/biz/member")
@@ -36,6 +37,9 @@ public class AdminMemberController {
 
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private MemberMoneyService memberMoneyService;
 
     @Autowired
     private SysChannelService channelService;
@@ -93,8 +97,7 @@ public class AdminMemberController {
     @Log(title = "会员管理", businessType = BusinessType.EDIT)
     @RequirePermission(BizPermissionConstants.Member.EDIT)
     @PostMapping("edit")
-    public MemberVO editUser(@ApiObject(validate = true) MemberVO member,
-                             @ApiParam String password) {
+    public MemberVO editUser(@ApiObject(validate = true) MemberVO member) {
         if (member == null) {
             throw BusinessException.build("member不能为空");
         }
@@ -107,20 +110,9 @@ public class AdminMemberController {
             throw BusinessException.build("会员不存在");
         }
         ChannelCheckUtils.checkHasPermission(db.getChannelId());
-        db.setStatus(member.getStatus());
-        db.setStatus(member.getStatus());
-        db.setPhone(member.getPhone());
-        db.setName(member.getName());
-
-        db.setUpdateBy(SessionContextHelper.getCurrentLoginName());
-
-        Member check = memberService.selectByPhone(db.getChannelId(),db.getPhone());
-        if(check != null && !check.getMemberId().equals(db.getMemberId()))
-            throw BusinessException.build("手机号已经存在");
-
-        db = memberService.update(db);
+        member.setUpdateBy(SessionContextHelper.getCurrentLoginName());
+        db = memberService.updateMember(member);
         SysChannel channel = channelService.selectByPId(db.getChannelId());
-
         return MemberVO.from(db,channel);
     }
 
@@ -145,7 +137,8 @@ public class AdminMemberController {
             throw new UserNotFoundException();
         ChannelCheckUtils.checkHasPermission(db.getChannelId());
         SysChannel channel = channelService.selectByPId(db.getChannelId());
-        return MemberVO.from(db,channel);
+        MemberVO data = MemberVO.from(db,channel);
+        return data;
     }
 
     @Log(title = "会员管理", businessType = BusinessType.EDIT)

@@ -10,6 +10,7 @@ public class MemberSession {
     private Long memberId;
 
     private String phone;
+    private String loginAddress;
     private String name;
     private String nickName;
     private String avatar;

@@ -38,7 +38,7 @@ public class MemberPasswordService {
 
         Long loginUserId = member.getMemberId();
         if (!matches(member, password)) {
-            AsyncManager.me().execute(AsyncFactory.recordMemberLoginInfo(loginName, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.password.retry.limit.count", passwordErrorCount)));
+            AsyncManager.me().execute(AsyncFactory.recordMemberLoginInfo(null,null,loginName, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.password.retry.limit.count", passwordErrorCount)));
             if(timeExpire(passwordErrorTime)) {
                 passwordErrorCount = 1;
             } else {
@@ -55,7 +55,7 @@ public class MemberPasswordService {
         String loginName = member.getPhone();
         Long memberId = member.getMemberId();
         if (!assertMatches(member, assertRawPassword)) {
-            AsyncManager.me().execute(AsyncFactory.recordMemberLoginInfo(loginName, SystemConstants.LOGIN_FAIL, "支付密码错误"));
+            AsyncManager.me().execute(AsyncFactory.recordMemberLoginInfo(null,null,loginName, SystemConstants.LOGIN_FAIL, "支付密码错误"));
             throw new UserPasswordNotMatchException("支付密码错误",loginName);
         }
     }

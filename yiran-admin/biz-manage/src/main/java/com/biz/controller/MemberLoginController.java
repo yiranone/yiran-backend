@@ -66,18 +66,18 @@ public class MemberLoginController {
 
         String username = m.getPhone();
         if (Boolean.TRUE.equals(m.getIsDelete())) {
-            AsyncManager.me().execute(AsyncFactory.recordMemberLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.password.delete")));
+            AsyncManager.me().execute(AsyncFactory.recordMemberLoginInfo(m.getChannelId(),m.getMemberId(),username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.password.delete")));
             throw new UserDeleteException();
         }
 
         if (m.getIsDelete() != null && m.getIsDelete().booleanValue()) {
-            AsyncManager.me().execute(AsyncFactory.recordMemberLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.blocked", m.getName())));
+            AsyncManager.me().execute(AsyncFactory.recordMemberLoginInfo(m.getChannelId(),m.getMemberId(),username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.blocked", m.getName())));
             throw new UserBlockedException();
         }
 
         memberPasswordService.validate(m, password);
 
-        AsyncManager.me().execute(AsyncFactory.recordMemberLoginInfo("会员" + m.getMemberId() + " "+ m.getPhone(), SystemConstants.LOGIN_SUCCESS, MessageUtil.message("user.login.success")));
+        AsyncManager.me().execute(AsyncFactory.recordMemberLoginInfo(m.getChannelId(),m.getMemberId(),"会员" + m.getMemberId() + " "+ m.getPhone(), SystemConstants.LOGIN_SUCCESS, MessageUtil.message("user.login.success")));
         m.setLoginIp(SessionContextHelper.getIp());
         m.setLoginDate(new Date());
         memberService.update(m);
@@ -106,7 +106,7 @@ public class MemberLoginController {
         if (memberSession != null) {
             String phone = memberSession.getPhone();
             // 记录用户退出日志
-            AsyncManager.me().execute(AsyncFactory.recordMemberLoginInfo(phone, SystemConstants.LOGOUT, MessageUtil.message("user.logout.success")));
+            AsyncManager.me().execute(AsyncFactory.recordMemberLoginInfo(memberSession.getChannelId(),memberSession.getMemberId(),phone, SystemConstants.LOGOUT, MessageUtil.message("user.logout.success")));
             //设置数据库里面的用户状态为离线
             log.info("设置用户{}为离线状态 token={}",phone, memberSession.getToken());
             // 清理缓存

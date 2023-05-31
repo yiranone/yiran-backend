@@ -11,6 +11,8 @@ import org.springframework.beans.BeanUtils;
 public class MemberVO {
     @Search
     private Long memberId;
+    @Search
+    private Long inviteMemberId;
 
     @Search
     private String phone;
@@ -24,9 +26,11 @@ public class MemberVO {
     private String loginDate;
     private String loginIp;
     private String updateTime;
+    private String registerTime;
     private String createBy;
     private String updateBy;
     private Boolean isDelete;
+    private String remark;
 
     private Long tokenExpires; //token过期时间 毫秒
 
@@ -37,9 +41,10 @@ public class MemberVO {
 
     public static MemberVO from(Member member, SysChannel sysChannel) {
         MemberVO memberVO = new MemberVO();
-        BeanUtils.copyProperties(member,memberVO);
+        BeanUtils.copyProperties(member, memberVO);
         memberVO.setCreateTime(DateUtil.dateTime(member.getCreateTime()));
         memberVO.setUpdateTime(DateUtil.dateTime(member.getUpdateTime()));
+        memberVO.setRegisterTime(DateUtil.dateTime(member.getRegisterTime()));
         memberVO.setCreateBy(member.getCreateBy());
         memberVO.setUpdateBy(member.getUpdateBy());
         memberVO.setChannelCode(sysChannel.getChannelCode());

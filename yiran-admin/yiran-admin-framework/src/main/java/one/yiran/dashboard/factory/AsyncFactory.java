@@ -33,16 +33,16 @@ public class AsyncFactory {
         };
     }
 
-    public static TimerTask recordUserLoginInfo(final String username, final String status, final String message, final Object... args) {
-       return recordLoginInfo("User",username, status, message, args);
+    public static TimerTask recordUserLoginInfo(final Long channelId, final Long categoryId, final String username, final String status, final String message, final Object... args) {
+       return recordLoginInfo("User",channelId,categoryId,username, status, message, args);
     }
 
-    public static TimerTask recordMemberLoginInfo(final String username, final String status, final String message, final Object... args) {
-        return recordLoginInfo("Member",username, status, message, args);
+    public static TimerTask recordMemberLoginInfo(final Long channelId, final Long categoryId,final String username, final String status, final String message, final Object... args) {
+        return recordLoginInfo("Member",channelId,categoryId,username, status, message, args);
     }
 
     //记录登陆用户信息表
-    public static TimerTask recordLoginInfo(final String category, final String username, final String status, final String message, final Object... args) {
+    public static TimerTask recordLoginInfo(final String category, final Long channelId, final Long categoryId, final String username, final String status, final String message, final Object... args) {
         final UserAgent userAgent = UserAgent.parseUserAgentString(ServletUtil.getRequest().getHeader("User-Agent"));
         final String ip = IpUtil.getIpAddr(ServletUtil.getRequest());
         return new TimerTask() {
@@ -68,6 +68,7 @@ public class AsyncFactory {
                 SysLoginInfo logininfor = new SysLoginInfo();
                 logininfor.setCreateBy(StringUtils.substring(username,0,32));
                 logininfor.setCreateTime(new Date());
+                logininfor.setChannelId(channelId);
                 logininfor.setLoginName(StringUtils.substring(username,0,32));
                 logininfor.setIpAddr(StringUtils.substring(ip,0,32));
                 logininfor.setLoginLocation(StringUtils.substring(ipString,0,32));
@@ -75,6 +76,7 @@ public class AsyncFactory {
                 logininfor.setOs(StringUtils.substring(os,0,32));
                 logininfor.setMsg(StringUtils.substring(message,0,1024));
                 logininfor.setLoginTime(new Date());
+                logininfor.setCategoryId(categoryId);
                 logininfor.setCategory(category);
                 // 日志状态
                 if (SystemConstants.SUCCESS.equals(status) || SystemConstants.LOGOUT.equals(status) || SystemConstants.REGISTER.equals(status)) {
