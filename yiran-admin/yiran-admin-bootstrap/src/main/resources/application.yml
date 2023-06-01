@@ -27,7 +27,7 @@ spring:
         metadata_builder_contributor: one.yiran.dashboard.config.sql.GroupConcatSqlFunctionsMetadataBuilderContributor
     show-sql: true
     open-in-view: false
-    database-platform: org.hibernate.dialect.MySQL5Dialect
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     hibernate:
       ddl-auto: update
   redis:
