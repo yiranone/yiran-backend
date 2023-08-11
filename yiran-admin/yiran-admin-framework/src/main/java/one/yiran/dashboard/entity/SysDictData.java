@@ -62,14 +62,17 @@ public class SysDictData extends TimedBasedEntity {
     /**
      * 是否默认（Y是 N否）
      */
+    @Option(value = {"Y","N"},message = "是否默认只能是Y，N。 Y=默认,N=非默认")
+    @NotBlank(message = "是否默认字段不能为空")
     @Excel(name = "是否默认", readConverterExp = "Y=是,N=否")
-    @Column
+    @Search
+    @Column(nullable = false,length = 1)
     private String isDefault;
 
     @Option(value = {"1","2"},message = "状态只能是1，2。 1=正常,2=停用")
     @NotBlank(message = "状态不能为空")
     @Search
-    @Excel(name = "状态", readConverterExp = "0=正常,1=停用")
+    @Excel(name = "状态", readConverterExp = "1=正常,2=停用")
     @Column(length = 8,nullable = false)
     private String status;
 

@@ -19,17 +19,25 @@ public class SysAnalysisItemServiceImpl extends CrudBaseServiceImpl<Long, SysAna
     @Transactional
     @Override
     public SysAnalysisItem insertOrUpdate(Long channelId, LocalDate date, String type, String key , String value){
+        return insertOrUpdate(channelId,date,type, null,key,value);
+    }
+
+    @Transactional
+    @Override
+    public SysAnalysisItem insertOrUpdate(Long channelId, LocalDate date, String type, String subType, String key, String value) {
         QSysAnalysisItem qAnalysisItem = QSysAnalysisItem.sysAnalysisItem;
         SysAnalysisItem dbItem = selectOne(PredicateBuilder.builder()
                 .addEqual(qAnalysisItem.channelId,channelId)
                 .addEqualIfNotBlank(qAnalysisItem.belongDate, date)
                 .addEqualIfNotBlank(qAnalysisItem.type, type)
+                .addEqualIfNotBlank(qAnalysisItem.subType, subType)
                 .addExpression(qAnalysisItem.keyName.eq(key)).toPredicate());
         if (dbItem == null) {
             SysAnalysisItem item = new SysAnalysisItem();
             item.setChannelId(channelId);
             item.setBelongDate(date);
             item.setType(type);
+            item.setSubType(subType);
             item.setKeyName(key);
             item.setValue(value);
             item.setCreateTime(new Date());

@@ -1,15 +1,14 @@
 package one.yiran.dashboard.service.impl;
 
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import lombok.extern.slf4j.Slf4j;
 import one.yiran.common.domain.PageModel;
 import one.yiran.common.domain.PageRequest;
-import lombok.extern.slf4j.Slf4j;
+import one.yiran.common.exception.BusinessException;
 import one.yiran.common.util.DateUtil;
 import one.yiran.dashboard.dao.UserOnlineDao;
 import one.yiran.dashboard.entity.QSysUserOnline;
 import one.yiran.dashboard.entity.SysUserOnline;
-import one.yiran.common.exception.BusinessException;
 import one.yiran.dashboard.service.SysUserOnlineService;
 import one.yiran.db.common.service.CrudBaseServiceImpl;
 import org.apache.commons.lang3.StringUtils;

@@ -148,6 +148,7 @@ public class SysUser extends TimedBasedEntity {
     @Column
     private Date passwordErrorTime;
 
+    @Search
     @NotNull(message = "渠道号不能为空")
     @Column(nullable = false,updatable = false)
     private Long channelId;

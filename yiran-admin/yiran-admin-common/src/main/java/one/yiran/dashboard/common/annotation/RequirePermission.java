@@ -10,4 +10,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequirePermission {
     String[] value();
+
+    boolean isAnd() default false;
+
 }

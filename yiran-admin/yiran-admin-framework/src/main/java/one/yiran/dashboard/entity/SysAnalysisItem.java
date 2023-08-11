@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 import java.time.LocalDate;
 
@@ -17,7 +18,10 @@ import java.time.LocalDate;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @Entity
-@Table(name = "SYS_ANALYSIS_ITEM")
+@Table(name = "SYS_ANALYSIS_ITEM",indexes = {
+        @Index(name = "idx_ty_date",columnList = "type,belongDate"),
+        @Index(name = "idx_chid_type",columnList = "channelId,type")
+})
 public class SysAnalysisItem extends TimedBasedEntity {
 
     public static final String TYPE_MEMBER = "MEMBER";
@@ -29,6 +33,9 @@ public class SysAnalysisItem extends TimedBasedEntity {
 
     @Column(name = "TYPE",length = 32,nullable = false)
     private String type;//
+
+    @Column(length = 32,nullable = true)
+    private String subType;
 
     @Column
     private Long channelId;

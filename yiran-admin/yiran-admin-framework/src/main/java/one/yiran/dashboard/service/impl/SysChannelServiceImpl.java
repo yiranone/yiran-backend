@@ -8,6 +8,8 @@ import one.yiran.dashboard.entity.SysChannel;
 import one.yiran.dashboard.service.SysChannelHandleService;
 import one.yiran.dashboard.service.SysChannelService;
 import one.yiran.db.common.service.CrudBaseServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -16,6 +18,9 @@ import org.springframework.util.Assert;
 public class SysChannelServiceImpl extends CrudBaseServiceImpl<Long, SysChannel> implements SysChannelService {
 
     private final ChannelDao channelDao;
+
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     public SysChannelServiceImpl(ChannelDao channelDao) {
         this.channelDao = channelDao;
@@ -35,6 +40,12 @@ public class SysChannelServiceImpl extends CrudBaseServiceImpl<Long, SysChannel>
     public SysChannel selectByChannelCode(String channelCode) {
         Assert.hasLength(channelCode,"channelCode不能为空");
         return selectOne(QSysChannel.sysChannel.channelCode.eq(channelCode));
+    }
+
+    @Override
+    public SysChannel selectByDomainName(String domainName) {
+        Assert.hasLength(domainName,"domainName不能为空");
+        return selectOne(QSysChannel.sysChannel.domainName.eq(domainName));
     }
 
     @Override

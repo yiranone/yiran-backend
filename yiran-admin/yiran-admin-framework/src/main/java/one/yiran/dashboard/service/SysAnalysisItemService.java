@@ -8,4 +8,5 @@ import java.time.LocalDate;
 public interface SysAnalysisItemService extends CrudBaseService<Long, SysAnalysisItem> {
 
     SysAnalysisItem insertOrUpdate(Long channelId, LocalDate date, String type, String key , String value);
+    SysAnalysisItem insertOrUpdate(Long channelId, LocalDate date, String type, String subType, String key , String value);
 }

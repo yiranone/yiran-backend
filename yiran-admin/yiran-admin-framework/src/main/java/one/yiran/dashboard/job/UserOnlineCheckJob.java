@@ -3,12 +3,10 @@ package one.yiran.dashboard.job;
 import lombok.extern.slf4j.Slf4j;
 import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.service.SysUserOnlineService;
-import one.yiran.dashboard.util.UserCacheUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
@@ -30,13 +28,13 @@ public class UserOnlineCheckJob {
     public void excuteTask() {
         log.info("处理用户是否在线 start");
         long start = System.currentTimeMillis();
-        process();
+        updateExpireUserOffline();
         long end = System.currentTimeMillis();
         long gap = (end - start)/1000;
         log.info("处理用户是否在线 end 耗时:{}s",gap);
     }
 
-    private void process() {
+    private void updateExpireUserOffline() {
         Long sessionTimeout = Global.getSessionTimeout();
         log.info("系统当前的session有效期设置为{}",sessionTimeout);
         if(sessionTimeout == null)

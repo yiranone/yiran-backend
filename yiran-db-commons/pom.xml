@@ -14,7 +14,7 @@
         <dependency>
             <groupId>one.yiran</groupId>
             <artifactId>yiran-commons</artifactId>
-            <version>8.0-SNAPSHOT</version>
+            <version>10.0-SNAPSHOT</version>
         </dependency>
         <!-- SpringWeb模块 -->
         <dependency>

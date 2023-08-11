@@ -28,4 +28,7 @@ public class SystemConstants {
     public static final String STATUS_ENABLE = "1";
     public static final String STATUS_DISABLE = "2";
 
+    public static final int VALID = 1;
+    public static final int INVALID = 0;
+
 }

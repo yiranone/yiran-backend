@@ -47,6 +47,30 @@ public class SysChannel extends TimedBasedEntity {
     @Column(nullable = false,length = 32)
     private String channelCode;
 
+    /**
+     * 渠道域名
+     */
+    @Excel(name = "渠道域名")
+    @Search
+    @Column(nullable = true,length = 32)
+    private String domainName;
+
+    /**
+     * 渠道logot图片
+     */
+    @Excel(name = "渠道logo")
+    @Column(nullable = true,length = 256)
+    private String logo;
+
+    //显示在浏览器上面的favicon.ico
+    @Excel(name = "渠道icon")
+    @Column(nullable = true,length = 256)
+    private String icon;
+
+    @Excel(name = "后台显示名称")
+    @Column(nullable = true,length = 32)
+    private String displayName;
+
 
     @Excel(name = "渠道有效期")
     @Column(nullable = false)

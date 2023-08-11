@@ -93,6 +93,10 @@ public class ChannelAdminController {
         dbChannel.setChannelName(channel.getChannelName());
         dbChannel.setChannelCode(channel.getChannelCode());
         dbChannel.setChannelSort(channel.getChannelSort());
+        dbChannel.setIcon(channel.getIcon());
+        dbChannel.setDomainName(channel.getDomainName());
+        dbChannel.setDisplayName(channel.getDisplayName());
+        dbChannel.setLogo(channel.getLogo());
         dbChannel.setStatus(channel.getStatus());
         dbChannel.setExpireDate(channel.getExpireDate());
         String loginName = SessionContextHelper.getCurrentLoginName();

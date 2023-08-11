@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.SimpleExpression;
 import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.jpa.impl.JPAUpdateClause;
 import lombok.extern.slf4j.Slf4j;
 import one.yiran.common.domain.PageModel;
 import one.yiran.common.domain.PageRequest;
@@ -291,12 +292,18 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
 //        return deletedCount;
     }
 
+    @Transactional
     @Override
     public long delete(Predicate predicate) throws BusinessException {
         Path isDeletePath = getDeletePath();
         if(predicate == null)
             throw BusinessException.build("predicate不能为空");
-        return queryFactory.update(entityPath()).set(isDeletePath,true).where(predicate).execute();
+        JPAUpdateClause updateClause = queryFactory.update(entityPath());
+        updateClause.set(isDeletePath,true);
+        Path pathUpdateTime = QClassUtil.getFieldPathByClass((Class) tClass, "updateTime");
+        if(pathUpdateTime != null)
+            updateClause.set(pathUpdateTime,new Date());
+        return updateClause.where(predicate).execute();
     }
 
     @Transactional
@@ -308,37 +315,18 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
 
         SimpleExpression numberKeyPath = getSimpleExpression(fieldName);
         return delete(numberKeyPath.in(ids));
-
-//        String sb = "";
-//        for(int i = 0; i <ids.length; i ++) {
-//            sb = sb + ":p" + i;
-//            if(i != ids.length-1) {
-//                sb = sb + ",";
-//            }
-//        }
-//        Query query = entityManager.createQuery(
-//                "update " + ((Class) tClass).getName() + " set isDelete = true WHERE  " + fieldName + " in (" + sb + ")");
-//
-//        if (Long.class.isAssignableFrom(filedType)) {
-//            for(int i = 0; i <ids.length; i ++) {
-//                query.setParameter("p"+i, Long.valueOf(ids[i].toString()));
-//            }
-//        } else {
-//            for(int i = 0; i <ids.length; i ++) {
-//                query.setParameter("p"+i, ids[i]);
-//            }
-//        }
-//
-//        int deletedCount = query.executeUpdate();
-//        return deletedCount;
     }
 
     @Transactional
     @Override
     public long deleteAll() {
         Path isDeletePath = getDeletePath();
-        return queryFactory.update(entityPath()).set(isDeletePath,true).execute();
-
+        JPAUpdateClause updateClause = queryFactory.update(entityPath());
+        updateClause.set(isDeletePath,true);
+        Path pathUpdateTime = QClassUtil.getFieldPathByClass((Class) tClass, "updateTime");
+        if(pathUpdateTime != null)
+            updateClause.set(pathUpdateTime,new Date());
+        return updateClause.execute();
 //        Query query = entityManager.createQuery(
 //                "update " + ((Class) tClass).getName() + " set isDelete = true");
 //        int deletedCount = query.executeUpdate();
@@ -352,15 +340,6 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
     public T insert(T target) {
         String primaryId = doGetPrimaryId();
         processionAnnotations(target);
-//        Field f = ReflectionUtils.findField((Class<T>) tClass, primaryId);
-//        Object fv ;
-//        try {
-//            fv = FieldUtils.readField(f,target,true);
-//        } catch (IllegalAccessException e) {
-//            log.error("",e);
-//            throw BusinessException.build("读取主键异常");
-//        }
-
         entityManager.persist(target);
         return target;
     }
@@ -403,6 +382,7 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
         return (SimpleExpression) keyPath;
     }
 
+    @Transactional
     @Override
     public long remove(Predicate predicate) {
         if(predicate == null)
@@ -437,40 +417,11 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
         String fieldName = doGetPrimaryId();
         SimpleExpression numberKeyPath = getSimpleExpression(fieldName);
         return remove(numberKeyPath.in(ids));
-//        Assert.notNull(ids,"");
-//        String fieldName = doGetPrimaryId();
-//        Class filedType = doGetPrimaryType();
-//
-//        String sb = "";
-//        for(int i = 0; i <ids.length; i ++) {
-//            sb = sb + ":p" + i;
-//            if(i != ids.length-1) {
-//                sb = sb + ",";
-//            }
-//        }
-//        Query query = entityManager.createQuery(
-//                "DELETE FROM  " + ((Class) tClass).getName() + " WHERE  " + fieldName + " in (" + sb + ")");
-//
-//        if (Long.class.isAssignableFrom(filedType)) {
-//            for(int i = 0; i <ids.length; i ++) {
-//                query.setParameter("p"+i, Long.valueOf(ids[i].toString()));
-//            }
-//        } else {
-//            for(int i = 0; i <ids.length; i ++) {
-//                query.setParameter("p"+i, ids[i]);
-//            }
-//        }
-//        int deletedCount = query.executeUpdate();
-//        return deletedCount;
     }
 
     @Transactional
     @Override
     public long removeAll() {
-//        Query query = entityManager.createQuery(
-//                "DELETE FROM  " + ((Class) tClass).getName());
-//        int deletedCount = query.executeUpdate();
-//        return deletedCount;
         return queryFactory.delete(entityPath()).execute();
     }
 
@@ -523,10 +474,14 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
     }
 
     private Path getDeletePath() {
-        Path isDeletePath = QClassUtil.getFieldPathByClass((Class) tClass, "isDelete");
-        if (isDeletePath == null)
-            throw BusinessException.build("isDelete字段不存在");
-        return isDeletePath;
+        return getPath("isDelete");
+    }
+
+    private Path getPath(String pathS) {
+        Path path = QClassUtil.getFieldPathByClass((Class) tClass, pathS);
+        if (path == null)
+            throw BusinessException.build(pathS + "字段不存在");
+        return path;
     }
 
     private List<Predicate> exactFromObject(T target, EntityPath path) {

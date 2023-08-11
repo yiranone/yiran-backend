@@ -28,7 +28,7 @@ public class MemberCacheUtil {
     private static final String CONFIG_PREFIX = ".config.{";
     private static final String CONFIG_SUFFIX = "}.token";
 
-    private static final int SESSION_TIMEOUT = 86400; //session单位为s 604800=7天 86400=1天
+    private static final int SESSION_TIMEOUT = 604800; //session单位为s 604800=7天
 
     public static int getSessionTimeout(){
         return SESSION_TIMEOUT;

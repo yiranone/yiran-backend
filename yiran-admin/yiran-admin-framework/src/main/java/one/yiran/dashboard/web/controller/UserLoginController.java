@@ -10,6 +10,7 @@ import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.common.constants.SystemConstants;
 import one.yiran.dashboard.common.constants.UserConstants;
 import one.yiran.dashboard.common.expection.CaptchaException;
+import one.yiran.dashboard.entity.SysChannel;
 import one.yiran.dashboard.entity.SysDept;
 import one.yiran.dashboard.entity.SysUser;
 import one.yiran.dashboard.factory.AsyncFactory;
@@ -19,6 +20,7 @@ import one.yiran.dashboard.common.expection.user.UserBlockedException;
 import one.yiran.dashboard.common.expection.user.UserDeleteException;
 import one.yiran.dashboard.common.expection.user.UserNotFoundException;
 import one.yiran.dashboard.common.expection.user.UserPasswordNotMatchException;
+import one.yiran.dashboard.service.SysChannelService;
 import one.yiran.dashboard.service.SysDeptService;
 import one.yiran.dashboard.service.SysUserOnlineService;
 import one.yiran.dashboard.service.SysUserService;
@@ -60,6 +62,8 @@ public class UserLoginController {
     private SysUserService sysUserService;
     @Autowired
     private DefaultCaptchaService captchaService;
+    @Autowired
+    private SysChannelService sysChannelService;
 
     @PostMapping("/login")
     public UserPageVO ajaxLogin(@ApiParam String username, @ApiParam String password,
@@ -218,6 +222,24 @@ public class UserLoginController {
     public Map<String,String> loginConfig(HttpServletRequest request) {
         Map<String,String> map = new HashMap<>();
         map.put("captcha",Global.getCaptchaType());
+
+        String hostName = request.getHeader("Host");
+        log.info("Host:{}",hostName);
+        String logo = null;
+        String icon = null;
+        String displayName = null;
+        if(StringUtils.isNotBlank(hostName)) {
+            SysChannel sysChan = sysChannelService.selectByDomainName(hostName);
+            if(sysChan != null){
+                logo = sysChan.getLogo();
+                displayName = sysChan.getDisplayName();
+                icon = sysChan.getIcon();
+            }
+        }
+        //map.put("logo","https://theme.zdassets.com/theme_assets/1848125/dd0b0631a75936bfb90a2b1aa61b380738fc9e4c.png");
+        map.put("logo",logo);
+        map.put("icon",icon);
+        map.put("displayName",displayName);
         return map;
     }
 }

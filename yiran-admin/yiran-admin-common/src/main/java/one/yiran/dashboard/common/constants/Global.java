@@ -60,6 +60,19 @@ public class Global {
         }
         return value;
     }
+    public static Boolean getBooleanConfig(String key) {
+        String t = getConfig(key);
+        if(StringUtils.isNotBlank(t))
+            return Boolean.valueOf(t);
+        return null;
+    }
+
+    public static Integer getIntegerConfig(String key) {
+        String t = getConfig(key);
+        if(StringUtils.isNotBlank(t))
+            return Integer.valueOf(t);
+        return null;
+    }
 
     /**
      * 获取项目名称

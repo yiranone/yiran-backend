@@ -21,6 +21,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.TimerTask;
 
@@ -43,7 +44,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
             requirePermission = handlerMethod.getMethodAnnotation(RequirePermission.class);
         }
 
-        if (HttpMethod.OPTIONS.equals(request.getMethod())) {
+        if (HttpMethod.OPTIONS.name().equals(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
             return true;
         }
@@ -56,7 +57,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
                 //用户登陆了，修改下在线用户列表
                 String sessionId = session.getToken();
                 Long lastSync = session.getLastSyncToDbTime();
-                Long now = new Date().getTime();
+                long now = new Date().getTime();
 
                 //每10s做一次持久化，异步在数据库写入用户在线
                 if (sessionId != null && (lastSync == null || lastSync + 10 * 1000 < now)) {
@@ -94,13 +95,31 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
                 String[] perms = requirePermission.value();
                 if (perms != null && perms.length > 0) {
                     //校验用户权限
-                    for (String perm : perms) {
-                        boolean has = sysRoleService.checkUserHasPermission(session.getUserId(), perm);
-                        if (!has) {
-                            log.info("校验用户{}权限{}未通过,URI={}", session.getLoginName(), perm, request.getRequestURI());
-                            throw BusinessException.build("用户缺少权限:" + perm);
-                        } else {
-                            log.info("校验用户{}权限{}通过,URI={}", session.getLoginName(), perm, request.getRequestURI());
+                    boolean isAnd = requirePermission.isAnd();
+                    if (isAnd) {
+                        for (String perm : perms) {
+                            boolean has = sysRoleService.checkUserHasPermission(session.getUserId(), perm);
+                            if (!has) {
+                                log.info("AND校验用户{}权限{}未通过,URI={}", session.getLoginName(), perm, request.getRequestURI());
+                                throw BusinessException.build("用户缺少权限:" + perm);
+                            } else {
+                                log.info("AND校验用户{}权限{}通过,URI={}", session.getLoginName(), perm, request.getRequestURI());
+                            }
+                        }
+                    } else {
+                        boolean pass = false;
+                        for (String perm : perms) {
+                            boolean has = sysRoleService.checkUserHasPermission(session.getUserId(), perm);
+                            if (!has) {
+                                log.info("OR校验用户{}权限{}未通过,URI={}", session.getLoginName(), perm, request.getRequestURI());
+                            } else {
+                                log.info("OR校验用户{}权限{}通过,URI={}", session.getLoginName(), perm, request.getRequestURI());
+                                pass = true;
+                                break;
+                            }
+                        }
+                        if (!pass) {
+                            throw BusinessException.build("OR用户缺少任意一个权限:" + Arrays.toString(perms));
                         }
                     }
                 }
