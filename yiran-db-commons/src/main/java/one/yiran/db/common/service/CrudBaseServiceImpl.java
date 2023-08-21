@@ -260,7 +260,7 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
     }
 
     private long doCount(List<Predicate> predicates){
-        log.info("query count sql Entity:{},{}",tClass.getTypeName(),predicates);
+        //log.info("query count sql Entity:{},{}",tClass.getTypeName(),predicates);
         JPAQuery query = queryFactory.selectFrom(entityPath());
         if (predicates != null) {
             predicates.forEach(e->{

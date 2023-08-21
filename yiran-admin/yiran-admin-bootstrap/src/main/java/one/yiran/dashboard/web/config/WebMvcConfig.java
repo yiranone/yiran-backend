@@ -2,13 +2,17 @@ package one.yiran.dashboard.web.config;
 
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-//import com.alibaba.fastjson.serializer.SimpleDateFormatSerializer;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.biz.interceptor.MemberInterceptor;
 import one.yiran.dashboard.common.constants.Global;
 import one.yiran.dashboard.interceptor.AuthInterceptor;
-import one.yiran.dashboard.resolver.*;
+import one.yiran.dashboard.resolver.ApiChannelParamResolver;
+import one.yiran.dashboard.resolver.ApiUserParamResolver;
+import one.yiran.dashboard.resolver.ObjectParamTypeParamResolver;
+import one.yiran.dashboard.resolver.PageRequestParamResolver;
+import one.yiran.dashboard.resolver.SimpleParamTypeParamResolver;
+import one.yiran.dashboard.web.config.json.LocalDateFormatSerializer;
 import one.yiran.dashboard.web.filter.AjaxMethodReturnValueHandler;
 import one.yiran.dashboard.web.filter.MyInterceptor;
 import org.springframework.beans.factory.InitializingBean;
@@ -17,7 +21,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -33,8 +36,8 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Configuration
@@ -43,12 +46,8 @@ import java.util.List;
 //@Enable
 public class WebMvcConfig implements WebMvcConfigurer, InitializingBean {
 
-    private static SerializeConfig serializeConfig = new SerializeConfig();
-    private static String dateFormat;
-
     static {
-        dateFormat = "yyyy-MM-dd HH:mm:ss";
-//        serializeConfig.put(Date.class, new SimpleDateFormatSerializer(dateFormat));
+        SerializeConfig.global.put(LocalDate.class,new LocalDateFormatSerializer());
     }
 
     @Override
@@ -92,9 +91,8 @@ public class WebMvcConfig implements WebMvcConfigurer, InitializingBean {
                 /*SerializerFeature.WriteMapNullValue,*/
                 SerializerFeature.WriteDateUseDateFormat,
                 SerializerFeature.WriteBigDecimalAsPlain,
-                SerializerFeature.DisableCircularReferenceDetect,
-                SerializerFeature.WriteDateUseDateFormat);
-        config.setSerializeConfig(serializeConfig);
+                SerializerFeature.DisableCircularReferenceDetect);
+
 
         fastJsonHttpMessageConverter.setFastJsonConfig(config);
 
