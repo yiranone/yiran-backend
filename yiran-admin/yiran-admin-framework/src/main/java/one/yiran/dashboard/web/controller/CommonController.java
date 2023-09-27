@@ -77,7 +77,8 @@ public class CommonController {
         String[] image = MimeTypeUtil.IMAGE_EXTENSION;
         String[] media = MimeTypeUtil.MEDIA_EXTENSION;
         String[] both = ArrayUtils.addAll(image, media);
-        String fileRelatedPath = FileUploadUtil.upload(Global.getUploadPath(), file,both);
+        log.info("config extension allow:{} / {} ", image,media);
+        String fileRelatedPath = FileUploadUtil.upload(Global.getUploadPath(), file, both);
         //String url = serverConfig.getRequestUrl() + fileName;
         String contextPath = request.getContextPath();
         String contextPathAvatar = fileRelatedPath;
